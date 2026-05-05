@@ -46,17 +46,17 @@ const ENG_MONTHS_SHORT = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug"
 
 const smartParseDate = (v: any, fiscalYear?: string): string => {
     if (!v) return "";
-    
+
     // 1. If it's already a JS Date
     if (v instanceof Date) return formatThaiDate(v);
-    
+
     // 2. If it's an Excel Serial Number (e.g. 45145)
     if (typeof v === "number" || (!isNaN(Number(v)) && String(v).length >= 5)) {
         const serial = Number(v);
         const date = new Date((serial - 25569) * 86400 * 1000);
         return formatThaiDate(date);
     }
-    
+
     const s = String(v).trim();
     if (!s) return "";
 
@@ -65,7 +65,7 @@ const smartParseDate = (v: any, fiscalYear?: string): string => {
     let parts = s.split(/[\/\-\s\.]+/);
     if (parts.length === 3) {
         let [d, m, y] = parts;
-        
+
         // Handle Month Abbreviations (Thai & English)
         if (isNaN(Number(m))) {
             const mLower = m.toLowerCase();
@@ -75,14 +75,14 @@ const smartParseDate = (v: any, fiscalYear?: string): string => {
             if (mIdx === -1) {
                 mIdx = ENG_MONTHS_SHORT.findIndex(month => mLower.startsWith(month));
             }
-            
+
             if (mIdx !== -1) m = String(mIdx + 1);
         }
-        
+
         let day = parseInt(d);
         let month = parseInt(m);
         let year = parseInt(y);
-        
+
         if (isNaN(day) || isNaN(month) || isNaN(year)) return s;
 
         // Smart Year Guessing
@@ -1281,10 +1281,10 @@ export default function ImportPage() {
     // ── download template ────────────────────────────────────────────────────
     const downloadTemplate = (type: "normal" | "bulk" | "status" | "status_unit" = "normal") => {
         let headers = ["วันเดือนปีที่รับ", "รายการ", "รหัสครุภัณฑ์", "จำนวน", "หน่วย", "ราคาต่อหน่วย", "มูลค่ารวม", "ประเภทเงิน", "วิธีการได้มา", "ใช้ประจำที่ไหน", "สถานะ"];
-        
+
         let exampleRows: any[][] = [];
         let filename = "";
-        
+
         if (type === "normal") {
             headers = headers.filter(h => h !== "หน่วย");
             exampleRows = [["01/01/2568", "คอมพิวเตอร์เดสก์ท็อป", "AMS-001", "1 เครื่อง", "25000", "25000", "งบประมาณ", "ตกลงราคา", "ห้องคอมพิวเตอร์", "ใช้งานได้"]];
@@ -1336,11 +1336,11 @@ export default function ImportPage() {
         }
 
         XLSX.writeFile(wb, filename);
-        const labelMap = { 
-            normal: "แบบมาตรฐาน", 
-            bulk: "แบบแยกจำนวนและหน่วย", 
-            status: "แบบแยกสถานะ", 
-            status_unit: "แบบแยกสถานะและหน่วย" 
+        const labelMap = {
+            normal: "แบบมาตรฐาน",
+            bulk: "แบบแยกจำนวนและหน่วย",
+            status: "แบบแยกสถานะ",
+            status_unit: "แบบแยกสถานะและหน่วย"
         };
         const label = labelMap[type];
         toast.success(`ดาวน์โหลดเทมเพลต (${label}) สำเร็จ`);
@@ -1578,11 +1578,11 @@ export default function ImportPage() {
                         </button>
                         <div className="relative" ref={templateDDRef}>
                             <button onClick={() => setShowTemplateDD(!showTemplateDD)} className="group flex items-center gap-2 h-9 px-4 rounded-lg border border-amber-200 bg-amber-50 hover:bg-amber-100 text-[12px] font-bold text-amber-600 transition-all shadow-sm active:scale-95 cursor-pointer">
-                                <FileDown size={14} className="text-amber-500 mr-1" /> 
+                                <FileDown size={14} className="text-amber-500 mr-1" />
                                 เทมเพลต
                                 <ChevronDown size={12} className={cn("ml-1.5 transition-transform", showTemplateDD && "rotate-180")} />
                             </button>
-                            
+
                             <AnimatePresence>
                                 {showTemplateDD && (
                                     <motion.div
@@ -1860,7 +1860,7 @@ export default function ImportPage() {
                                         {SYSTEM_COLS.map(sc => {
                                             const mappedKeys = Object.values(colMapping);
                                             let isMapped = mappedKeys.includes(sc.key as any);
-                                            
+
                                             // Smart mapping detection (Implied)
                                             if (sc.key === "unit" && !isMapped) {
                                                 isMapped = mappedKeys.includes("quantity");
@@ -1882,7 +1882,7 @@ export default function ImportPage() {
                                             // Only warn about core inventory fields
                                             const coreFields = ["receivedDate", "name", "assetCode", "quantity", "unitPrice", "totalPrice", "moneyType", "acquisitionMethod", "location", "unit", "status"];
                                             if (!coreFields.includes(sc.key)) return false;
-                                            
+
                                             let isMapped = mappedKeys.includes(sc.key as any);
                                             if (sc.key === "unit" && !isMapped) {
                                                 isMapped = mappedKeys.includes("quantity");
@@ -1931,15 +1931,15 @@ export default function ImportPage() {
                                                         คอลัมน์ระบบถูกจับคู่ครบถ้วนแล้ว พร้อมสำหรับการตรวจสอบข้อมูล
                                                     </p>
                                                 </div>
-                                                
+
                                                 {qtyHeader && (hasEmbeddedUnits || !unitHeader) && (
-                                                    <div className={cn("ml-7 pl-3 border-l-2 py-0.5 flex flex-col gap-0.5", 
+                                                    <div className={cn("ml-7 pl-3 border-l-2 py-0.5 flex flex-col gap-0.5",
                                                         hasEmbeddedUnits ? "border-emerald-200" : "border-amber-200")}>
                                                         <p className="text-[11px] font-bold text-emerald-700/70 uppercase tracking-tight">การวิเคราะห์ข้อมูลเพิ่มเติม</p>
-                                                        <p className={cn("text-[12px] font-medium", 
+                                                        <p className={cn("text-[12px] font-medium",
                                                             hasEmbeddedUnits ? "text-emerald-600" : "text-amber-600")}>
-                                                            {hasEmbeddedUnits 
-                                                                ? "• ตรวจพบหน่วยนับห้อยท้ายในข้อมูลแล้ว ระบบจะแยกหน่วยนับให้อัตโนมัติ" 
+                                                            {hasEmbeddedUnits
+                                                                ? "• ตรวจพบหน่วยนับห้อยท้ายในข้อมูลแล้ว ระบบจะแยกหน่วยนับให้อัตโนมัติ"
                                                                 : "• ไม่พบหน่วยนับห้อยท้าย อย่าลืมระบุหน่วยนับในขั้นตอนถัดไป"}
                                                         </p>
                                                     </div>
@@ -2542,7 +2542,7 @@ export default function ImportPage() {
                 {/* ════ MODAL: Duplicate Error Alert ═════════════════════════════ */}
                 <AnimatePresence>
                     {showDupErrorModal && (
-                        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
+                        <div className="fixed inset-0 z-150 flex items-center justify-center p-4">
                             <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
@@ -2580,7 +2580,7 @@ export default function ImportPage() {
                 {/* ════ MODAL: Incomplete Error Alert ════════════════════════════ */}
                 <AnimatePresence>
                     {showIncompleteErrorModal && (
-                        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
+                        <div className="fixed inset-0 z-150 flex items-center justify-center p-4">
                             <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
