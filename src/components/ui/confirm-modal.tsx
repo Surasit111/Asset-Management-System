@@ -141,9 +141,9 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                                 <h3 className="text-lg font-bold text-gray-900 tracking-tight mb-2">
                                     {title}
                                 </h3>
-                                <p className="text-sm text-gray-500 leading-relaxed">
+                                <div className="text-sm text-gray-500 leading-relaxed">
                                     {description}
-                                </p>
+                                </div>
                             </div>
                         </div>
 

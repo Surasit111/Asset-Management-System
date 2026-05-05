@@ -114,7 +114,7 @@ export default function ClientLayout({
                         position: "fixed",
                         inset: 0,
                         background: "rgba(0,0,0,0.5)",
-                        zIndex: 40,
+                        zIndex: 90,
                     }}
                 />
             )}
@@ -132,7 +132,7 @@ export default function ClientLayout({
                     top: 0,
                     left: mobileOpen ? 0 : undefined,
                     bottom: 0,
-                    zIndex: 50,
+                    zIndex: 100,
                     boxShadow: "none",
                     borderRight: "1px solid #cbd5e1",
                     overflow: "hidden",

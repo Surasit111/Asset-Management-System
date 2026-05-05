@@ -468,7 +468,7 @@ const CustomSelect = ({ value, onChange, options, placeholder = "เลือก
                         <PopoverContent
                             forceMount
                             asChild
-                            className="p-1.5 bg-white border border-slate-200/60 rounded-xl z-10000 w-(--radix-popover-trigger-width) min-w-[220px] data-[side=top]:shadow-[0_-12px_30px_-10px_rgba(0,0,0,0.15)] data-[side=bottom]:shadow-xl"
+                            className="p-1.5 bg-white border border-slate-200/60 rounded-xl z-80 w-(--radix-popover-trigger-width) min-w-[220px] data-[side=top]:shadow-[0_-12px_30px_-10px_rgba(0,0,0,0.15)] data-[side=bottom]:shadow-xl"
                             align="start"
                             sideOffset={8}
                         >
@@ -644,7 +644,7 @@ export function LuxuryCombobox({
                         top: coords.showAbove ? coords.top - 8 : coords.top + 8,
                         left: coords.left,
                         width: coords.width,
-                        zIndex: 99999,
+                        zIndex: 80,
                         transform: coords.showAbove ? 'translateY(-100%)' : 'none'
                     }}
                 >
@@ -1556,7 +1556,7 @@ export default function ImportPage() {
         <div className="min-h-screen bg-slate-100 -m-6 page-import">
 
             {/* ══ Navbar ═══════════════════════════════════════════════════════ */}
-            <header className="sticky top-0 z-110 bg-[#ffffff] border-b border-[#cbd5e1] flex items-center shrink-0" style={{ minHeight: "80px" }}>
+            <header className="sticky top-0 z-90 bg-[#ffffff] border-b border-[#cbd5e1] flex items-center shrink-0" style={{ minHeight: "80px" }}>
                 <div className="w-full px-10 flex items-center gap-4 relative">
                     <div className="flex items-center gap-3 shrink-0">
                         <div className="flex flex-col">
@@ -2542,7 +2542,7 @@ export default function ImportPage() {
                 {/* ════ MODAL: Duplicate Error Alert ═════════════════════════════ */}
                 <AnimatePresence>
                     {showDupErrorModal && (
-                        <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
+                        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
                             <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
@@ -2580,7 +2580,7 @@ export default function ImportPage() {
                 {/* ════ MODAL: Incomplete Error Alert ════════════════════════════ */}
                 <AnimatePresence>
                     {showIncompleteErrorModal && (
-                        <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
+                        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
                             <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
