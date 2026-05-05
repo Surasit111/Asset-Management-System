@@ -1,0 +1,168 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  fullImage     String?   @map("full_image")
+  role          String    @default("user")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lastLogin     DateTime?
+  phoneNumber   String?
+  status        String    @default("active")
+  banReason     String?
+  banned        Boolean?  @default(false)
+  createdById   String?   @map("created_by_id")
+  createdBy     User?     @relation("CreatedByUser", fields: [createdById], references: [id], onDelete: SetNull)
+  createdUsers  User[]    @relation("CreatedByUser")
+  accounts      Account[]
+  sessions      Session[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("accounts")
+}
+
+model Verification {
+  id         String    @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+
+  @@map("verifications")
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  type        String
+  description String?
+  color       String?
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([name, type])
+  @@map("categories")
+}
+
+model CategoryType {
+  id        String   @id @default(cuid())
+  label     String   @unique
+  typeKey   String   @unique
+  createdAt DateTime @default(now())
+
+  @@map("category_types")
+}
+
+model Asset {
+  id                String       @id @default(cuid())
+  assetType         String       @default("general")
+  assetCode         String       @unique
+  name              String
+  status            String?
+  receivedDate      DateTime?
+  fiscalYear        String?
+  acquisitionMethod String?
+  quantity          Int          @default(1)
+  unit              String?
+  unitPrice         Float?
+  moneyType         String?
+  receivedBy        String?
+  createdBy         String?
+  department        String?
+  remark            String?
+  location          String?
+  latitude          Float?
+  longitude         Float?
+  locationDetail    String?
+  imageUrl          String?
+  mapPinId          String?
+  mapPin            MapPin?      @relation(fields: [mapPinId], references: [id])
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  images            AssetImage[]
+
+  @@map("assets")
+}
+
+model AssetImage {
+  id      String @id @default(cuid())
+  url     String
+  assetId String
+  asset   Asset  @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@map("asset_images")
+}
+
+model MapPin {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  latitude    Float
+  longitude   Float
+  description String?
+  type        String   @default("building")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  imageUrl      String?
+  pinImageUrl   String?  @map("pin_image_url")
+  cardImageUrl  String?  @map("card_image_url")
+  assets        Asset[]
+
+  @@map("map_pins")
+}
+
+model ImportHistory {
+  id          String   @id @default(cuid())
+  fileName    String
+  department  String?
+  imported    Int
+  updated     Int
+  skipped     Int
+  importedAt  DateTime @default(now())
+
+  @@map("import_history")
+}
