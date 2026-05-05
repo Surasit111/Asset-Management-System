@@ -75,7 +75,14 @@
 
 4. **Database Initialization**
    ```bash
+   # 1. สร้างโครงสร้างฐานข้อมูล
    npx prisma db push
+
+   # 2. ตั้งค่าระบบเริ่มต้น (สร้าง Admin และหมวดหมู่พื้นฐาน) **สำคัญมาก**
+   npx tsx scripts/setup-system.tsx
+
+   # 3. ใส่ข้อมูลครุภัณฑ์ตัวอย่าง (ถ้าต้องการ)
+   npx tsx scripts/seed-assets.tsx
    ```
 
 5. **Run Development Server**
@@ -85,12 +92,8 @@
 
 ---
 
-## 👨‍💻 ผู้พัฒนา (Author)
+## ผู้พัฒนา (Author)
 
-**[ชื่อของพี่ - Surasit Phimseeda]**
-- 📧 Email: surasit.phimseeda111@gmail.com
-- 🌐 Portfolio: [ลิงก์เว็บไซต์ของพี่ ถ้ามี]
-- 💼 LinkedIn: [ลิงก์ LinkedIn ของพี่ ถ้ามี]
-
----
-*Developed with ❤️ and Precision for Corporate Asset Management.*
+**[สุรสิทธิ์ พิมพ์สีดา - Surasit Phimseeda]**
+- Email: surasit.phimseeda111@gmail.com
+-------------------------------------------------------------------------

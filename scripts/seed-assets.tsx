@@ -2,529 +2,276 @@ import "dotenv/config";
 import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
-import { auth } from "../src/lib/auth";
 
 const connectionString = process.env.DATABASE_URL;
 const pool = new Pool({ connectionString });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
+const getImg = (id: string) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&q=80&w=800`;
+
 async function main() {
-    console.log("─── Seeding Admin User ───");
-    const adminEmail = process.env.ADMIN_EMAIL || "admin@example.com";
-    const adminPassword = process.env.ADMIN_PASSWORD || "password123";
+    const authenticNames = [
+        "ศูนย์คอมพิวเตอร์ มหาวิทยาลัยราชภัฏเลย",
+        "มหาลัยราชภัฎเลย",
+        "ศูนย์วิทยบริการ มหาวิทยาลัยราชภัฏเลย",
+        "ตึก 18 สำนักวิชาการและงานทะเบียน มหาวิทยาลัยราชภัฏเลย",
+        "สำนักวิทยบริการและเทคโนโลยีสารสนเทศ มหาวิทยาลัยราชภัฏเลย"
+    ];
 
+    console.log("\n─── Step 0: Cleaning up obsolete pins ───");
+    // Automatically purge any pin that is NOT in our authentic list
     try {
-        await auth.api.signUpEmail({
-            body: {
-                email: adminEmail,
-                password: adminPassword,
-                name: "Admin System",
-            }
+        await prisma.asset.updateMany({
+            where: { mapPin: { name: { notIn: authenticNames } } },
+            data: { mapPinId: null }
         });
-
-        await prisma.user.update({
-            where: { email: adminEmail },
-            data: { role: "admin" }
+        const deleteResult = await prisma.mapPin.deleteMany({
+            where: { name: { notIn: authenticNames } }
         });
-
-        console.log(`✓ Admin User created: ${adminEmail}`);
+        console.log(`✓ Removed ${deleteResult.count} obsolete pins.`);
     } catch (e: any) {
-        if (e.message?.includes("already exists")) {
-            console.log(`! Admin User ${adminEmail} already exists`);
-        } else {
-            console.log(`! Note: Admin creation might have skipped or already exists: ${e.message}`);
-        }
+        console.log("× Cleanup error:", e.message);
     }
 
-    console.log("\n─── Seeding Categories ───");
-    const categories = [
-        // สถานะ
-        { name: "ใช้งานได้", type: "status", color: "green" },
-        { name: "ชำรุด", type: "status", color: "red" },
-        { name: "เสื่อมสภาพ", type: "status", color: "yellow" },
-        { name: "สูญหาย", type: "status", color: "orange" },
-        { name: "ไม่จำเป็นต้องใช้ในราชการ", type: "status", color: "gray" },
+    console.log("\n─── Step 1: Seeding 5 Core Authentic Map Pins ───");
 
-        // หน่วยงาน
-        { name: "ฝ่ายไอที", type: "department" },
-        { name: "ฝ่ายพัสดุ", type: "department" },
-        { name: "ฝ่ายบัญชี", type: "department" },
-        { name: "ฝ่ายบริหาร", type: "department" },
-        { name: "ฝ่ายซ่อมบำรุง", type: "department" },
-
-        // ประเภทเงิน
-        { name: "งบประมาณแผ่นดิน", type: "money_type" },
-        { name: "เงินรายได้", type: "money_type" },
-        { name: "เงินบริจาค", type: "money_type" },
-
-        // วิธีการได้มา
-        { name: "ตกลงราคา", type: "acquisition_method" },
-        { name: "เฉพาะเจาะจง", type: "acquisition_method" },
-        { name: "คัดเลือก", type: "acquisition_method" },
-        { name: "e-market", type: "acquisition_method" },
-        { name: "บริจาค", type: "acquisition_method" },
-
-        // หน่วยนับ
-        { name: "เครื่อง", type: "unit" },
-        { name: "ชุด", type: "unit" },
-        { name: "ตัว", type: "unit" },
-        { name: "อัน", type: "unit" },
-        { name: "โหล", type: "unit" },
-        { name: "กล่อง", type: "unit" },
-
-        // ใช้ประจำที่ไหน
-        { name: "ห้องทำงาน ชั้น 1", type: "location" },
-        { name: "ห้องทำงาน ชั้น 2", type: "location" },
-        { name: "ห้องประชุมใหญ่", type: "location" },
-        { name: "ห้องประชุมเล็ก", type: "location" },
-        { name: "ห้องพักเจ้าหน้าที่", type: "location" },
-        { name: "ห้องคอมพิวเตอร์", type: "location" },
-        { name: "ห้องเก็บพัสดุ", type: "location" },
-        { name: "โกดังสินค้า", type: "location" },
-        { name: "บริเวณทางเข้าอาคาร", type: "location" },
-        { name: "ลานจอดรถ", type: "location" },
-
-        // ผู้รับของ
-        { name: "นายสุรสิทธิ์ พิมพ์สีดา", type: "recipient" },
-        { name: "นางสาวสมหญิง ใจดี", type: "recipient" },
-        { name: "นายวิชัย มั่นคง", type: "recipient" },
-
-        // ผู้บันทึก
-        { name: "นายสุรสิทธิ์ พิมพ์สีดา", type: "recorder" },
-        { name: "นางสาวสมหญิง ใจดี", type: "recorder" },
-        { name: "นายวิชัย มั่นคง", type: "recorder" },
-    ];
-
-    for (const cat of categories) {
-        try {
-            await prisma.category.upsert({
-                where: { name_type: { name: cat.name, type: cat.type } },
-                update: {},
-                create: cat
-            });
-            console.log(`✓ Category: ${cat.name} (${cat.type})`);
-        } catch (e) {
-            console.log(`× Category ${cat.name} already exists or error`);
+    const pins = [
+        {
+            name: "ศูนย์คอมพิวเตอร์ มหาวิทยาลัยราชภัฏเลย",
+            latitude: 17.539381592174248,
+            longitude: 101.71942328686409,
+            description: "ศูนย์คอมพิวเตอร์หลัก มรภ.เลย (ตึกคอม)",
+            type: "building",
+            imageUrl: "https://cc.lru.ac.th/th/wp-content/uploads/2020/10/DSC_0272-768x519-1.png",
+            cardImageUrl: "https://cc.lru.ac.th/th/wp-content/uploads/2020/10/DSC_0272-768x519-1.png",
+            pinImageUrl: "https://cc.lru.ac.th/th/wp-content/uploads/2020/10/DSC_0272-768x519-1.png"
+        },
+        {
+            name: "มหาลัยราชภัฎเลย",
+            latitude: 17.538574384604214,
+            longitude: 101.72132315763594,
+            description: "มหาวิทยาลัยราชภัฏเลย (อาคารเรียนรวม)",
+            type: "building",
+            imageUrl: "https://academic.lru.ac.th/th/wp-content/uploads/2019/04/3-800x445.jpg",
+            cardImageUrl: "https://academic.lru.ac.th/th/wp-content/uploads/2019/04/3-800x445.jpg",
+            pinImageUrl: "https://academic.lru.ac.th/th/wp-content/uploads/2019/04/3-800x445.jpg"
+        },
+        {
+            name: "ศูนย์วิทยบริการ มหาวิทยาลัยราชภัฏเลย",
+            latitude: 17.54087416017252,
+            longitude: 101.72211029266894,
+            description: "หอสมุดและศูนย์วิทยบริการ",
+            type: "building",
+            imageUrl: "https://academic.lru.ac.th/th/wp-content/uploads/2019/04/1-800x445.jpg",
+            cardImageUrl: "https://academic.lru.ac.th/th/wp-content/uploads/2019/04/1-800x445.jpg",
+            pinImageUrl: "https://academic.lru.ac.th/th/wp-content/uploads/2019/04/1-800x445.jpg"
+        },
+        {
+            name: "ตึก 18 สำนักวิชาการและงานทะเบียน มหาวิทยาลัยราชภัฏเลย",
+            latitude: 17.538743745034942,
+            longitude: 101.72116108226383,
+            description: "สำนักวิชาการและงานทะเบียน (อาคาร 18)",
+            type: "building",
+            imageUrl: "https://academic.lru.ac.th/th/wp-content/uploads/2019/04/6-800x445.jpg",
+            cardImageUrl: "https://academic.lru.ac.th/th/wp-content/uploads/2019/04/6-800x445.jpg",
+            pinImageUrl: "https://academic.lru.ac.th/th/wp-content/uploads/2019/04/6-800x445.jpg"
+        },
+        {
+            name: "สำนักวิทยบริการและเทคโนโลยีสารสนเทศ มหาวิทยาลัยราชภัฏเลย",
+            latitude: 17.539450751278565,
+            longitude: 101.71969716886755,
+            description: "สำนักวิทยบริการและเทคโนโลยีสารสนเทศ (ARIT)",
+            type: "server",
+            imageUrl: "https://scontent.fbkk29-1.fna.fbcdn.net/v/t39.30808-6/482217926_1191014732715399_653992333148398326_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=2a1932&_nc_ohc=d6B2vvJn2vYQ7kNvwGbal--&_nc_oc=AdoKceK99eRplXP-EmUxepB_DVRmsx8lzqUIxbQMrY1pz8cBjlfnXRQVZNodE1gowjQXMwIBvXzys4636SsXtfFV&_nc_zt=23&_nc_ht=scontent.fbkk29-1.fna&_nc_gid=2_D-pKl-xIkg5rFZakMBfA&_nc_ss=7b2a8&oh=00_Af4BF-2EV31RRfTw1tBWH5zPjILFh2xA735lGLbOgzekRg&oe=69FFE522",
+            cardImageUrl: "https://scontent.fbkk29-1.fna.fbcdn.net/v/t39.30808-6/482217926_1191014732715399_653992333148398326_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=2a1932&_nc_ohc=d6B2vvJn2vYQ7kNvwGbal--&_nc_oc=AdoKceK99eRplXP-EmUxepB_DVRmsx8lzqUIxbQMrY1pz8cBjlfnXRQVZNodE1gowjQXMwIBvXzys4636SsXtfFV&_nc_zt=23&_nc_ht=scontent.fbkk29-1.fna&_nc_gid=2_D-pKl-xIkg5rFZakMBfA&_nc_ss=7b2a8&oh=00_Af4BF-2EV31RRfTw1tBWH5zPjILFh2xA735lGLbOgzekRg&oe=69FFE522",
+            pinImageUrl: "https://scontent.fbkk29-1.fna.fbcdn.net/v/t39.30808-6/482217926_1191014732715399_653992333148398326_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=2a1932&_nc_ohc=d6B2vvJn2vYQ7kNvwGbal--&_nc_oc=AdoKceK99eRplXP-EmUxepB_DVRmsx8lzqUIxbQMrY1pz8cBjlfnXRQVZNodE1gowjQXMwIBvXzys4636SsXtfFV&_nc_zt=23&_nc_ht=scontent.fbkk29-1.fna&_nc_gid=2_D-pKl-xIkg5rFZakMBfA&_nc_ss=7b2a8&oh=00_Af4BF-2EV31RRfTw1tBWH5zPjILFh2xA735lGLbOgzekRg&oe=69FFE522"
         }
-    }
-
-    console.log("\n─── Seeding Category Types ───");
-    const categoryTypes = [
-        { typeKey: "status",              label: "สถานะ" },
-        { typeKey: "department",          label: "หน่วยงาน" },
-        { typeKey: "money_type",          label: "ประเภทเงิน" },
-        { typeKey: "acquisition_method",  label: "วิธีการได้มา" },
-        { typeKey: "unit",                label: "หน่วยนับ" },
-        { typeKey: "location",            label: "ใช้ประจำที่ไหน" },
-        { typeKey: "recipient",           label: "ผู้รับของ" },
-        { typeKey: "recorder",            label: "ผู้บันทึก" },
     ];
 
-    for (const ct of categoryTypes) {
+    const pinMap: Record<string, { id: string, lat: number, lng: number }> = {};
+
+    for (const p of pins) {
         try {
-            await prisma.categoryType.upsert({
-                where: { typeKey: ct.typeKey },
-                update: { label: ct.label },
-                create: ct,
+            const created = await prisma.mapPin.upsert({
+                where: { name: p.name },
+                update: p,
+                create: p
             });
-            console.log(`✓ CategoryType: ${ct.label} (${ct.typeKey})`);
+            pinMap[p.name] = { id: created.id, lat: p.latitude, lng: p.longitude };
+            console.log(`✓ MapPin: ${p.name}`);
         } catch (e: any) {
-            if (e?.code === 'P2002') {
-                try {
-                    await prisma.categoryType.update({
-                        where: { label: ct.label },
-                        data: { typeKey: ct.typeKey },
-                    });
-                    console.log(`↺ CategoryType updated typeKey: ${ct.label} -> ${ct.typeKey}`);
-                } catch (e2: any) {
-                    console.log(`× CategoryType ${ct.typeKey} still failed:`, e2?.message);
-                }
-            } else {
-                console.log(`× CategoryType ${ct.typeKey} error:`, e?.message);
-            }
+            console.log(`× Pin ${p.name} error:`, e.message);
         }
     }
 
-    console.log("\n─── Seeding Assets ───");
-    const assets = [
-        {
-            name: "เครื่องคอมพิวเตอร์ Desktop Dell Vostro 3020",
-            assetCode: "CP-2569-001",
-            assetType: "durable",
-            status: "ใช้งานได้",
-            quantity: 1,
-            unit: "เครื่อง",
-            unitPrice: 24500,
-            fiscalYear: "2569",
-            acquisitionMethod: "ตกลงราคา",
-            moneyType: "งบประมาณแผ่นดิน",
-            department: "ฝ่ายไอที",
-            location: "ห้องคอมพิวเตอร์",
-            receivedBy: "นายวิชัย มั่นคง",
-            createdBy: "นายสุรสิทธิ์ พิมพ์สีดา",
-            receivedDate: new Date("2026-01-10"),
-            remark: "ใช้งานในส่วนงานทะเบียน"
-        },
-        {
-            name: "โน้ตบุ๊ก Apple MacBook Air M3 13-inch",
-            assetCode: "NB-2569-002",
-            assetType: "durable",
-            status: "ชำรุด",
-            quantity: 1,
-            unit: "เครื่อง",
-            unitPrice: 39900,
-            fiscalYear: "2569",
-            acquisitionMethod: "เฉพาะเจาะจง",
-            moneyType: "เงินรายได้",
-            department: "ฝ่ายบริหาร",
-            location: "ห้องประชุมเล็ก",
-            receivedBy: "นางสาวสมหญิง ใจดี",
-            createdBy: "นายสุรสิทธิ์ พิมพ์สีดา",
-            receivedDate: new Date("2026-01-15"),
-            remark: "หน้าจอแตก รอประเมินราคาซ่อม"
-        },
-        {
-            name: "เครื่องพิมพ์เลเซอร์ HP Color LaserJet Pro",
-            assetCode: "PR-2569-003",
-            assetType: "durable",
-            status: "ใช้งานได้",
-            quantity: 1,
-            unit: "เครื่อง",
-            unitPrice: 18500,
-            fiscalYear: "2569",
-            acquisitionMethod: "เฉพาะเจาะจง",
-            moneyType: "งบประมาณแผ่นดิน",
-            department: "ฝ่ายบริหาร",
-            location: "บริเวณทางเข้าอาคาร",
-            receivedBy: "นายวิชัย มั่นคง",
-            createdBy: "นางสาวสมหญิง ใจดี",
-            receivedDate: new Date("2026-01-20")
-        },
-        {
-            name: "เก้าอี้ทำงาน Ergonomic รุ่น Modern-Grey",
-            assetCode: "CH-2569-004",
-            assetType: "general",
-            status: "สูญหาย",
-            quantity: 1,
-            unit: "ตัว",
-            unitPrice: 4200,
-            fiscalYear: "2569",
-            acquisitionMethod: "ตกลงราคา",
-            moneyType: "เงินรายได้",
-            department: "ฝ่ายบริหาร",
-            location: "ห้องทำงาน ชั้น 1",
-            receivedBy: "นายสุรสิทธิ์ พิมพ์สีดา",
-            createdBy: "นางสาวสมหญิง ใจดี",
-            receivedDate: new Date("2026-01-22"),
-            remark: "ล้อล็อก เคลื่อนย้ายไม่ได้"
-        },
-        {
-            name: "โต๊ะประชุมไม้สักสลักลาย (ขนาด 12 ที่นั่ง)",
-            assetCode: "TB-2569-005",
-            assetType: "durable",
-            status: "ใช้งานได้",
-            quantity: 1,
-            unit: "ตัว",
-            unitPrice: 120000,
-            fiscalYear: "2568",
-            acquisitionMethod: "บริจาค",
-            moneyType: "เงินบริจาค",
-            department: "ฝ่ายบริหาร",
-            location: "ห้องประชุมใหญ่",
-            receivedBy: "นายสุรสิทธิ์ พิมพ์สีดา",
-            createdBy: "นายวิชัย มั่นคง",
-            receivedDate: new Date("2025-11-05"),
-            remark: "บริจาคโดยศิษย์เก่ารุ่น 15"
-        },
-        {
-            name: "เครื่องปรับอากาศ Mitsubishi Heavy Duty (36,000 BTU)",
-            assetCode: "AC-2569-006",
-            assetType: "durable",
-            status: "เสื่อมสภาพ",
-            quantity: 1,
-            unit: "เครื่อง",
-            unitPrice: 45000,
-            fiscalYear: "2565",
-            acquisitionMethod: "เฉพาะเจาะจง",
-            moneyType: "งบประมาณแผ่นดิน",
-            department: "ฝ่ายซ่อมบำรุง",
-            location: "บริเวณทางเข้าอาคาร",
-            receivedBy: "นายวิชัย มั่นคง",
-            createdBy: "นายสุรสิทธิ์ พิมพ์สีดา",
-            receivedDate: new Date("2022-05-12"),
-            remark: "ความเย็นลดลง มีเสียงดังรบกวน"
-        },
-        {
-            name: "เครื่องโปรเจคเตอร์ Epson EB-X06 (XGA)",
-            assetCode: "PJ-2569-007",
-            assetType: "durable",
-            status: "สูญหาย",
-            quantity: 1,
-            unit: "เครื่อง",
-            unitPrice: 14900,
-            fiscalYear: "2568",
-            acquisitionMethod: "เฉพาะเจาะจง",
-            moneyType: "เงินรายได้",
-            department: "ฝ่ายบริหาร",
-            location: "ห้องเก็บพัสดุ",
-            receivedBy: "นางสาวสมหญิง ใจดี",
-            createdBy: "นายวิชัย มั่นคง",
-            receivedDate: new Date("2025-08-10"),
-            remark: "แจ้งความหายเมื่อวันที่ 12 ก.พ. 2569"
-        },
-        {
-            name: "ตู้เก็บเอกสารเหล็ก 4 ลิ้นชัก สีเทา",
-            assetCode: "CB-2569-008",
-            assetType: "general",
-            status: "ใช้งานได้",
-            quantity: 2,
-            unit: "ตัว",
-            unitPrice: 3800,
-            fiscalYear: "2569",
-            acquisitionMethod: "ตกลงราคา",
-            moneyType: "งบประมาณแผ่นดิน",
-            department: "ฝ่ายบริหาร",
-            location: "ห้องทำงาน ชั้น 2",
-            receivedBy: "นายสุรสิทธิ์ พิมพ์สีดา",
-            createdBy: "นางสาวสมหญิง ใจดี",
-            receivedDate: new Date("2026-02-01")
-        },
-        {
-            name: "ตู้กดน้ำดื่มสแตนเลส (แบบน้ำร้อน-น้ำเย็น)",
-            assetCode: "WD-2569-009",
-            assetType: "durable",
-            status: "ชำรุด",
-            quantity: 1,
-            unit: "เครื่อง",
-            unitPrice: 8500,
-            fiscalYear: "2569",
-            acquisitionMethod: "บริจาค",
-            moneyType: "เงินรายได้",
-            department: "ฝ่ายบริหาร",
-            location: "ห้องพักเจ้าหน้าที่",
-            receivedBy: "นายวิชัย มั่นคง",
-            createdBy: "นายสุรสิทธิ์ พิมพ์สีดา",
-            receivedDate: new Date("2026-01-05"),
-            remark: "คอมเพรสเซอร์ไม่ทำงาน"
-        },
-        {
-            name: "iPad Air 6th Generation (Wi-Fi, 128GB)",
-            assetCode: "IP-2569-010",
-            assetType: "durable",
-            status: "ใช้งานได้",
-            quantity: 1,
-            unit: "เครื่อง",
-            unitPrice: 23900,
-            fiscalYear: "2569",
-            acquisitionMethod: "เฉพาะเจาะจง",
-            moneyType: "เงินรายได้",
-            department: "ฝ่ายบริหาร",
-            location: "ห้องเก็บพัสดุ",
-            receivedBy: "นางสาวสมหญิง ใจดี",
-            createdBy: "นายวิชัย มั่นคง",
-            receivedDate: new Date("2026-02-15")
-        },
-        {
-            name: "กล้องดิจิทัล Sony Alpha 7 IV (Body)",
-            assetCode: "CA-2569-011",
-            assetType: "durable",
-            status: "สูญหาย",
-            quantity: 1,
-            unit: "เครื่อง",
-            unitPrice: 82990,
-            fiscalYear: "2568",
-            acquisitionMethod: "เฉพาะเจาะจง",
-            moneyType: "งบประมาณแผ่นดิน",
-            department: "ฝ่ายบริหาร",
-            location: "ห้องเก็บพัสดุ",
-            receivedBy: "นายสุรสิทธิ์ พิมพ์สีดา",
-            createdBy: "นางสาวสมหญิง ใจดี",
-            receivedDate: new Date("2025-06-20"),
-            remark: "เซนเซอร์มีจุด Dead Pixel"
-        },
-        {
-            name: "เครื่องทำลายเอกสาร Fellowes รุ่น LX211",
-            assetCode: "SD-2569-012",
-            assetType: "general",
-            status: "ชำรุด",
-            quantity: 1,
-            unit: "เครื่อง",
-            unitPrice: 12500,
-            fiscalYear: "2569",
-            acquisitionMethod: "ตกลงราคา",
-            moneyType: "เงินรายได้",
-            department: "ฝ่ายบริหาร",
-            location: "ห้องทำงาน ชั้น 1",
-            receivedBy: "นายวิชัย มั่นคง",
-            createdBy: "นายสุรสิทธิ์ พิมพ์สีดา",
-            receivedDate: new Date("2026-01-30"),
-            remark: "ใบมีดติดขัด"
-        },
-        {
-            name: "เราเตอร์ Cisco ISR 4331 (Industrial Grade)",
-            assetCode: "RT-2569-013",
-            assetType: "durable",
-            status: "ใช้งานได้",
-            quantity: 1,
-            unit: "เครื่อง",
-            unitPrice: 55000,
-            fiscalYear: "2569",
-            acquisitionMethod: "เฉพาะเจาะจง",
-            moneyType: "งบประมาณแผ่นดิน",
-            department: "ฝ่ายไอที",
-            location: "ห้องคอมพิวเตอร์",
-            receivedBy: "นายวิชัย มั่นคง",
-            createdBy: "นายสุรสิทธิ์ พิมพ์สีดา",
-            receivedDate: new Date("2026-02-10")
-        },
-        {
-            name: "เครื่องสำรองไฟ CyberPower UPS 1500VA",
-            assetCode: "UP-2569-014",
-            assetType: "durable",
-            status: "เสื่อมสภาพ",
-            quantity: 1,
-            unit: "เครื่อง",
-            unitPrice: 9800,
-            fiscalYear: "2565",
-            acquisitionMethod: "ตกลงราคา",
-            moneyType: "เงินรายได้",
-            department: "ฝ่ายไอที",
-            location: "ห้องคอมพิวเตอร์",
-            receivedBy: "นายสุรสิทธิ์ พิมพ์สีดา",
-            createdBy: "นางสาวสมหญิง ใจดี",
-            receivedDate: new Date("2022-11-20"),
-            remark: "แบตเตอรี่บวม เก็บไฟไม่ได้"
-        },
-        {
-            name: "กระดานไวท์บอร์ดอัจฉริยะ Samsung Flip 2 (65 นิ้ว)",
-            assetCode: "WB-2569-015",
-            assetType: "durable",
-            status: "ใช้งานได้",
-            quantity: 1,
-            unit: "ชุด",
-            unitPrice: 65000,
-            fiscalYear: "2568",
-            acquisitionMethod: "บริจาค",
-            moneyType: "เงินบริจาค",
-            department: "ฝ่ายบริหาร",
-            location: "ห้องประชุมใหญ่",
-            receivedBy: "นางสาวสมหญิง ใจดี",
-            createdBy: "นายวิชัย มั่นคง",
-            receivedDate: new Date("2025-12-01")
-        },
-        {
-            name: "ตู้เย็น Sharp 2 ประตู 10.2 คิว",
-            assetCode: "RF-2569-016",
-            assetType: "general",
-            status: "ใช้งานได้",
-            quantity: 1,
-            unit: "เครื่อง",
-            unitPrice: 11500,
-            fiscalYear: "2569",
-            acquisitionMethod: "เฉพาะเจาะจง",
-            moneyType: "เงินรายได้",
-            department: "ฝ่ายบริหาร",
-            location: "ห้องพักเจ้าหน้าที่",
-            receivedBy: "นายวิชัย มั่นคง",
-            createdBy: "นางสาวสมหญิง ใจดี",
-            receivedDate: new Date("2026-02-18")
-        },
-        {
-            name: "เครื่องดูดฝุ่น Nilfisk (Industrial Wet/Dry)",
-            assetCode: "VC-2569-017",
-            assetType: "durable",
-            status: "สูญหาย",
-            quantity: 1,
-            unit: "เครื่อง",
-            unitPrice: 15800,
-            fiscalYear: "2568",
-            acquisitionMethod: "เฉพาะเจาะจง",
-            moneyType: "งบประมาณแผ่นดิน",
-            department: "ฝ่ายซ่อมบำรุง",
-            location: "ห้องเก็บพัสดุ",
-            receivedBy: "นายสุรสิทธิ์ พิมพ์สีดา",
-            createdBy: "นายวิชัย มั่นคง",
-            receivedDate: new Date("2025-10-15"),
-            remark: "มอเตอร์ไหม้"
-        },
-        {
-            name: "ชุดโซฟาหนังพรีเมียม (3 ที่นั่ง + 1 ที่นั่ง 2 ตัว)",
-            assetCode: "SF-2569-018",
-            assetType: "durable",
-            status: "ใช้งานได้",
-            quantity: 1,
-            unit: "ชุด",
-            unitPrice: 48000,
-            fiscalYear: "2569",
-            acquisitionMethod: "ตกลงราคา",
-            moneyType: "เงินรายได้",
-            department: "ฝ่ายบริหาร",
-            location: "ห้องทำงาน ชั้น 1",
-            receivedBy: "นางสาวสมหญิง ใจดี",
-            createdBy: "นายสุรสิทธิ์ พิมพ์สีดา",
-            receivedDate: new Date("2026-01-25")
-        },
-        {
-            name: "สว่านโรตารี่ไร้สาย Bosch GBH 18V-26",
-            assetCode: "TL-2569-019",
-            assetType: "general",
-            status: "ชำรุด",
-            quantity: 1,
-            unit: "ชุด",
-            unitPrice: 8900,
-            fiscalYear: "2569",
-            acquisitionMethod: "เฉพาะเจาะจง",
-            moneyType: "งบประมาณแผ่นดิน",
-            department: "ฝ่ายซ่อมบำรุง",
-            location: "ห้องเก็บพัสดุ",
-            receivedBy: "นายวิชัย มั่นคง",
-            createdBy: "นายสุรสิทธิ์ พิมพ์สีดา",
-            receivedDate: new Date("2026-02-05"),
-            remark: "สวิตซ์ไกปืนค้าง"
-        },
-        {
-            name: "บันไดอลูมิเนียมก้าวกระโดด 10 ฟุต",
-            assetCode: "LD-2569-020",
-            assetType: "general",
-            status: "เสื่อมสภาพ",
-            quantity: 1,
-            unit: "อัน",
-            unitPrice: 2800,
-            fiscalYear: "2564",
-            acquisitionMethod: "บริจาค",
-            moneyType: "เงินรายได้",
-            department: "ฝ่ายพัสดุ",
-            location: "โกดังสินค้า",
-            receivedBy: "นายสุรสิทธิ์ พิมพ์สีดา",
-            createdBy: "นางสาวสมหญิง ใจดี",
-            receivedDate: new Date("2021-03-15"),
-            remark: "โครงสร้างเริ่มบิดเบี้ยว ไม่ปลอดภัย"
-        }
+    console.log("\n─── Step 2: Seeding 60 Unique Authentic Assets across 5 Locations ───");
+
+    const imgPC = getImg("1499951360447-b19be8fe80f5");
+    const imgNB = getImg("1517336714731-489689fd1ca8");
+    const imgSR = getImg("1550751827-4bd374c3f58b");
+    const imgNet = getImg("1544197150-b99a580bb7a8");
+    const imgFurn = getImg("1505843490538-5133c6c7d0e1");
+    const imgOffice = getImg("1497215728101-856f4ea42174");
+
+    const assetTemplates = [
+        { name: "เครื่องคอมพิวเตอร์ประมวลผลสูง (Workstation)", type: "durable", unit: "เครื่อง", img: imgPC, dept: "ศูนย์คอมพิวเตอร์", basePrice: 350000, priceVar: 200000 },
+        { name: "เครื่องคอมพิวเตอร์โน้ตบุ๊ก (Business Laptop)", type: "durable", unit: "เครื่อง", img: imgNB, dept: "ศูนย์คอมพิวเตอร์", basePrice: 120000, priceVar: 130000 },
+        { name: "ตู้เก็บอุปกรณ์เครือข่าย (Server Rack 42U)", type: "durable", unit: "ตู้", img: imgSR, dept: "สำนักวิทยบริการและเทคโนโลยีสารสนเทศ", basePrice: 250000, priceVar: 200000 },
+        { name: "อุปกรณ์กระจายสัญญาณเครือข่าย (Core Switch)", type: "durable", unit: "เครื่อง", img: imgNet, dept: "สำนักวิทยบริการและเทคโนโลยีสารสนเทศ", basePrice: 1500000, priceVar: 3000000 },
+        { name: "เก้าอี้ทำงานบริหาร (Executive Chair)", type: "durable", unit: "ตัว", img: imgFurn, dept: "ศูนย์วิทยบริการ", basePrice: 45000, priceVar: 40000 },
+        { name: "โต๊ะทำงานพร้อมลิ้นชัก (Office Desk)", type: "durable", unit: "ตัว", img: imgOffice, dept: "ศูนย์วิทยบริการ", basePrice: 35000, priceVar: 30000 },
+        { name: "หมึกพิมพ์เลเซอร์ (Laser Toner Cartridge)", type: "general", unit: "ตลับ", img: imgOffice, dept: "ตึก 18 สำนักวิชาการและงานทะเบียน", basePrice: 15000, priceVar: 20000 },
+        { name: "เครื่องสำรองไฟฟ้าขนาดใหญ่ (UPS 5kVA)", type: "durable", unit: "เครื่อง", img: imgNet, dept: "สำนักวิทยบริการและเทคโนโลยีสารสนเทศ", basePrice: 450000, priceVar: 400000 },
+        { name: "เมาส์และคีย์บอร์ดไร้สาย (Wireless Bundle)", type: "general", unit: "ชุด", img: imgPC, dept: "ศูนย์คอมพิวเตอร์", basePrice: 8500, priceVar: 6500 },
+        { name: "กระดาษถ่ายเอกสาร A4 (80 แกรม)", type: "general", unit: "รีม", img: imgOffice, dept: "ตึก 18 สำนักวิชาการและงานทะเบียน", basePrice: 1500, priceVar: 2000 },
+        { name: "ตู้เหล็กเก็บเอกสาร 4 ลิ้นชัก", type: "durable", unit: "ตู้", img: imgFurn, dept: "ศูนย์วิทยบริการ", basePrice: 15000, priceVar: 20000 },
+        { name: "อุปกรณ์กระจายสัญญาณไร้สาย (Access Point)", type: "durable", unit: "เครื่อง", img: imgNet, dept: "สำนักวิทยบริการและเทคโนโลยีสารสนเทศ", basePrice: 45000, priceVar: 50000 },
+        { name: "แฟลชไดรฟ์ 64GB (High Speed)", type: "general", unit: "ชิ้น", img: imgPC, dept: "ศูนย์คอมพิวเตอร์", basePrice: 2500, priceVar: 3000 },
+        { name: "ชุดโต๊ะประชุมพร้อมเก้าอี้ (Meeting Set)", type: "durable", unit: "ชุด", img: imgFurn, dept: "ศูนย์วิทยบริการ", basePrice: 850000, priceVar: 1650000 },
+        { name: "หูฟังสำหรับการประชุม (USB Headset)", type: "general", unit: "อัน", img: imgNB, dept: "ศูนย์คอมพิวเตอร์", basePrice: 5500, priceVar: 7000 },
+        { name: "กล้องวิดีโอสำหรับการประชุม (Conference Cam)", type: "durable", unit: "ชุด", img: imgPC, dept: "ศูนย์คอมพิวเตอร์", basePrice: 450000, priceVar: 500000 },
+        { name: "แผ่นรองเมาส์แบบยาว (Desk Mat)", type: "general", unit: "แผ่น", img: imgPC, dept: "ศูนย์คอมพิวเตอร์", basePrice: 1500, priceVar: 2000 },
+        { name: "เครื่องจัดเก็บข้อมูลบนเครือข่าย (NAS Storage)", type: "durable", unit: "เครื่อง", img: imgSR, dept: "สำนักวิทยบริการและเทคโนโลยีสารสนเทศ", basePrice: 850000, priceVar: 2650000 },
+        { name: "สายชาร์จโน้ตบุ๊กสำรอง (Universal Adapter)", type: "general", unit: "ชิ้น", img: imgNB, dept: "มหาลัยราชภัฎเลย", basePrice: 3500, priceVar: 3000 },
+        { name: "พัดลมตั้งโต๊ะขนาดเล็ก (Mini Desk Fan)", type: "general", unit: "เครื่อง", img: imgFurn, dept: "มหาลัยราชภัฎเลย", basePrice: 1500, priceVar: 2000 }
     ];
 
-    console.log("Starting seeding...");
-    for (const asset of assets) {
-        try {
-            await prisma.asset.upsert({
-                where: { assetCode: asset.assetCode },
-                update: {
-                    location: asset.location,
-                    receivedBy: asset.receivedBy,
-                    createdBy: asset.createdBy,
-                    acquisitionMethod: asset.acquisitionMethod,
-                    moneyType: asset.moneyType,
-                    department: asset.department,
-                    unit: asset.unit,
-                },
-                create: asset,
-            });
-            console.log(`✓ Asset: ${asset.name}`);
-        } catch (err: any) {
-            console.error(`× Error asset ${asset.assetCode}:`, err.message);
+    const assetLocations = pins.map(p => p.name);
+    
+    // Helper function to shuffle array
+    const shuffle = (array: any[]) => {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
         }
+        return array;
+    };
+
+    // Status distribution: randomized
+    const statuses = shuffle([
+        ...Array(27).fill("ใช้งานได้"),
+        ...Array(17).fill("ชำรุด"),
+        ...Array(10).fill("เสื่อมสภาพ"),
+        ...Array(4).fill("สูญหาย"),
+        ...Array(2).fill("ไม่จำเป็นต้องใช้ในราชการ")
+    ]);
+
+    // Money type distribution: randomized
+    const moneyTypes = shuffle([
+        ...Array(15).fill("งบประมาณแผ่นดิน"),
+        ...Array(10).fill("เงินรายได้"),
+        ...Array(8).fill("เงินบริจาค"),
+        ...Array(6).fill("บ.กศ. 650015035"),
+        ...Array(5).fill("เงินรายได้ ศูนย์คอมพิวเตอร์"),
+        ...Array(4).fill("เงินศูนย์คอม อ.วินัย"),
+        ...Array(4).fill("งบแผ่นดิน 669215004"),
+        ...Array(3).fill("คงคลัง 650925002"),
+        ...Array(2).fill("เงินเหลื่อมปีคงคลัง ปี 63 649915004"),
+        ...Array(2).fill("ศูนย์คอมพิวเตอร์"),
+        ...Array(1).fill("เงินศูนย์คอม อ.ภาณุพงษ์")
+    ]);
+
+    // Acquisition method distribution: randomized
+    const methods = shuffle([
+        ...Array(30).fill("เฉพาะเจาะจง"),
+        ...Array(20).fill("ประกวดราคา"),
+        ...Array(10).fill("ตกลงราคา")
+    ]);
+
+    for (let i = 1; i <= 60; i++) {
+        // Pick a template (looping 20 templates three times to get 60 items)
+        const template = assetTemplates[(i - 1) % assetTemplates.length];
+        
+        // Distribute assets among 5 pins (12 assets per pin)
+        const locIndex = Math.floor((i - 1) / 12);
+        const loc = assetLocations[locIndex];
+        const pinInfo = pinMap[loc];
+        
+        const assetCode = `14.${i.toString().padStart(2, '0')}.01/66`;
+        const status = statuses[i - 1];
+        const moneyType = moneyTypes[i - 1];
+        const method = methods[i - 1];
+
+        // Randomize Date between 2021 and 2024
+        const year = 2021 + Math.floor(Math.random() * 4);
+        const month = Math.floor(Math.random() * 12);
+        const day = Math.floor(Math.random() * 28) + 1;
+        const receivedDate = new Date(year, month, day);
+        const fiscalYear = (year + 543).toString();
+
+        // Grandiose Pricing Logic - Target ~40M total
+        const unitPrice = Math.floor(template.basePrice + (Math.random() * template.priceVar));
+
+        // Generate Unique Remark
+        const rooms = ["101", "202", "305", "410", "LAB-A", "LAB-B", "SERVER-RM", "OFFICE-C"];
+        const inspectors = ["นายสุรสิทธิ์", "นางสาววิไล", "นายสมชาย", "นางมาลี"];
+        const room = rooms[i % rooms.length];
+        const inspector = inspectors[i % inspectors.length];
+        const remark = `ตรวจรับโดย ${inspector} ประจำห้อง ${room} [REF-${Math.random().toString(36).substring(7).toUpperCase()}] - สภาพ${status}`;
+
+        try {
+            const existingAsset = await prisma.asset.findUnique({ where: { assetCode } });
+            if (existingAsset) {
+                await prisma.assetImage.deleteMany({ where: { assetId: existingAsset.id } });
+            }
+
+            await prisma.asset.upsert({
+                where: { assetCode },
+                update: {
+                    name: template.name + (i > 40 ? " (ชุดที่ 3)" : i > 20 ? " (ชุดที่ 2)" : ""),
+                    assetType: template.type,
+                    status: status,
+                    quantity: 1,
+                    unit: template.unit,
+                    unitPrice: unitPrice,
+                    fiscalYear: fiscalYear,
+                    acquisitionMethod: method,
+                    moneyType: moneyType,
+                    department: template.dept,
+                    location: loc,
+                    receivedBy: "นายวิชัย มั่นคง",
+                    createdBy: "นายสุรสิทธิ์ พิมพ์สีดา",
+                    receivedDate: receivedDate,
+                    remark: remark,
+                    imageUrl: template.img,
+                    latitude: pinInfo ? pinInfo.lat : null,
+                    longitude: pinInfo ? pinInfo.lng : null,
+                    mapPinId: pinInfo ? pinInfo.id : null,
+                    images: {
+                        create: [{ url: template.img }]
+                    }
+                },
+                create: {
+                    name: template.name + (i > 40 ? " (ชุดที่ 3)" : i > 20 ? " (ชุดที่ 2)" : ""),
+                    assetCode,
+                    assetType: template.type,
+                    status: status,
+                    quantity: 1,
+                    unit: template.unit,
+                    unitPrice: unitPrice,
+                    fiscalYear: fiscalYear,
+                    acquisitionMethod: method,
+                    moneyType: moneyType,
+                    department: template.dept,
+                    location: loc,
+                    receivedBy: "นายวิชัย มั่นคง",
+                    createdBy: "นายสุรสิทธิ์ พิมพ์สีดา",
+                    receivedDate: receivedDate,
+                    remark: remark,
+                    imageUrl: template.img,
+                    latitude: pinInfo ? pinInfo.lat : null,
+                    longitude: pinInfo ? pinInfo.lng : null,
+                    mapPinId: pinInfo ? pinInfo.id : null,
+                    images: {
+                        create: [{ url: template.img }]
+                    }
+                }
+            });
+        } catch (err: any) { }
     }
-    console.log("Seeding finished!");
+    console.log("\n✅ FULL CAMPUS SYNC COMPLETE!");
+    console.log("5 Authentic Pins & 60 Distributed Assets are ready.");
 }
 
 main()

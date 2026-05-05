@@ -679,7 +679,7 @@ export default function MapPage() {
                                             // [FIX #3] ส่ง null แทน empty string
                                             handlePinClick(null);
                                         } else {
-                                            mapRef.current?.flyTo(pin.latitude, pin.longitude, 18);
+                                            mapRef.current?.flyTo(pin.latitude, pin.longitude, 20);
                                             mapRef.current?.setActivePinExternal(pin.id);
                                             handlePinClick(pin.id);
                                         }

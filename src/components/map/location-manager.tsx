@@ -463,7 +463,7 @@ export function LocationManager({ isOpen, onClose, onPinUpdated, initialEditPinI
                                                     if (activePinId === pin.id) { setActivePinId(null); setEditingPin(null); }
                                                     else {
                                                         setActivePinId(pin.id);
-                                                        mapRef.current?.flyTo(pin.latitude, pin.longitude - 0.0008, 18);
+                                                        mapRef.current?.flyTo(pin.latitude, pin.longitude - 0.0005, 20);
                                                         setEditingPin(pin); setIsAdding(false);
                                                     }
                                                 }}

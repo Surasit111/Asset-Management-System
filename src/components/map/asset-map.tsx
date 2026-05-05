@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useImperativeHandle, forwardRef, memo, useState } from "react";
+import { useEffect, useRef, useImperativeHandle, forwardRef, memo, useState, useMemo } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import {
@@ -33,20 +33,21 @@ const STYLES = `
     gap: 6px;
     pointer-events: none;
     user-select: none;
-    transform-origin: 18px 45px;
-    transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), filter 0.22s ease;
+    transform-origin: var(--pin-origin, 18px 45px);
+    transform: translateX(var(--pin-offset, 0px));
+    transition: filter 0.22s ease;
     will-change: transform;
     backface-visibility: hidden;
     -webkit-font-smoothing: subpixel-antialiased;
     box-sizing: border-box;
 }
 .pin-root * { box-sizing: border-box; }
-.pin-root:hover { transform: scale(1.1) translate3d(0,0,0); }
-.pin-root:active { transform: scale(0.95) translate3d(0,0,0) !important; transition: transform 0.1s ease !important; }
-.pin-root.pin-active { transform: scale(1.15) translate3d(0,0,0); }
-.pin-root:hover .photo-pin-body { filter: drop-shadow(0 6px 14px rgba(0,0,0,0.25)); }
-.pin-root.pin-active .photo-pin-body { filter: drop-shadow(0 8px 18px rgba(239,68,68,0.45)) !important; }
-.pin-root.pin-active:hover .photo-pin-body { filter: drop-shadow(0 10px 22px rgba(239,68,68,0.55)) !important; }
+.pin-root:hover, .pin-root.pin-active {
+    transform: translateX(var(--pin-offset, 0px)) scale(1.18);
+    filter: drop-shadow(0 12px 20px rgba(0,0,0,0.25));
+    z-index: 1000 !important;
+}
+.pin-root:active { transform: translateX(var(--pin-offset, 0px)) scale(0.95) !important; transition: transform 0.1s ease !important; }
 
 .map-readonly .pin-root:hover,
 .map-readonly .pin-root:active,
@@ -94,7 +95,7 @@ const STYLES = `
 
 .pin-label {
     pointer-events: auto; cursor: pointer; line-height: 1.1; white-space: normal;
-    transition: opacity 0.25s ease;
+    transition: none;
 }
 
 .pop-carousel-btn{position:absolute;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.45);color:#fff;border:none;cursor:pointer;font-size:18px;font-weight:bold;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;z-index:5;line-height:1;}
@@ -348,6 +349,38 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
             latestProps.current = { assets, masterPins, onPinClick, pinAssetCounts, onMapClick, onSelectLocation, forcedActivePinId, initialMapState, readOnly };
         }, [assets, masterPins, onPinClick, pinAssetCounts, onMapClick, onSelectLocation, forcedActivePinId, initialMapState, readOnly]);
 
+        // Pre-calculate the best "stable" side for each pin to avoid flickering between zoom 18-20
+        // Use a cluster-based alternating logic for maximum stability
+        const preferredSides = useMemo(() => {
+            const sides: Record<string, 'left' | 'right'> = {};
+            const sorted = [...masterPins].sort((a, b) => a.longitude - b.longitude);
+            
+            for (let i = 0; i < sorted.length; i++) {
+                const p = sorted[i];
+                if (sides[p.id]) continue;
+
+                // Find neighbors in a very small cluster (~80-100m)
+                const neighbors = sorted.filter(n => 
+                    n.id !== p.id && 
+                    Math.abs(n.latitude - p.latitude) < 0.0008 && 
+                    Math.abs(n.longitude - p.longitude) < 0.0008
+                );
+
+                if (neighbors.length > 0) {
+                    // It's a dense area. Assign alternating sides to everyone in this cluster
+                    const cluster = [p, ...neighbors].sort((a, b) => a.longitude - b.longitude);
+                    cluster.forEach((cp, idx) => {
+                        // Alternate: 0=left, 1=right, 2=left...
+                        sides[cp.id] = (idx % 2 === 0) ? 'left' : 'right';
+                    });
+                } else {
+                    // Isolated pin: default to right
+                    sides[p.id] = 'right';
+                }
+            }
+            return sides;
+        }, [masterPins]);
+
         const refreshLabels = () => {
             const map = mapRef.current;
             if (!map) return;
@@ -365,29 +398,78 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
                 return {
                     entry,
                     pinRect: { left: pt.x - 18, right: pt.x + 18, top: pt.y - 45, bottom: pt.y },
-                    labelRect: { left: pt.x + 24, right: pt.x + 24 + LABEL_EST_W, top: pt.y - 8 - LABEL_EST_H, bottom: pt.y - 8 },
-                    visible: true
+                    labelRectRight: { left: pt.x + 24, right: pt.x + 24 + LABEL_EST_W, top: pt.y - 8 - LABEL_EST_H, bottom: pt.y - 8 },
+                    labelRectLeft: { left: pt.x - 24 - LABEL_EST_W, right: pt.x - 24, top: pt.y - 8 - LABEL_EST_H, bottom: pt.y - 8 },
+                    visible: true,
+                    side: 'right' as 'right' | 'left'
                 };
             });
             const intersect = (r1: BoundsRect, r2: BoundsRect) =>
                 !(r2.left >= r1.right || r2.right <= r1.left || r2.top >= r1.bottom || r2.bottom <= r1.top);
 
             for (let i = 0; i < rects.length; i++) {
-                if (rects[i].entry.isActive) { rects[i].visible = true; continue; }
-                let overlapsPin = false;
-                for (let j = 0; j < rects.length; j++) {
-                    if (i === j || rects[j].entry.isActive) continue;
-                    if (intersect(rects[i].labelRect, rects[j].pinRect)) { overlapsPin = true; break; }
+                const r = rects[i];
+                if (r.entry.isActive) {
+                    r.visible = true;
+                    // Active pin ALWAYS follows its preferred side for consistency during fly/zoom
+                    r.side = preferredSides[r.entry.pin.id] || 'right';
+                    continue;
                 }
-                if (overlapsPin) { rects[i].visible = false; continue; }
-                for (let j = 0; j < i; j++) {
-                    if (!rects[j].visible || rects[j].entry.isActive) continue;
-                    if (intersect(rects[i].labelRect, rects[j].labelRect)) { rects[i].visible = false; break; }
+
+                const checkSide = (side: 'left' | 'right') => {
+                    const rect = side === 'right' ? r.labelRectRight : r.labelRectLeft;
+                    for (let j = 0; j < rects.length; j++) {
+                        if (i === j) continue;
+                        if (intersect(rect, rects[j].pinRect)) return false;
+                        if (j < i && rects[j].visible) {
+                            const otherLabelRect = rects[j].side === 'right' ? rects[j].labelRectRight : rects[j].labelRectLeft;
+                            if (intersect(rect, otherLabelRect)) return false;
+                        }
+                    }
+                    return true;
+                };
+
+                // Zoom 18, 19, 20: Use the pre-calculated Cluster side for total stability
+                if (zoom >= 18) {
+                    const side = preferredSides[r.entry.pin.id] || 'right';
+                    r.side = side;
+                    
+                    // Only hide if the preferred side is blocked by a PIN body
+                    let blockedByPin = false;
+                    const rect = side === 'right' ? r.labelRectRight : r.labelRectLeft;
+                    for (let j = 0; j < rects.length; j++) {
+                        if (i === j) continue;
+                        if (intersect(rect, rects[j].pinRect)) { blockedByPin = true; break; }
+                    }
+                    r.visible = !blockedByPin;
+                } 
+                // Zoom 17 and below: Only try Right, otherwise hide (Original behavior)
+                else {
+                    r.side = 'right';
+                    r.visible = checkSide('right');
                 }
             }
-            rects.forEach(({ entry, visible }) => {
-                const lbl = entry.marker.getElement()?.querySelector<HTMLElement>('.pin-label');
-                if (lbl) { lbl.style.opacity = visible ? '1' : '0'; lbl.style.pointerEvents = visible ? 'auto' : 'none'; }
+            rects.forEach(({ entry, visible, side }) => {
+                const el = entry.marker.getElement();
+                const root = el?.querySelector<HTMLElement>('.pin-root');
+                const lbl = el?.querySelector<HTMLElement>('.pin-label');
+                
+                if (root) {
+                    root.style.flexDirection = side === 'left' ? 'row-reverse' : 'row';
+                    // Set CSS variables for warp and origin
+                    root.style.setProperty('--pin-offset', side === 'left' ? 'calc(-100% + 36px)' : '0px');
+                    root.style.setProperty('--pin-origin', side === 'left' ? 'calc(100% - 18px) 45px' : '18px 45px');
+                }
+
+                if (lbl) {
+                    lbl.style.opacity = visible ? '1' : '0';
+                    lbl.style.pointerEvents = visible ? 'auto' : 'none';
+                    const span = lbl.querySelector<HTMLElement>('span');
+                    if (span) {
+                        span.style.textAlign = side === 'left' ? 'right' : 'left';
+                        span.style.display = 'inline-block';
+                    }
+                }
             });
         };
 
@@ -410,9 +492,8 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
 
         useImperativeHandle(ref, () => ({
             flyTo: (lat, lng, zoom = 12) => {
-                mapRef.current?.flyTo([lat, lng + 0.0008], zoom, { duration: 1.5, easeLinearity: 0.25 });
+                mapRef.current?.flyTo([lat, lng + 0.0003], zoom, { duration: 1.5, easeLinearity: 0.25 });
             },
-            // [FIX #5] jumpTo อยู่ใน interface แล้ว
             jumpTo: (lat, lng, zoom = 18) => {
                 mapRef.current?.setView([lat, lng + 0.0008], zoom, { animate: false });
             },
@@ -445,8 +526,9 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
                 const isForced = forcedActivePinId === pin.id;
                 const isActive = isForced || activePinIdRef.current === pin.id;
                 const imgUrl = pin.images?.[0] || pin.imageUrl || null;
+                const stableSide = preferredSides[pin.id] || 'right';
 
-                const icon = buildMasterPinIcon(pin.name, count, isActive, imgUrl, pin.pinAdjustment, pin.pinImageUrl ?? null, readOnly);
+                const icon = buildMasterPinIcon(pin.name, count, isActive, imgUrl, pin.pinAdjustment, pin.pinImageUrl ?? null, readOnly, stableSide);
                 const m = L.marker([pin.latitude, pin.longitude], { icon, zIndexOffset: isForced ? 2000 : 1000 }).addTo(layer);
                 const entry = { marker: m, pin, isActive };
                 pinEntriesRef.current.push(entry);
@@ -460,8 +542,6 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
                         if (cb) cb(null);
                         if (latestProps.current.onSelectLocation) latestProps.current.onSelectLocation(0, 0, undefined, undefined);
                     } else {
-                        const map = mapRef.current!;
-                        map.setZoomAround([pin.latitude, pin.longitude], 17, { animate: true });
                         setActivePin(pin.id);
                         if (cb) cb(pin.id, pin.name, pin.latitude, pin.longitude);
                         if (latestProps.current.onSelectLocation) latestProps.current.onSelectLocation(pin.latitude, pin.longitude, pin.id, pin.name);
@@ -495,7 +575,9 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
 
             L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-                crossOrigin: true
+                crossOrigin: true,
+                maxZoom: 20,
+                maxNativeZoom: 18
             }).addTo(map);
 
             map.on('dblclick', (e: L.LeafletMouseEvent) => { L.DomEvent.stopPropagation(e); });
