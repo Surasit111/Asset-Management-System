@@ -5,95 +5,92 @@
 [![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma)](https://www.prisma.io/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 
-ระบบจัดการครุภัณฑ์ระดับองค์กรที่ออกแบบมาเพื่อความพรีเมียม ใช้งานง่าย และรองรับข้อมูลขนาดใหญ่ พัฒนาด้วยเทคโนโลยีสมัยใหม่ครบวงจร
+ระบบจัดการครุภัณฑ์ระดับองค์กรที่ออกแบบมาด้วยแนวคิด **"Luxury Minimal"** เน้นความพรีเมียม ใช้งานง่าย และประสิทธิภาพสูงสุด เป็นโปรเจ็กต์ที่รวมการแก้ปัญหาเชิงเทคนิคที่ซับซ้อน ทั้งระบบแผนที่อัจฉริยะและการจัดการข้อมูลขนาดใหญ่
 
 ---
 
 ## ✨ ภาพรวมของโปรเจ็กต์ (Project Showcase)
 
 > [!TIP]
-> พี่สามารถนำรูปภาพที่แคปไว้มาใส่แทนที่ลิงก์ด้านล่างนี้ได้เลยครับ
+> เพื่อการนำเสนอที่ยอดเยี่ยมใน Resume แนะนำให้แคปภาพหน้าจอ (Screenshots) มาใส่แทนที่ลิงก์ด้านล่างนี้ครับ
 
-### 📊 Modern Dashboard
-*สรุปข้อมูลภาพรวมขององค์กรด้วยกราฟและตัวเลขสถิติที่ชัดเจน*
-![Dashboard Showcase](https://via.placeholder.com/1200x600?text=Dashboard+Showcase+-+Add+Your+Screenshot+Here)
+### 📊 Modern Intelligence Dashboard
+*วิเคราะห์ข้อมูลและสรุปสถิติด้วยกราฟดีไซน์พรีเมียม รองรับข้อมูลระดับ Real-time เพื่อการตัดสินใจที่แม่นยำ*
+![Dashboard Showcase](https://via.placeholder.com/1200x600?text=Premium+Dashboard+Showcase+-+Add+Your+Screenshot)
 
-### 🗺️ Intelligent Map Integration
-*ระบุพิกัดครุภัณฑ์ผ่านระบบแผนที่อัจฉริยะ รองรับการปักหมุดและนำทาง*
-![Map Showcase](https://via.placeholder.com/1200x600?text=Map+Integration+Showcase+-+Add+Your+Screenshot+Here)
+### 🗺️ Smart Geospatial Tracking
+*การผสานระบบแผนที่ (Leaflet) เข้ากับ React State Management เพื่อการระบุพิกัดครุภัณฑ์ที่ลื่นไหลและเสถียร*
+![Map Showcase](https://via.placeholder.com/1200x600?text=Intelligent+Map+Showcase+-+Add+Your+Screenshot)
 
-### 📥 Advanced Excel Import
-*ระบบนำเข้าข้อมูลอัจฉริยะ จับคู่คอลัมน์อัตโนมัติ และตรวจสอบความถูกต้องของข้อมูลก่อนบันทึก*
-![Import Showcase](https://via.placeholder.com/1200x600?text=Smart+Import+Showcase+-+Add+Your+Screenshot+Here)
-
----
-
-## 🚀 ฟีเจอร์หลัก (Core Features)
-
-- **🏢 Multi-View Dashboard**: วิเคราะห์ข้อมูลครุภัณฑ์ แยกตามหมวดหมู่และสถานะ
-- **🔍 Smart Searching & Filtering**: ค้นหาข้อมูลแบบละเอียด แม่นยำ และรวดเร็ว
-- **📍 Geospatial Tracking**: จัดเก็บและแสดงพิกัดครุภัณฑ์ผ่านแผนที่
-- **📦 Bulk Actions**: จัดการข้อมูลทีละหลายรายการด้วยแถบเครื่องมือ Luxury Minimal
-- **📑 QR Code Generation**: พิมพ์ QR Code สำหรับครุภัณฑ์แต่ละชิ้นได้ทันที
-- **🔐 Secure Authentication**: ระบบความปลอดภัยมาตรฐานสูง รองรับการจัดการสิทธิ์ผู้ใช้ (Admin/User)
-- **🧹 Auto File Cleanup**: ระบบจัดการไฟล์อัจฉริยะ ลบรูปภาพที่ไม่ได้ใช้โดยอัตโนมัติเพื่อประหยัดพื้นที่
+### 📥 Advanced Enterprise Excel Import
+*ระบบนำเข้าข้อมูลอัจฉริยะที่ใช้ตรรกะการตรวจสอบข้อมูล (Data Validation) และการจับคู่คอลัมน์อัตโนมัติ ช่วยลดความผิดพลาดจากคน*
+![Import Showcase](https://via.placeholder.com/1200x600?text=Smart+Excel+Import+Showcase+-+Add+Your+Screenshot)
 
 ---
 
-## 🛠️ เทคโนโลยีที่ใช้ (Tech Stack)
+## 🚀 ฟีเจอร์ที่น่าสนใจ (Key Technical Features)
 
-### **Frontend**
-- **Next.js 14+** (App Router)
-- **TypeScript** (Type Safety)
-- **Framer Motion** (Smooth Animations)
-- **Tailwind CSS** (Modern Styling)
-- **Lucide Icons** (Premium Icons)
-
-### **Backend & Database**
-- **Prisma ORM** (Database Management)
-- **PostgreSQL** (Scalable Database)
-- **Better-Auth** (Secure Authentication)
-- **Node.js** (Server-side Logic)
+- **🏢 Multi-Dimensional Analysis**: ระบบวิเคราะห์ครุภัณฑ์แยกตามหมวดหมู่และสถานะแบบพลวัต
+- **🔍 Advanced Search Engine**: ค้นหาข้อมูลแบบละเอียดด้วย Multi-filter logic ที่ทำงานอย่างรวดเร็ว
+- **📍 Smart Map Interaction**: จัดการพิกัดและรายละเอียดสถานที่แบบ Interactive ผ่าน Custom Markers
+- **📦 Enterprise Bulk Actions**: ระบบจัดการข้อมูลทีละหลายรายการ (Bulk Select/Edit/Delete) พร้อม UI ที่นิ่งและแม่นยำ
+- **🔐 Standard-Grade Security**: ระบบพิสูจน์ตัวตนด้วย Better-Auth รองรับสิทธิ์ผู้ใช้หลายระดับ (RBAC)
+- **🧹 Auto Storage Management**: ระบบจัดการไฟล์อัจฉริยะ ลบรูปภาพที่ไม่ได้ใช้งานอัตโนมัติ เพื่อประสิทธิภาพสูงสุดของ Storage
 
 ---
 
-## ⚙️ การตั้งค่าเพื่อรันโปรเจ็กต์ (Setup & Installation)
+## 🛠️ เทคโนโลยีและเหตุผลที่เลือกใช้ (Tech Stack & Rationale)
 
-1. **Clone Repository**
+- **Next.js 14+ (App Router)**: เพื่อประสิทธิภาพ SSR/ISR และการจัดการ SEO ที่ยอดเยี่ยม
+- **TypeScript**: เพื่อลด Runtime Error และเพิ่มคุณภาพของโค้ดในระดับองค์กร
+- **Prisma ORM & PostgreSQL**: การจัดการฐานข้อมูลที่ปลอดภัยและรองรับการขยายตัว (Scalability)
+- **Framer Motion & Tailwind CSS**: เพื่อสร้างประสบการณ์ผู้ใช้ (UX) ที่ลื่นไหลและดูพรีเมียมแบบ Luxury Minimal
+- **Better-Auth**: มาตรฐานความปลอดภัยระดับสากลสำหรับการจัดการ Session และ Password
+- **Node.js**: สภาพแวดล้อมการทำงานฝั่ง Server ที่ทรงพลัง รองรับการจัดการ API และสคริปต์ระบบอัจฉริยะ
+
+---
+
+## ⚙️ การติดตั้งและตั้งค่า (Quick Setup)
+
+1. **Clone & Install**
    ```bash
    git clone https://github.com/Surasit111/Asset-Management-System.git
-   ```
-
-2. **Install Dependencies**
-   ```bash
    npm install
    ```
 
-3. **Environment Setup**
-   - คัดลอกไฟล์ `.env.example` เป็น `.env`
-   - กรอกข้อมูล Database URL และ SMTP สำหรับระบบอีเมล
-
-4. **Database Initialization**
+2. **Database Initialization**
    ```bash
-   # 1. สร้างโครงสร้างฐานข้อมูล
    npx prisma db push
-
-   # 2. ตั้งค่าระบบเริ่มต้น (สร้าง Admin และหมวดหมู่พื้นฐาน) **สำคัญมาก**
-   npx tsx scripts/setup-system.tsx
-
-   # 3. ใส่ข้อมูลครุภัณฑ์ตัวอย่าง (ถ้าต้องการ)
-   npx tsx scripts/seed-assets.tsx
+   npx tsx scripts/setup-system.tsx # สร้าง Admin และระบบพื้นฐาน
+   npx tsx scripts/seed-assets.tsx  # ข้อมูลจำลองพรีเมียม (60 รายการ ~40 ล้านบาท)
    ```
 
-5. **Run Development Server**
+3. **Start Development**
    ```bash
    npm run dev
    ```
 
 ---
 
-## ผู้พัฒนา (Author)
+## 🔐 ข้อมูลเข้าใช้งานเริ่มต้น (Access Credentials)
+- **URL**: `http://localhost:3000`
+- **Email**: `admin@gmail.com` | **Password**: `password123`
 
-**[สุรสิทธิ์ พิมพ์สีดา - Surasit Phimseeda]**
-- Email: surasit.phimseeda111@gmail.com
--------------------------------------------------------------------------
+---
+
+## 📋 รายการตรวจสอบระดับมืออาชีพ (Handover & Deployment)
+- [ ] เปลี่ยนรหัสผ่าน Admin ทันทีหลังเข้าใช้งาน
+- [ ] ตั้งค่าคีย์ลับความปลอดภัยใน `BETTER_AUTH_SECRET`
+- [ ] ตรวจสอบการตั้งค่า SMTP เพื่อระบบแจ้งเตือนที่สมบูรณ์
+
+---
+
+## 👨‍💻 เกี่ยวกับผู้พัฒนา (About the Developer)
+
+**คุณสุรสิทธิ์ พิมพ์สีดา (Surasit Phimseeda)**
+
+- 📧 Email: [surasit.phimseeda111@gmail.com](mailto:surasit.phimseeda111@gmail.com)
+- 🌐 GitHub: [Surasit111](https://github.com/Surasit111)
+
+---
+*Developed with ❤️ for excellence in Asset Management.*
