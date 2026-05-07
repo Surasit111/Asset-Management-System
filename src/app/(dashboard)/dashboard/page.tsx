@@ -769,12 +769,7 @@ export default function DashboardPage() {
                         ].map(chart => (
                             <div key={chart.title} className="bg-white rounded-xl border border-slate-200 shadow-sm px-5 py-5 overflow-hidden">
                                 <p className="text-[13px] font-bold text-[#0f172a] mb-4">{chart.title}</p>
-                                <div 
-                                    className={cn(
-                                        "h-52 outline-none transition-all duration-300 origin-center",
-                                        isTransitioning ? "opacity-30 blur-[4px] scale-[0.98]" : "opacity-100 blur-0 scale-100"
-                                    )}
-                                >
+                                <div className="h-52 outline-none" style={{ outline: "none" }}>
                                     {loading && !stats ? (
                                         <div className="flex gap-3 h-full">
                                             <div className="flex flex-col justify-between pb-6 shrink-0">
@@ -803,15 +798,9 @@ export default function DashboardPage() {
                     </div>
 
                     {/* ── 3. Money Type Chart ── */}
-                    <div className="bg-white rounded-xl border border-slate-200 shadow-sm px-5 py-5 overflow-hidden">
+                    <div className="bg-white rounded-xl border border-slate-200 shadow-sm px-5 py-5">
                         <p className="text-[13px] font-bold text-[#0f172a] mb-4">ประเภทเงิน</p>
-                        <div 
-                            className={cn(
-                                "outline-none transition-all duration-300 origin-center",
-                                isTransitioning ? "opacity-30 blur-[4px] scale-[0.98]" : "opacity-100 blur-0 scale-100"
-                            )}
-                            style={{ height: "280px" }}
-                        >
+                        <div style={{ height: "280px", outline: "none" }} className="outline-none">
                             {loading && !stats ? (
                                 <div className="flex gap-3 h-full">
                                     <div className="flex flex-col justify-between pb-10 shrink-0">

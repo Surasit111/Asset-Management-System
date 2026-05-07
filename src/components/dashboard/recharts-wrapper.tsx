@@ -29,7 +29,7 @@ function RechartsWrapperInner({ data, type, getBarColor, isMoney = false }: Rech
 
     if (isMoney) {
         return (
-            <ResponsiveContainer width="100%" height="100%" debounce={200}>
+            <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                     data={data}
                     margin={{ top: 8, right: 8, left: 0, bottom: 80 }}
@@ -82,7 +82,6 @@ function RechartsWrapperInner({ data, type, getBarColor, isMoney = false }: Rech
                         dataKey="value"
                         radius={[6, 6, 0, 0]}
                         maxBarSize={36}
-                        isAnimationActive={false}
                     >
                         {data.map((e, i) => (
                             <Cell key={i} fill={getBarColor(e.name, "money", i, data.length)} />
@@ -94,7 +93,7 @@ function RechartsWrapperInner({ data, type, getBarColor, isMoney = false }: Rech
     }
 
     return (
-        <ResponsiveContainer width="100%" height="100%" debounce={200}>
+        <ResponsiveContainer width="100%" height="100%">
             <BarChart
                 data={data}
                 barCategoryGap="15%"
@@ -130,7 +129,6 @@ function RechartsWrapperInner({ data, type, getBarColor, isMoney = false }: Rech
                     dataKey="value"
                     radius={[6, 6, 0, 0]}
                     maxBarSize={32}
-                    isAnimationActive={false}
                 >
                     {data.map((e, i) => (
                         <Cell key={i} fill={getBarColor(e.name, type ?? "status", i, data.length)} />
