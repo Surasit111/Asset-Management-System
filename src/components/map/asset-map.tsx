@@ -131,14 +131,6 @@ const assetDotIcon = L.divIcon({
     iconAnchor: [5, 5],
 });
 
-
-function getOptimizedNextImageUrl(url: unknown, width: number): string | null {
-    if (!url || typeof url !== 'string' || url.trim() === '' || url.startsWith('{')) return null;
-    if (url.startsWith('data:') || url.startsWith('blob:') || url.startsWith('/_next/')) return url;
-    const allowedWidth = width <= 64 ? 64 : width <= 96 ? 96 : width <= 128 ? 128 : width <= 256 ? 256 : width <= 384 ? 384 : 640;
-    return `/_next/image?url=${encodeURIComponent(url)}&w=${allowedWidth}&q=75`;
-}
-
 // ─── Master Pin Icon ──────────────────────────────────────────────────────────
 function buildMasterPinIcon(
     name: string, count: number, isActive: boolean,
@@ -157,8 +149,8 @@ function buildMasterPinIcon(
         return u;
     };
 
-    const safePinUrl = getOptimizedNextImageUrl(pinImageUrl, 96);
-    const safeImgUrl = getOptimizedNextImageUrl(imageUrl, 96);
+    const safePinUrl = getSafe(pinImageUrl);
+    const safeImgUrl = getSafe(imageUrl);
 
     let ringContent: string;
     if (safePinUrl) {
@@ -212,7 +204,8 @@ function buildMasterPinIcon(
 
 // ─── Popup HTML ───────────────────────────────────────────────────────────────
 function buildPopup(pin: MasterPin): string {
-    const imgs = (pin.images && pin.images.length > 0 ? pin.images : (pin.imageUrl ? [pin.imageUrl] : [])).map(u => getOptimizedNextImageUrl(u, 384)).filter(Boolean) as string[];
+    const imgs = pin.images && pin.images.length > 0 ? pin.images
+        : (pin.imageUrl ? [pin.imageUrl] : []);
 
     let imgHtml: string;
     if (imgs.length === 0) {
@@ -227,8 +220,8 @@ function buildPopup(pin: MasterPin): string {
         <div style="width:240px;height:135px;overflow:hidden;background:#f1f5f9;position:relative;">
             <img src="${imgs[0]}" alt="" style="${buildAdjustedImageStyleString(pin.cardAdjustment)}">
             <div style="position:absolute;top:10px;left:10px;width:36px;height:36px;border-radius:50%;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);overflow:hidden;background:white;z-index:10;">
-                ${getOptimizedNextImageUrl(pin.pinImageUrl, 96)
-                ? `<img src="${getOptimizedNextImageUrl(pin.pinImageUrl, 96)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">`
+                ${pin.pinImageUrl
+                ? `<img src="${pin.pinImageUrl}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">`
                 : buildLeafletPinRingHtml(imgs[0], pin.pinAdjustment, 32)}
             </div>
         </div>`;
@@ -254,7 +247,9 @@ function buildPopup(pin: MasterPin): string {
 }
 
 function buildAssetPopup(asset: MapAsset): string {
-    const imgs = (asset.images && asset.images.length > 0 ? asset.images.map(img => img.url) : (asset.imageUrl ? [asset.imageUrl] : [])).map(u => getOptimizedNextImageUrl(u, 384)).filter(Boolean) as string[];
+    const imgs = asset.images && asset.images.length > 0
+        ? asset.images.map(img => img.url)
+        : (asset.imageUrl ? [asset.imageUrl] : []);
 
     let imgHtml = '';
     if (imgs.length > 0) {
