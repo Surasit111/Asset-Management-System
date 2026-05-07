@@ -243,23 +243,18 @@ export default function DashboardPage() {
             fetch("/api/categories?type=acquisition_method", { signal }).then(r => r.json()),
             fetch("/api/categories?type=money_type", { signal }).then(r => r.json()),
             fetch("/api/categories?type=department", { signal }).then(r => r.json()),
-            fetch("/api/assets?limit=5000", { signal }).then(r => r.ok ? r.json() : { assets: [] }),
-        ]).then(([sArr, aArr, mArr, dArr, assetData]) => {
-            const assets: RecentAsset[] = assetData.assets || [];
-
-            const getMergedValues = (catArr: { name: string }[], assetField: keyof RecentAsset) => {
+            fetch("/api/assets/distinct-filters", { signal }).then(r => r.ok ? r.json() : {}),
+        ]).then(([sArr, aArr, mArr, dArr, dbFilters]) => {
+            const getMergedValues = (catArr: { name: string }[], dbVals: string[]) => {
                 const catNames = catArr.map(c => c.name);
-                const existingVals = assets.map(a => a[assetField] as string).filter(Boolean);
-                return [...new Set([...catNames, ...existingVals])].sort();
+                return [...new Set([...catNames, ...(dbVals || [])])].sort();
             };
 
-            setStatuses(getMergedValues(sArr, "status"));
-            setAcquisitionMethods(getMergedValues(aArr, "acquisitionMethod"));
-            setMoneyTypes(getMergedValues(mArr, "moneyType"));
-            setDepartments(getMergedValues(dArr, "location")); // department field
-
-            const yrs = [...new Set(assets.map(a => a.fiscalYear).filter(Boolean))] as string[];
-            setFiscalYears(yrs.sort().reverse());
+            setStatuses(getMergedValues(sArr, dbFilters.status));
+            setAcquisitionMethods(getMergedValues(aArr, dbFilters.acquisitionMethod));
+            setMoneyTypes(getMergedValues(mArr, dbFilters.moneyType));
+            setDepartments(getMergedValues(dArr, dbFilters.department));
+            if (dbFilters.fiscalYear) setFiscalYears(dbFilters.fiscalYear);
         }).catch(err => {
             if ((err as Error)?.name !== "AbortError") console.error(err);
         });
