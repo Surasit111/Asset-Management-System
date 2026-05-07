@@ -72,7 +72,6 @@ interface DashboardStats {
 // Constants
 // ─────────────────────────────────────────────
 
-/** [FIX #14] เก็บแค่ค่าที่ใช้จริง ลบ dead constants ออก */
 const ITEMS_PER_PAGE = 10;
 
 const TH_MONTHS = [
@@ -129,7 +128,8 @@ const acqBadge = (m: string | null) => {
     return "bg-slate-50 text-slate-700 border-slate-200";
 };
 
-const getBarColor = (name: string, type: "status" | "acq" | "money", idx: number, total: number) => {
+// module-level stable function — ไม่สร้าง reference ใหม่ทุก render
+const getBarColor = (name: string, type: "status" | "acq" | "money" | string, idx: number, total: number) => {
     if (type === "status") {
         if (name.includes("ใช้งานได้")) return "#34d399";
         if (name.includes("ชำรุด")) return "#fbbf24";
@@ -196,7 +196,7 @@ export default function DashboardPage() {
     const [loading, setLoading] = useState(true);
     const [filterType, setFilterType] = useState<"all" | "general" | "durable">("all");
     const [showFilters, setShowFilters] = useState(false);
-    const [masterPins, setMasterPins] = useState<MapPin[]>([]);  // [FIX #13] MapPin แทน any[]
+    const [masterPins, setMasterPins] = useState<MapPin[]>([]);
     const [selectedPinId, setSelectedPinId] = useState<string | null>(null);
 
     const [fiscalYear, setFiscalYear] = useState("");
@@ -217,7 +217,6 @@ export default function DashboardPage() {
     const [dashSortBy, setDashSortBy] = useState("fiscalYear");
     const [dashSortOrder, setDashSortOrder] = useState<"asc" | "desc">("desc");
 
-    // [FIX #2] AbortController ref สำหรับ fetchStats
     const statsAbortRef = useRef<AbortController | null>(null);
 
     // ── outside click ──────────────────────────
@@ -232,9 +231,6 @@ export default function DashboardPage() {
     }, [activeDropdown]);
 
     // ── fetch dropdown options ─────────────────
-    /**
-     * [FIX #3] เพิ่ม AbortController cleanup เพื่อป้องกัน setState หลัง unmount
-     */
     useEffect(() => {
         const controller = new AbortController();
         const { signal } = controller;
@@ -264,9 +260,6 @@ export default function DashboardPage() {
     }, []);
 
     // ── fetch stats ────────────────────────────
-    /**
-     * [FIX #2] Cancel request เก่าก่อน fetch ใหม่ทุกครั้ง
-     */
     const fetchStats = useCallback(async () => {
         statsAbortRef.current?.abort();
         const controller = new AbortController();
@@ -357,7 +350,6 @@ export default function DashboardPage() {
         return sidebarAssets.slice(start, start + ITEMS_PER_PAGE);
     }, [sidebarAssets, sidebarPage]);
 
-    // [FIX #5] เปลี่ยนชื่อจาก total → sidebarTotalPages เพื่อไม่ให้ชนกับ outer scope
     const sidebarTotalPages = Math.ceil(sidebarAssets.length / ITEMS_PER_PAGE);
 
     useEffect(() => { setSidebarPage(1); }, [selectedPinId]);
@@ -371,10 +363,6 @@ export default function DashboardPage() {
     }, [stats?.pinnedAssets]);
 
     // ── sidebar pagination builder ─────────────
-    /**
-     * [FIX #4] แยก type ให้ชัด — (number | "dots")[] แทน (number | string)[]
-     * ป้องกัน type ambiguity ใน .includes() และ onClick
-     */
     const buildSidebarPages = (): (number | "dots")[] => {
         const pages: (number | "dots")[] = [];
         const current = sidebarPage;
@@ -406,10 +394,6 @@ export default function DashboardPage() {
         : filterType === "durable" ? "text-orange-500"
             : "text-slate-900";
 
-    /**
-     * [FIX #12] เพิ่ม departmentFilter เข้าไปใน hasActiveFilter
-     * ทำให้ dot indicator บนปุ่ม "ตัวกรอง" แสดงถูกต้องทุกกรณี
-     */
     const hasActiveFilter = !!(
         fiscalYear || startMonth || endMonth ||
         statusFilter || acquisitionFilter || moneyTypeFilter || departmentFilter
@@ -657,11 +641,6 @@ export default function DashboardPage() {
                                                                                 if (!o.value) {
                                                                                     f.setter("");
                                                                                 } else {
-                                                                                    /**
-                                                                                     * [FIX #9] ใช้ปีจาก fiscalYear ที่ปัจจุบัน
-                                                                                     * ถ้ายังไม่ได้เลือก fiscalYear ใช้ปี ค.ศ. ปัจจุบัน
-                                                                                     * ทำให้เดือนที่เลือกก่อน fiscalYear จะยังถูกต้องหลัง sync
-                                                                                     */
                                                                                     const yr = fiscalYear
                                                                                         ? parseInt(fiscalYear) - 543
                                                                                         : new Date().getFullYear();
@@ -795,7 +774,12 @@ export default function DashboardPage() {
                                             </div>
                                         </div>
                                     ) : (
-                                        <RechartsWrapper data={chart.data} type={chart.type} collapsed={collapsed} getBarColor={getBarColor} />
+                                        // ✅ ลบ collapsed prop ออก — ไม่ส่งเข้า RechartsWrapper อีกต่อไป
+                                        <RechartsWrapper
+                                            data={chart.data}
+                                            type={chart.type}
+                                            getBarColor={getBarColor}
+                                        />
                                     )}
                                 </div>
                             </div>
@@ -825,7 +809,12 @@ export default function DashboardPage() {
                                     </div>
                                 </div>
                             ) : (
-                                <RechartsWrapper data={stats?.moneyTypeCounts} isMoney={true} getBarColor={getBarColor} />
+                                // ✅ isMoney chart — ไม่มี collapsed อยู่แล้ว ไม่ต้องเปลี่ยน
+                                <RechartsWrapper
+                                    data={stats?.moneyTypeCounts}
+                                    isMoney={true}
+                                    getBarColor={getBarColor}
+                                />
                             )}
                         </div>
                     </div>
@@ -1076,7 +1065,6 @@ export default function DashboardPage() {
                                                                 <ChevronLeft size={14} />
                                                             </button>
 
-                                                            {/* [FIX #4] buildSidebarPages() แยก type ชัด (number | "dots")[] */}
                                                             <div className="flex items-center gap-1">
                                                                 {buildSidebarPages().map((p, idx) =>
                                                                     p === "dots" ? (
