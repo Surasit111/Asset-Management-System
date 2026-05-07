@@ -179,10 +179,10 @@ const PinCard = memo(({ pin, assetCount, isActive, onClick }: {
             <div style={{ height: '100%', position: 'relative', overflow: 'hidden', background: '#f8fafc' }}>
                 {getSafeUrl(pin.cardImageUrl) ? (
                     <Image src={getSafeUrl(pin.cardImageUrl)!} alt={pin.name} fill sizes="(max-width: 768px) 100vw, 300px"
-                        style={{ objectFit: 'cover', display: 'block' }} />
+                        style={{ objectFit: 'cover', display: 'block' }} unoptimized />
                 ) : thumbUrl ? (
                     <Image src={thumbUrl} alt={pin.name} fill sizes="(max-width: 768px) 100vw, 300px"
-                        style={{ objectFit: 'cover', display: 'block' }} />
+                        style={{ objectFit: 'cover', display: 'block' }} unoptimized />
                 ) : (
                     <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <MapIcon size={24} style={{ opacity: 0.1, color: '#0f172a' }} />
@@ -851,7 +851,7 @@ export default function MapPage() {
                                                 className="asset-card-sidebar">
                                                 <div style={{ position: 'relative', width: '72px', height: '72px', borderRadius: '12px', background: '#f8fafc', border: '1px solid #f1f5f9', flexShrink: 0, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                                     {asset.images?.[0] ? (
-                                                        <Image src={asset.images[0].url} alt={asset.name} fill sizes="72px" style={{ objectFit: 'cover' }} />
+                                                        <Image src={asset.images[0].url} alt={asset.name} fill sizes="72px" style={{ objectFit: 'cover' }} unoptimized />
                                                     ) : (
                                                         <Box size={24} style={{ opacity: 0.2, color: '#64748b' }} />
                                                     )}

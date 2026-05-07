@@ -9,8 +9,14 @@ export async function GET(request: NextRequest) {
     }
 
     try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error("Failed to fetch image");
+        let fetchUrl = url;
+        if (url.startsWith("/")) {
+            const origin = request.nextUrl.origin;
+            fetchUrl = `${origin}${url}`;
+        }
+        
+        const response = await fetch(fetchUrl);
+        if (!response.ok) throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
 
         const blob = await response.blob();
         return new NextResponse(blob, {

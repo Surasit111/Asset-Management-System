@@ -1042,7 +1042,7 @@ export default function DashboardPage() {
                                                                     className="flex gap-2.5 p-2.5 rounded-xl border border-slate-200 hover:border-blue-300 hover:bg-blue-50/30 transition-all group">
                                                                     <div className="w-11 h-11 rounded-lg bg-gray-100 shrink-0 overflow-hidden relative">
                                                                         {asset.images?.[0]?.url
-                                                                            ? <Image src={asset.images[0].url} alt={asset.name} fill sizes="44px" className="object-cover" />
+                                                                            ? <Image src={asset.images[0].url} alt={asset.name} fill sizes="44px" className="object-cover" unoptimized />
                                                                             : <div className="w-full h-full flex items-center justify-center text-slate-400"><Package className="w-5 h-5" /></div>
                                                                         }
                                                                     </div>

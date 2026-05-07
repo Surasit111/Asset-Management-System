@@ -37,7 +37,7 @@ function InlineCropEditor({ src, mode, confirmedBlob, onBlob }: EditorProps) {
 
     useEffect(() => {
         if (!src) return;
-        if (src.startsWith("data:") || src.startsWith("blob:") || src.startsWith("/_next/")) {
+        if (src.startsWith("data:") || src.startsWith("blob:") || src.startsWith("/_next/") || src.startsWith("/")) {
             setLocalSrc(src);
             return;
         }
