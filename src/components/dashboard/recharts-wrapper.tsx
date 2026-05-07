@@ -82,6 +82,7 @@ function RechartsWrapperInner({ data, type, getBarColor, isMoney = false }: Rech
                         dataKey="value"
                         radius={[6, 6, 0, 0]}
                         maxBarSize={36}
+                        isAnimationActive={false}
                     >
                         {data.map((e, i) => (
                             <Cell key={i} fill={getBarColor(e.name, "money", i, data.length)} />
@@ -129,6 +130,7 @@ function RechartsWrapperInner({ data, type, getBarColor, isMoney = false }: Rech
                     dataKey="value"
                     radius={[6, 6, 0, 0]}
                     maxBarSize={32}
+                    isAnimationActive={false}
                 >
                     {data.map((e, i) => (
                         <Cell key={i} fill={getBarColor(e.name, type ?? "status", i, data.length)} />
