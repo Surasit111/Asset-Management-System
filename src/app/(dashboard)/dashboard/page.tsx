@@ -245,9 +245,9 @@ export default function DashboardPage() {
             fetch("/api/categories?type=money_type", { signal }).then(r => r.json()),
             fetch("/api/categories?type=department", { signal }).then(r => r.json()),
             fetch("/api/assets/distinct-filters", { signal }).then(r => r.ok ? r.json() : {}),
-        ]).then(([sArr, aArr, mArr, dArr, dbFilters]) => {
+        ]).then(([sArr, aArr, mArr, dArr, dbFilters]: any[]) => {
             const getMergedValues = (catArr: { name: string }[], dbVals: string[]) => {
-                const catNames = catArr.map(c => c.name);
+                const catNames = catArr?.map(c => c.name) || [];
                 return [...new Set([...catNames, ...(dbVals || [])])].sort();
             };
 
