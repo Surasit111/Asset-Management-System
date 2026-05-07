@@ -33,7 +33,16 @@ function InlineCropEditor({ src, mode, confirmedBlob, onBlob }: EditorProps) {
     const [showEditor, setShowEditor] = useState(false);
     const [processing, setProcessing] = useState(false);
 
-    // [FIX #10] ลบ comment block ที่ถูก comment ออกแล้วค้างอยู่ออก
+    const [localSrc, setLocalSrc] = useState(src);
+
+    useEffect(() => {
+        if (!src) return;
+        if (src.startsWith("data:") || src.startsWith("blob:") || src.startsWith("/_next/")) {
+            setLocalSrc(src);
+            return;
+        }
+        setLocalSrc(`/api/proxy-image?url=${encodeURIComponent(src)}`);
+    }, [src]);
 
     const imgRef = useRef<HTMLImageElement>(null);
     const dragging = useRef(false);
@@ -240,7 +249,7 @@ function InlineCropEditor({ src, mode, confirmedBlob, onBlob }: EditorProps) {
                 }}
                 onMouseDown={handleMouseDown} onTouchStart={handleTouchStart}>
 
-                <img ref={imgRef} src={src} alt="" onLoad={handleLoad} draggable={false}
+                <img ref={imgRef} src={localSrc} alt="" onLoad={handleLoad} draggable={false} crossOrigin="anonymous"
                     style={{
                         position: "absolute", top: "50%", left: "50%",
                         transform: `translate(calc(-50% + ${offset.x}px), calc(-50% + ${offset.y}px)) scale(${zoom}) rotate(${rotation}deg)`,
