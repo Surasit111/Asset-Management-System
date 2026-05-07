@@ -17,17 +17,20 @@
 
 | Feature | รายละเอียด |
 |---|---|
-| **📊 Smart Excel Import** | จับคู่คอลัมน์อัตโนมัติ + Data Validation ตรวจสอบข้อมูลก่อน insert จริง พร้อม Import History |
-| **📤 Excel & PDF Export** | Export ข้อมูลครุภัณฑ์เป็น Excel (styled) หรือ PDF พร้อมตาราง ใช้ jsPDF + html2canvas |
-| **🗺️ Geospatial Tracking** | Leaflet.js — ระบุพิกัดครุภัณฑ์ผ่าน Custom Map Pins แต่ละ Pin มีรูปและข้อมูลอาคาร |
-| **🔍 Multi-filter Search** | Client-side filtering ลด API calls ผลลัพธ์ทันทีโดยไม่ต้อง reload |
-| **☑️ Bulk Actions** | Select / แก้ไขรูป / ระบุพิกัด / สร้าง QR Code ทีละหลายรายการพร้อม UI ที่ stable |
-| **🔒 RBAC Auth** | Better-Auth — Admin / User พร้อมระบบ Forgot Password ผ่าน Email (SMTP) |
-| **🏷️ QR Code Generator** | สร้าง QR Code รายบุคคลหรือ Bulk — พิมพ์หรือดาวน์โหลดได้ทันที |
-| **🗂️ Categories Management** | จัดการหมวดหมู่และประเภทหมวดหมู่ (CategoryType) ได้แบบ Dynamic |
-| **👥 User Management** | Admin จัดการผู้ใช้ ตั้งค่าสิทธิ์ ระงับบัญชี พร้อม Audit trail |
-| **🖼️ Image Gallery** | อัปโหลด / ดู / ลบรูปของแต่ละครุภัณฑ์ พร้อม Luxury Modal Viewer |
-| **🧹 Auto Storage Cleanup** | ลบ orphan images อัตโนมัติ ป้องกัน Storage บวมเมื่อเวลาผ่านไป |
+| **📥 นำเข้าข้อมูล Excel** | อ่านไฟล์ Excel แล้วแมปคอลัมน์อัตโนมัติ ตรวจสอบข้อมูลก่อนบันทึกจริง พร้อมบันทึกประวัติการนำเข้าทุกครั้ง |
+| **📤 ส่งออกรายงาน Excel** | กรองข้อมูลตามปีงบประมาณ ประเภท หรือหน่วยงาน แล้วดาวน์โหลดเป็นไฟล์ Excel พร้อม Styling และเลือกรูปแบบวันที่ได้ |
+| **🗺️ แผนที่ระบุตำแหน่ง** | ปักหมุดครุภัณฑ์บนแผนที่ Interactive แต่ละหมุดมีชื่ออาคาร รูปภาพ และรายการครุภัณฑ์ในพื้นที่นั้น |
+| **🔍 ค้นหาและกรองข้อมูล** | กรองได้หลายเงื่อนไขพร้อมกัน ผลลัพธ์แสดงทันทีโดยไม่ต้องโหลดหน้าใหม่ |
+| **☑️ เลือกหลายรายการพร้อมกัน** | เลือกหลายรายการแล้วลบ สร้าง QR Code หรือดูรูปภาพรวมได้ในคลิกเดียว |
+| **🖼️ จัดการรูปภาพกลุ่ม** | ปุ่มสำหรับเปิดดู และจัดการรูปภาพของหลายรายการพร้อมกัน (Bulk Image Modal) |
+| **📍 ระบุพิกัดกลุ่ม** | ปุ่มสำหรับระบุตำแหน่งแผนที่ให้หลายรายการในคราวเดียว (Bulk Map Modal) |
+| **🔒 ระบบสิทธิ์ผู้ใช้ (RBAC)** | แยก Admin / User ชัดเจน พร้อมระบบลืมรหัสผ่านผ่าน Email |
+| **🏷️ สร้าง QR Code** | สร้าง QR Code รายเดียวหรือหลายรายการ ดาวน์โหลดหรือพิมพ์ได้ทันที |
+| **🗂️ จัดการหมวดหมู่** | เพิ่ม แก้ไข ลบหมวดหมู่และประเภทหมวดหมู่ได้แบบยืดหยุ่น |
+| **👥 จัดการผู้ใช้งาน** | Admin เพิ่มผู้ใช้ ตั้งสิทธิ์ และระงับบัญชีได้จากหน้าเดียว |
+| **🖼️ แกลเลอรีรูปภาพ** | อัปโหลด ดู และลบรูปภาพของแต่ละครุภัณฑ์ พร้อม Modal Viewer เต็มจอ |
+| **🧹 ล้างรูปภาพอัตโนมัติ** | ลบรูปภาพที่ไม่มีรายการครุภัณฑ์อ้างอิงแล้วออกโดยอัตโนมัติ |
+
 
 ---
 
@@ -55,16 +58,8 @@
 | **PostgreSQL** | 16 | Relational DB รองรับข้อมูลซับซ้อน query หนัก และ relation หลายระดับ |
 | **Tailwind CSS** | 4.1.18 | Utility-first CSS เวอร์ชันใหม่ เร็วกว่าเดิมและ config น้อยลงมาก |
 | **Better-Auth** | 1.4.x | Session management + password hashing + RBAC มาตรฐานสากล |
-| **Framer Motion** | 12.x | Staggered reveal + micro-interactions สร้าง UX แบบ Luxury Minimal |
+| **Framer Motion** | 12.x | Animation library — ใช้ทำ staggered reveal และ micro-interactions ให้ UI รู้สึก responsive |
 | **Leaflet.js** | 1.9.x | Lightweight map library ไม่มี API cost ต่างจาก Google Maps |
-| **TanStack Table** | 8.x | Headless table — sorting, filtering, pagination ควบคุม UI ได้เต็มที่ |
-| **React Hook Form + Zod** | latest | Form validation แบบ schema-driven ลด boilerplate และ runtime error |
-| **xlsx / xlsx-js-style** | latest | อ่านและเขียนไฟล์ Excel พร้อม styling เช่น header สี background |
-| **jsPDF + html2canvas** | latest | Render DOM เป็น PDF สำหรับออกรายงานครุภัณฑ์ |
-| **qrcode / qrcode.react** | latest | สร้าง QR Code จาก assetCode เพื่อใช้ติดป้ายครุภัณฑ์ |
-| **Nodemailer** | 8.x | ส่ง Email สำหรับ Forgot Password ผ่าน SMTP (Gmail / custom) |
-| **Recharts** | 3.x | Dashboard charts — สถิติมูลค่าและจำนวนครุภัณฑ์ตามหมวดหมู่ |
-| **Luxon / date-fns** | latest | จัดการวันที่ภาษาไทย (พ.ศ.) และ fiscal year ได้อย่างถูกต้อง |
 
 ---
 
@@ -76,7 +71,7 @@
 | เพิ่ม / แก้ไขครุภัณฑ์ | ✅ | ✅ |
 | ลบครุภัณฑ์ (รายเดียว / Bulk) | ✅ | ✅ |
 | นำเข้า Excel | ✅ | ✅ |
-| ส่งออก Excel / PDF | ✅ | ✅ |
+| ส่งออก Excel | ✅ | ✅ |
 | จัดการแผนที่และ Map Pins | ✅ | ✅ |
 | สร้าง QR Code | ✅ | ✅ |
 | จัดการหมวดหมู่ (Categories) | ✅ | ❌ |
@@ -87,7 +82,7 @@
 
 ## ⚙️ Prerequisites
 
-- **Node.js** 24.11.0 หรือสูงกว่า
+- **Node.js** ≥ 20.x (LTS แนะนำ)
 - **PostgreSQL** 14 หรือสูงกว่า (local หรือ Docker หรือ Supabase)
 - **npm** หรือ **pnpm**
 - SMTP credentials — สำหรับระบบ Forgot Password (Gmail App Password รองรับ)
@@ -115,13 +110,13 @@ cp .env.example .env
 | Variable | ตัวอย่าง | คำอธิบาย |
 |---|---|---|
 | `DATABASE_URL` | `postgresql://user:pass@localhost:5432/asset_db?schema=public` | PostgreSQL connection string |
-| `BETTER_AUTH_SECRET` | `openssl rand -base64 32` | Random string ≥32 ตัวอักษร สำหรับ session signing |
-| `BETTER_AUTH_URL` | `http://localhost:3000` | Base URL ของแอป |
-| `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` | Base URL สำหรับ client-side (ใช้ใน QR Code และ link) |
+| `BETTER_AUTH_SECRET` | `s3cr3t_key_min_32_chars_here!!` | Random string ≥32 ตัวอักษร สำหรับ session signing — สร้างได้ด้วย `openssl rand -base64 32` |
+| `BETTER_AUTH_URL` | `http://localhost:3000` | Base URL ที่ Better Auth ใช้สร้าง link ในอีเมล reset password — ต้องตรงกับ domain จริงใน production |
+| `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` | Base URL ที่ Better Auth client ใช้ระบุว่า API อยู่ที่ไหน — ต้องตรงกับ domain จริงใน production |
 | `SMTP_HOST` | `smtp.gmail.com` | SMTP server host |
 | `SMTP_PORT` | `587` | SMTP port (587 = STARTTLS, 465 = SSL) |
 | `SMTP_USER` | `your-email@gmail.com` | อีเมลผู้ส่ง |
-| `SMTP_PASS` | `xxxx xxxx xxxx xxxx` | App Password จาก Google 2FA |
+| `SMTP_PASS` | `xxxx xxxx xxxx xxxx` | App Password จาก Google — ต้องเปิด 2-Step Verification ก่อน จึงจะสร้าง App Password ได้ |
 | `ADMIN_EMAIL` | `admin@example.com` | อีเมล Admin เริ่มต้น (ใช้ใน setup script) |
 | `ADMIN_PASSWORD` | `ChangeMe123!` | รหัสผ่าน Admin เริ่มต้น — **เปลี่ยนทันทีหลัง login** |
 
