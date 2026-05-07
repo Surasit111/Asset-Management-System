@@ -135,7 +135,8 @@ const assetDotIcon = L.divIcon({
 function buildMasterPinIcon(
     name: string, count: number, isActive: boolean,
     imageUrl?: string | null, adj?: ImageAdjustment,
-    pinImageUrl?: string | null, readOnly: boolean = false
+    pinImageUrl?: string | null, readOnly: boolean = false,
+    side: 'left' | 'right' = 'right'
 ) {
     const activeClass = isActive ? ' pin-active' : '';
     const readOnlyClass = readOnly ? ' pin-readonly' : '';
@@ -188,13 +189,18 @@ function buildMasterPinIcon(
                      font-family: 'Plus Jakarta Sans', 'Noto Sans Thai', sans-serif !important;">${safeName}</span>
       </div>`;
 
+    const flexDir = side === 'left' ? 'row-reverse' : 'row';
+    const pinOffset = side === 'left' ? 'calc(-100% + 36px)' : '0px';
+    const pinOrigin = side === 'left' ? 'calc(100% - 18px) 45px' : '18px 45px';
+
     return L.divIcon({
         className: "custom-master-pin-icon",
-        html: `<div class="pin-root${activeClass}${readOnlyClass}" style="flex-direction:row;">${pinBodyHtml}${labelHtml}</div>`,
+        html: `<div class="pin-root${activeClass}${readOnlyClass}" style="flex-direction:${flexDir};--pin-offset:${pinOffset};--pin-origin:${pinOrigin};">${pinBodyHtml}${labelHtml}</div>`,
         iconSize: [36, 45],
         iconAnchor: [18, 45],
     });
 }
+
 
 // ─── Popup HTML ───────────────────────────────────────────────────────────────
 function buildPopup(pin: MasterPin): string {
