@@ -808,8 +808,8 @@ export default function MapPage() {
                         display: 'flex', flexDirection: 'column', gap: '4px', zIndex: 50,
                         transition: `right ${SLIDE_DURATION}ms cubic-bezier(0.4,0,0.2,1)`,
                     }}>
-                        <button className="ctrl-btn" onClick={() => mapRef.current?.zoomIn()}><Plus size={15} /></button>
-                        <button className="ctrl-btn" onClick={() => mapRef.current?.zoomOut()}><Minus size={15} /></button>
+                        <button className="ctrl-btn" aria-label="ขยายแผนที่" title="ขยายแผนที่" onClick={() => mapRef.current?.zoomIn()}><Plus size={15} /></button>
+                        <button className="ctrl-btn" aria-label="ย่อแผนที่" title="ย่อแผนที่" onClick={() => mapRef.current?.zoomOut()}><Minus size={15} /></button>
                     </div>
 
                     {/* ASSET DETAIL SIDEBAR */}

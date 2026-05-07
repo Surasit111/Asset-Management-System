@@ -65,7 +65,7 @@ interface DashboardStats {
     statusCounts: Array<{ name: string; value: number }>;
     acquisitionCounts: Array<{ name: string; value: number }>;
     moneyTypeCounts: Array<{ name: string; value: number }>;
-    pinnedAssets: PinnedAsset[];
+    pinCounts: Record<string, number>; // mapPinId → asset count (lightweight)
 }
 
 // ─────────────────────────────────────────────
@@ -214,8 +214,6 @@ export default function DashboardPage() {
     const [fiscalYears, setFiscalYears] = useState<string[]>([]);
     const [departments, setDepartments] = useState<string[]>([]);
 
-    const [dashSortBy, setDashSortBy] = useState("fiscalYear");
-    const [dashSortOrder, setDashSortOrder] = useState<"asc" | "desc">("desc");
 
     const { collapsed } = useSidebar();
     const [isTransitioning, setIsTransitioning] = useState(false);
@@ -311,39 +309,6 @@ export default function DashboardPage() {
         return () => controller.abort();
     }, []);
 
-    // ── sort ───────────────────────────────────
-    const handleSort = (field: string) => {
-        if (dashSortBy === field) {
-            setDashSortOrder(dashSortOrder === "desc" ? "asc" : "desc");
-        } else {
-            setDashSortBy(field);
-            setDashSortOrder("desc");
-        }
-    };
-
-    const SortIcon = ({ field }: { field: string }) => {
-        if (dashSortBy !== field) return <ArrowUpDown className="w-3.5 h-3.5 opacity-30 shrink-0" />;
-        return dashSortOrder === "asc"
-            ? <ArrowUp className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-            : <ArrowDown className="w-3.5 h-3.5 text-blue-500 shrink-0" />;
-    };
-
-    const sortedAssets = useMemo(() => {
-        if (!stats?.recentAssets) return [];
-        if (!dashSortBy) return stats.recentAssets;
-        return [...stats.recentAssets].sort((a, b) => {
-            const vA = a[dashSortBy as keyof RecentAsset] as unknown;
-            const vB = b[dashSortBy as keyof RecentAsset] as unknown;
-            if (vA === vB) return 0;
-            if (vA == null) return 1;
-            if (vB == null) return -1;
-            const mul = dashSortOrder === "asc" ? 1 : -1;
-            return typeof vA === "number" && typeof vB === "number"
-                ? (vA - vB) * mul
-                : String(vA).localeCompare(String(vB)) * mul;
-        });
-    }, [stats?.recentAssets, dashSortBy, dashSortOrder]);
-
     // ── map / sidebar ──────────────────────────
     const selectedPin = useMemo(
         () => masterPins.find(p => p.id === selectedPinId) || null,
@@ -351,11 +316,29 @@ export default function DashboardPage() {
     );
 
     const [sidebarPage, setSidebarPage] = useState(1);
+    const [sidebarAssets, setSidebarAssets] = useState<PinnedAsset[]>([]);
+    const [sidebarLoading, setSidebarLoading] = useState(false);
+    const sidebarAbortRef = useRef<AbortController | null>(null);
 
-    const sidebarAssets = useMemo(() => {
-        if (!selectedPinId || !stats?.pinnedAssets) return [];
-        return stats.pinnedAssets.filter(a => a.mapPinId === selectedPinId);
-    }, [stats?.pinnedAssets, selectedPinId]);
+    // lazy fetch assets for a specific pin when clicked
+    const fetchPinAssets = useCallback(async (pinId: string) => {
+        sidebarAbortRef.current?.abort();
+        const ctrl = new AbortController();
+        sidebarAbortRef.current = ctrl;
+        setSidebarLoading(true);
+        setSidebarAssets([]);
+        try {
+            const res = await fetch(`/api/assets?mapPinId=${pinId}&limit=500`, { signal: ctrl.signal });
+            if (res.ok) {
+                const data = await res.json();
+                setSidebarAssets(data.assets || []);
+            }
+        } catch (err) {
+            if ((err as Error)?.name !== "AbortError") console.error(err);
+        } finally {
+            setSidebarLoading(false);
+        }
+    }, []);
 
     const paginatedSidebarAssets = useMemo(() => {
         const start = (sidebarPage - 1) * ITEMS_PER_PAGE;
@@ -366,13 +349,9 @@ export default function DashboardPage() {
 
     useEffect(() => { setSidebarPage(1); }, [selectedPinId]);
 
-    const pinAssetCounts = useMemo(() => {
-        const counts: Record<string, number> = {};
-        stats?.pinnedAssets?.forEach(a => {
-            if (a.mapPinId) counts[a.mapPinId] = (counts[a.mapPinId] || 0) + 1;
-        });
-        return counts;
-    }, [stats?.pinnedAssets]);
+    // pinCounts comes directly from the API — no client-side computation needed
+    const pinAssetCounts = useMemo(() => stats?.pinCounts ?? {}, [stats?.pinCounts]);
+
 
     // ── sidebar pagination builder ─────────────
     const buildSidebarPages = (): (number | "dots")[] => {
@@ -408,7 +387,7 @@ export default function DashboardPage() {
 
     const hasActiveFilter = !!(
         fiscalYear || startMonth || endMonth ||
-        statusFilter || acquisitionFilter || moneyTypeFilter || departmentFilter
+        statusFilter || acquisitionFilter || moneyTypeFilter
     );
 
     const tabs = [
@@ -721,8 +700,8 @@ export default function DashboardPage() {
                                 icon: <Coins size={26} className="text-slate-400" strokeWidth={1.5} />,
                             },
                         ].map((card, i) => (
-                            <div key={i} className="bg-white rounded-xl border border-slate-200 shadow-sm px-6 py-5.5 flex items-center justify-between">
-                                {loading && !stats ? (
+                            <div key={i} className="bg-white rounded-xl border border-slate-200 shadow-sm px-6 h-[112px] flex items-center justify-between">
+                                {loading ? (
                                     <>
                                         <div>
                                             <Skeleton className="h-[16px] w-32 mb-2" />
@@ -770,13 +749,13 @@ export default function DashboardPage() {
                             <div key={chart.title} className="bg-white rounded-xl border border-slate-200 shadow-sm px-5 py-5 overflow-hidden">
                                 <p className="text-[13px] font-bold text-[#0f172a] mb-4">{chart.title}</p>
                                 <div className="h-52 relative outline-none">
-                                    {isTransitioning && (
+                                    {(isTransitioning || (loading && stats)) && (
                                         <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-white">
                                             <div className="w-6 h-6 rounded-full border-2 border-slate-200 border-t-blue-500 animate-spin mb-2" />
-                                            <span className="text-[10px] text-slate-400 font-semibold tracking-wide">กำลังปรับขนาด...</span>
+                                            <span className="text-[10px] text-slate-400 font-semibold tracking-wide">{loading ? "กำลังโหลดข้อมูล..." : "กำลังปรับขนาด..."}</span>
                                         </div>
                                     )}
-                                    <div className={cn("h-full transition-opacity duration-150", isTransitioning ? "opacity-0" : "opacity-100")}>
+                                    <div className={cn("h-full transition-opacity duration-150", (isTransitioning || (loading && stats)) ? "opacity-0" : "opacity-100")}>
                                         {loading && !stats ? (
                                             <div className="flex gap-3 h-full">
                                                 <div className="flex flex-col justify-between pb-6 shrink-0">
@@ -809,13 +788,13 @@ export default function DashboardPage() {
                     <div className="bg-white rounded-xl border border-slate-200 shadow-sm px-5 py-5">
                         <p className="text-[13px] font-bold text-[#0f172a] mb-4">ประเภทเงิน</p>
                         <div className="relative outline-none" style={{ height: "280px" }}>
-                            {isTransitioning && (
+                            {(isTransitioning || (loading && stats)) && (
                                 <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-white">
                                     <div className="w-6 h-6 rounded-full border-2 border-slate-200 border-t-blue-500 animate-spin mb-2" />
-                                    <span className="text-[10px] text-slate-400 font-semibold tracking-wide">กำลังปรับขนาด...</span>
+                                    <span className="text-[10px] text-slate-400 font-semibold tracking-wide">{loading ? "กำลังโหลดข้อมูล..." : "กำลังปรับขนาด..."}</span>
                                 </div>
                             )}
-                            <div className={cn("h-full transition-opacity duration-150", isTransitioning ? "opacity-0" : "opacity-100")}>
+                            <div className={cn("h-full transition-opacity duration-150", (isTransitioning || (loading && stats)) ? "opacity-0" : "opacity-100")}>
                                 {loading && !stats ? (
                                     <div className="flex gap-3 h-full">
                                         <div className="flex flex-col justify-between pb-10 shrink-0">
@@ -858,12 +837,11 @@ export default function DashboardPage() {
                             <table className="w-full text-left border-collapse min-w-[1000px]">
                                 <thead className="bg-[#fafafa] border-b border-slate-200">
                                     <tr>
-                                        <th onClick={() => handleSort("receivedDate")} className="px-4 py-3 cursor-pointer hover:bg-gray-100 transition-colors align-top group select-none">
+                                        <th className="px-4 py-3 align-top select-none">
                                             <div className="flex items-start justify-start gap-0.5 text-left">
-                                                <span className="text-[10px] uppercase tracking-[0.18em] font-extrabold text-gray-500 group-hover:text-blue-500 transition-colors leading-snug whitespace-nowrap">
+                                                <span className="text-[10px] uppercase tracking-[0.18em] font-extrabold text-gray-500 leading-snug whitespace-nowrap">
                                                     วันที่รับ /<br />ปีงบประมาณ
                                                 </span>
-                                                <SortIcon field="receivedDate" />
                                             </div>
                                         </th>
                                         <th className="px-4 py-3 align-top select-none">
@@ -888,12 +866,11 @@ export default function DashboardPage() {
                                         <th className="px-4 py-3 text-center align-top select-none">
                                             <span className="text-[10px] uppercase tracking-[0.18em] font-extrabold text-gray-500 leading-snug">จำนวน</span>
                                         </th>
-                                        <th onClick={() => handleSort("unitPrice")} className="px-4 py-3 cursor-pointer hover:bg-gray-100 transition-colors align-top group select-none w-px whitespace-nowrap text-right">
+                                        <th className="px-4 py-3 align-top select-none w-px whitespace-nowrap text-right">
                                             <div className="flex items-start justify-end gap-0.5 text-right">
-                                                <span className="text-[10px] uppercase tracking-[0.18em] font-extrabold text-gray-500 group-hover:text-blue-500 transition-colors leading-snug whitespace-nowrap">
+                                                <span className="text-[10px] uppercase tracking-[0.18em] font-extrabold text-gray-500 leading-snug whitespace-nowrap">
                                                     ราคา<br />(รวม / ต่อหน่วย)
                                                 </span>
-                                                <SortIcon field="unitPrice" />
                                             </div>
                                         </th>
                                         <th className="px-4 py-3 text-left align-top select-none">
@@ -902,21 +879,21 @@ export default function DashboardPage() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100">
-                                    {loading && !stats ? (
+                                    {loading ? (
                                         [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(i => (
                                             <tr key={i} className="h-[64px]">
-                                                <td className="px-4 py-3"><div className="flex flex-col gap-1 w-20"><Skeleton className="h-[14px] w-20" /><Skeleton className="h-[11px] w-16" /></div></td>
-                                                <td className="px-4 py-3"><div className="flex flex-col gap-1 w-full max-w-[200px]"><Skeleton className="h-[14px] w-full" /><Skeleton className="h-[14px] w-1/2" /></div></td>
-                                                <td className="px-1 py-3"><Skeleton className="h-[22px] w-10 rounded-md" /></td>
-                                                <td className="px-1 py-3"><Skeleton className="h-[22px] w-16 rounded-lg" /></td>
-                                                <td className="px-1 py-3"><Skeleton className="h-[22px] w-16 rounded-lg" /></td>
-                                                <td className="px-1 py-3 text-center flex justify-center"><Skeleton className="h-[22px] w-14 rounded-full mt-2" /></td>
-                                                <td className="px-4 py-3 text-center flex justify-center"><Skeleton className="h-[14px] w-12 mt-2" /></td>
-                                                <td className="px-4 py-3 text-right"><div className="flex flex-col items-end gap-1"><Skeleton className="h-[14px] w-16" /><Skeleton className="h-[11px] w-20" /></div></td>
-                                                <td className="px-4 py-3"><Skeleton className="h-[11px] w-20" /></td>
+                                                <td className="px-4 py-3"><div className="flex flex-col gap-1.5"><Skeleton className="h-[14px] w-16" /><Skeleton className="h-[11px] w-20" /></div></td>
+                                                <td className="px-4 py-3"><div className="flex flex-col gap-1.5 w-full max-w-[250px]"><Skeleton className="h-[14px] w-[85%]" /><Skeleton className="h-[12px] w-[45%]" /></div></td>
+                                                <td className="px-1 py-3"><Skeleton className="h-[20px] w-10 rounded-md" /></td>
+                                                <td className="px-1 py-3"><Skeleton className="h-[20px] w-16 rounded-lg" /></td>
+                                                <td className="px-1 py-3"><Skeleton className="h-[20px] w-20 rounded-lg" /></td>
+                                                <td className="px-1 py-3 text-center"><Skeleton className="h-[22px] w-16 rounded-full mx-auto" /></td>
+                                                <td className="px-4 py-3 text-center"><Skeleton className="h-[14px] w-10 mx-auto" /></td>
+                                                <td className="px-4 py-3 text-right"><div className="flex flex-col items-end gap-1.5"><Skeleton className="h-[14px] w-12" /><Skeleton className="h-[11px] w-20" /></div></td>
+                                                <td className="px-4 py-3"><Skeleton className="h-[11px] w-[85%]" /></td>
                                             </tr>
                                         ))
-                                    ) : sortedAssets.length > 0 ? sortedAssets.map(asset => {
+                                    ) : (stats?.recentAssets && stats.recentAssets.length > 0) ? stats.recentAssets.map(asset => {
                                         const ss = statusStyle(asset.status ?? null);
                                         const totalPrice = (asset.quantity || 0) * (asset.unitPrice || 0);
                                         return (
@@ -934,9 +911,15 @@ export default function DashboardPage() {
                                                 </td>
                                                 <td className="px-4 py-3">
                                                     <div className="flex flex-col">
-                                                        <span className="text-sm font-bold text-[#0f172a] group-hover:text-blue-600 transition-colors"
-                                                            style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", wordBreak: "break-word" }}
-                                                        >{asset.name}</span>
+                                                        <span 
+                                                            className={cn(
+                                                                "text-sm font-bold text-[#0f172a] group-hover:text-blue-600 transition-all block truncate",
+                                                                collapsed ? "max-w-[450px]" : "max-w-[250px]"
+                                                            )}
+                                                            title={asset.name}
+                                                        >
+                                                            {asset.name}
+                                                        </span>
                                                         <span className="text-sm font-medium text-gray-500 mt-0.5">{asset.assetCode}</span>
                                                     </div>
                                                 </td>
@@ -1000,7 +983,7 @@ export default function DashboardPage() {
                             </Link>
                         </div>
                         <div className="relative" style={{ height: "520px" }}>
-                            {loading && !stats ? (
+                            {loading ? (
                                 <>
                                     <Skeleton className="absolute inset-0 rounded-none" />
                                     <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 z-10">
@@ -1012,10 +995,14 @@ export default function DashboardPage() {
                             ) : (
                                 <>
                                     <AssetMap
-                                        assets={stats?.pinnedAssets || []}
+                                        assets={[]}
                                         masterPins={masterPins}
                                         pinAssetCounts={pinAssetCounts}
-                                        onPinClick={(pinId: string | null) => setSelectedPinId(pinId)}
+                                        onPinClick={(pinId: string | null) => {
+                                            setSelectedPinId(pinId);
+                                            if (pinId) fetchPinAssets(pinId);
+                                            else setSidebarAssets([]);
+                                        }}
                                         forcedActivePinId={selectedPinId}
                                     />
 
@@ -1039,7 +1026,7 @@ export default function DashboardPage() {
                                                     <div className="px-4 py-2.5 border-b border-slate-100 flex items-center justify-between shrink-0 bg-slate-50/50">
                                                         <div>
                                                             <p className="text-[13px] font-bold text-[#0f172a] line-clamp-1">{selectedPin.name}</p>
-                                                            <p className="text-[10px] text-slate-500 font-medium">พบครุภัณฑ์ {sidebarAssets.length} รายการ</p>
+                                                            <p className="text-[10px] text-slate-500 font-medium">{sidebarLoading ? 'กำลังโหลด...' : `พบครุภัณฑ์ ${sidebarAssets.length} รายการ`}</p>
                                                         </div>
                                                         <button aria-label="ปิดรายการครุภัณฑ์" onClick={() => setSelectedPinId(null)}
                                                             className="w-7 h-7 rounded-lg bg-gray-50 hover:bg-gray-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-colors">

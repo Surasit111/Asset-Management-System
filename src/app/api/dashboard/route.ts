@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
 export async function GET(request: Request) {
     try {
@@ -14,27 +15,54 @@ export async function GET(request: Request) {
         const department = searchParams.get("department") || "";
 
         const where: any = {};
+        const sqlConditions: Prisma.Sql[] = [];
+
         if (type === "general") {
             where.assetType = "general";
+            sqlConditions.push(Prisma.sql`"assetType" = 'general'`);
         } else if (type === "durable") {
             where.assetType = "durable";
+            sqlConditions.push(Prisma.sql`"assetType" = 'durable'`);
         }
 
-        if (fiscalYear) where.fiscalYear = fiscalYear;
-        if (status) where.status = status;
-        if (acquisitionMethod) where.acquisitionMethod = acquisitionMethod;
-        if (moneyType) where.moneyType = moneyType;
-        if (department) where.department = department;
+        if (fiscalYear) {
+            where.fiscalYear = fiscalYear;
+            sqlConditions.push(Prisma.sql`"fiscalYear" = ${fiscalYear}`);
+        }
+        if (status) {
+            where.status = status;
+            sqlConditions.push(Prisma.sql`"status" = ${status}`);
+        }
+        if (acquisitionMethod) {
+            where.acquisitionMethod = acquisitionMethod;
+            sqlConditions.push(Prisma.sql`"acquisitionMethod" = ${acquisitionMethod}`);
+        }
+        if (moneyType) {
+            where.moneyType = moneyType;
+            sqlConditions.push(Prisma.sql`"moneyType" = ${moneyType}`);
+        }
+        if (department) {
+            where.department = department;
+            sqlConditions.push(Prisma.sql`"department" = ${department}`);
+        }
 
         // Date range filter using receivedDate
         if (startMonth) {
             const [y, m] = startMonth.split("-").map(Number);
-            where.receivedDate = { ...where.receivedDate, gte: new Date(y, m - 1, 1) };
+            const startDate = new Date(y, m - 1, 1);
+            where.receivedDate = { ...where.receivedDate, gte: startDate };
+            sqlConditions.push(Prisma.sql`"receivedDate" >= ${startDate}`);
         }
         if (endMonth) {
             const [y, m] = endMonth.split("-").map(Number);
-            where.receivedDate = { ...where.receivedDate, lte: new Date(y, m, 0, 23, 59, 59) };
+            const endDate = new Date(y, m, 0, 23, 59, 59);
+            where.receivedDate = { ...where.receivedDate, lte: endDate };
+            sqlConditions.push(Prisma.sql`"receivedDate" <= ${endDate}`);
         }
+
+        const whereSql = sqlConditions.length > 0 
+            ? Prisma.sql`WHERE ${Prisma.join(sqlConditions, ' AND ')}`
+            : Prisma.empty;
 
         const [
             totalAssets,
@@ -42,8 +70,8 @@ export async function GET(request: Request) {
             acquisitionCounts,
             moneyTypeCounts,
             recentAssets,
-            pinnedAssets,
-            assetSum
+            pinCountsRaw,
+            totalValueResult
         ] = await Promise.all([
             prisma.asset.count({ where }),
             prisma.asset.groupBy({
@@ -82,39 +110,24 @@ export async function GET(request: Request) {
                     location: true,
                 },
             }),
-            prisma.asset.findMany({
-                take: 50,
+            prisma.asset.groupBy({
+                by: ["mapPinId"],
+                _count: { id: true },
                 where: {
                     ...where,
-                    AND: [{ latitude: { not: null } }, { longitude: { not: null } }],
+                    AND: [
+                        { mapPinId: { not: null } },
+                    ],
                 },
-                select: {
-                    id: true,
-                    assetCode: true,
-                    name: true,
-                    status: true,
-                    location: true,
-                    latitude: true,
-                    longitude: true,
-                    mapPinId: true,
-                    assetType: true,
-                    images: true,
-                    imageUrl: true,
-                },
-                orderBy: { createdAt: "desc" },
             }),
-            prisma.asset.findMany({
-                where,
-                select: {
-                    quantity: true,
-                    unitPrice: true
-                }
-            })
+            prisma.$queryRaw<Array<{ total: number | null }>>`
+                SELECT SUM(COALESCE(quantity, 0) * COALESCE("unitPrice", 0)) as total
+                FROM "assets"
+                ${whereSql}
+            `
         ]);
 
-        const totalValue = (assetSum as any[]).reduce((sum, asset) => {
-            return sum + ((asset.quantity || 0) * (asset.unitPrice || 0));
-        }, 0);
+        const totalValue = totalValueResult?.[0]?.total ? Number(totalValueResult[0].total) : 0;
 
         return NextResponse.json({
             totalAssets,
@@ -132,11 +145,10 @@ export async function GET(request: Request) {
                 value: s._count.moneyType,
             })),
             recentAssets,
-            pinnedAssets: pinnedAssets.map((asset: any) => ({
-                ...asset,
-                latitude: Number(asset.latitude),
-                longitude: Number(asset.longitude)
-            })),
+            // Lightweight map: { [mapPinId]: count } — no full asset rows transferred
+            pinCounts: Object.fromEntries(
+                pinCountsRaw.map((r: { mapPinId: string | null; _count: { id: number } }) => [r.mapPinId!, r._count.id])
+            ),
         });
     } catch (error) {
         console.error("Dashboard stats error:", error);

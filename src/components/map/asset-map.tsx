@@ -154,7 +154,7 @@ function buildMasterPinIcon(
 
     let ringContent: string;
     if (safePinUrl) {
-        ringContent = `<img src="${safePinUrl}" alt="" draggable="false" class="pin-cropped-img">`;
+        ringContent = `<img src="${safePinUrl}" alt="" draggable="false" width="36" height="36" class="pin-cropped-img">`;
     } else if (safeImgUrl) {
         ringContent = buildLeafletPinRingHtml(safeImgUrl, adj, 32);
     } else {
@@ -583,7 +583,9 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
                 crossOrigin: true,
                 maxZoom: 20,
-                maxNativeZoom: 18
+                maxNativeZoom: 18,
+                // @ts-ignore – fetchpriority is not in Leaflet types but is a valid browser hint
+                fetchpriority: "high",
             }).addTo(map);
 
             map.on('dblclick', (e: L.LeafletMouseEvent) => { L.DomEvent.stopPropagation(e); });

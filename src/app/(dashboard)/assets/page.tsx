@@ -546,9 +546,13 @@ export default function AssetManagementPage() {
                         <div className="w-px h-8 bg-slate-200 shrink-0" />
                         <div className="flex items-center gap-2 shrink-0">
                             <span className="text-[14px] text-slate-500 font-medium">{countLabel}</span>
-                            <span className={`text-[20px] font-extrabold tabular-nums ${loading ? "text-slate-400" : countAccentColor}`}>
-                                {total.toLocaleString("th-TH")}
-                            </span>
+                            {loading ? (
+                                <div className="w-10 h-7 bg-slate-200 rounded animate-pulse" />
+                            ) : (
+                                <span className={`text-[20px] font-extrabold tabular-nums ${countAccentColor}`}>
+                                    {total.toLocaleString("th-TH")}
+                                </span>
+                            )}
                             <span className="text-[14px] text-slate-500 font-medium">รายการ</span>
                         </div>
                     </div>
@@ -648,13 +652,7 @@ export default function AssetManagementPage() {
             </div>
 
             <main className="flex-1 w-full pl-10 pr-[34.7px] pt-5 pb-10">
-                {loading ? (
-                    <div className="flex flex-col items-center justify-center" style={{ height: "520px" }}>
-                        <Loader2 className="w-8 h-8 text-blue-600 animate-spin mb-4" />
-                        <p className="text-[13px] font-bold text-slate-500">กำลังโหลดข้อมูล...</p>
-                    </div>
-                ) : (
-                    <div className="animate-in fade-in duration-300">
+                <div className="animate-in fade-in duration-300">
 
                         {/* ══ Toolbar Card ══════════════════════════════════════════ */}
                         <div className={cn(
@@ -696,7 +694,7 @@ export default function AssetManagementPage() {
                                                 "min-w-[18px] h-[18px] rounded-full flex items-center justify-center text-[10px] font-extrabold px-1",
                                                 qualityFilter === badge.key ? "bg-white/25 text-white" : cn(badge.dot, "text-white")
                                             )}>
-                                                {badge.count}
+                                                {loading ? <div className="w-3 h-2.5 bg-white/40 rounded-sm animate-pulse" /> : badge.count}
                                             </span>
                                         </button>
                                     ))}
@@ -816,8 +814,14 @@ export default function AssetManagementPage() {
                         {/* ══ Table ════════════════════════════════════════════════ */}
                         <div className={cn(
                             "bg-white rounded-xl border border-slate-200 shadow-sm overflow-visible transition-all duration-300 relative",
-                            isFetching && "opacity-70 grayscale-[0.2]"
+                            (isFetching && !loading) && "opacity-70 grayscale-[0.2]"
                         )}>
+                            {loading && (
+                                <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white/60 backdrop-blur-[1px] rounded-xl">
+                                    <div className="w-10 h-10 rounded-full border-4 border-slate-200 border-t-blue-500 animate-spin mb-3" />
+                                    <p className="text-[13px] font-bold text-slate-500 tracking-wide">กำลังโหลดข้อมูล...</p>
+                                </div>
+                            )}
                             {isFetching && !loading && (
                                 <div className="absolute top-0 left-0 right-0 h-0.5 z-50 overflow-hidden rounded-t-xl">
                                     <div className="h-full bg-blue-500 animate-[loading-bar_1.5s_infinite_ease-in-out]" style={{ width: "40%" }} />
@@ -881,7 +885,9 @@ export default function AssetManagementPage() {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-100">
-                                        {assets.length === 0 ? (
+                                        {loading ? (
+                                            <tr><td colSpan={12} className="py-24"></td></tr>
+                                        ) : assets.length === 0 ? (
                                             <tr>
                                                 <td colSpan={12} className="py-20 text-center px-4">
                                                     <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -1039,7 +1045,6 @@ export default function AssetManagementPage() {
                             </div>
                         </div>
                     </div>
-                )}
             </main>
 
             {/* ── Modals ── */}
