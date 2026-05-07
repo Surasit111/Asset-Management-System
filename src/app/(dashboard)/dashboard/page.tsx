@@ -769,34 +769,37 @@ export default function DashboardPage() {
                         ].map(chart => (
                             <div key={chart.title} className="bg-white rounded-xl border border-slate-200 shadow-sm px-5 py-5 overflow-hidden">
                                 <p className="text-[13px] font-bold text-[#0f172a] mb-4">{chart.title}</p>
-                                <div 
-                                    className={cn(
-                                        "h-52 outline-none transition-all duration-300 origin-center",
-                                        isTransitioning ? "opacity-20 blur-[8px] scale-[0.98]" : "opacity-100 blur-0 scale-100"
-                                    )}
-                                >
-                                    {loading && !stats ? (
-                                        <div className="flex gap-3 h-full">
-                                            <div className="flex flex-col justify-between pb-6 shrink-0">
-                                                {[1, 2, 3, 4].map(t => <Skeleton key={t} className="h-2 w-6" />)}
-                                            </div>
-                                            <div className="flex-1 flex flex-col">
-                                                <div className="flex-1 flex items-end gap-1.5 border-l border-b border-slate-100 px-1 pb-1">
-                                                    {chart.skeletonBars.map((h, j) => <Skeleton key={j} className="flex-1 rounded-sm" style={{ height: h }} />)}
-                                                </div>
-                                                <div className="flex gap-1.5 mt-2 px-1">
-                                                    {chart.skeletonBars.map((_, j) => <Skeleton key={j} className="flex-1 h-2" />)}
-                                                </div>
-                                            </div>
+                                <div className="h-52 relative outline-none">
+                                    {isTransitioning && (
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-white">
+                                            <div className="w-6 h-6 rounded-full border-2 border-slate-200 border-t-blue-500 animate-spin mb-2" />
+                                            <span className="text-[10px] text-slate-400 font-semibold tracking-wide">กำลังปรับขนาด...</span>
                                         </div>
-                                    ) : (
-                                        // ✅ ลบ collapsed prop ออก — ไม่ส่งเข้า RechartsWrapper อีกต่อไป
-                                        <RechartsWrapper
-                                            data={chart.data}
-                                            type={chart.type}
-                                            getBarColor={getBarColor}
-                                        />
                                     )}
+                                    <div className={cn("h-full transition-opacity duration-150", isTransitioning ? "opacity-0" : "opacity-100")}>
+                                        {loading && !stats ? (
+                                            <div className="flex gap-3 h-full">
+                                                <div className="flex flex-col justify-between pb-6 shrink-0">
+                                                    {[1, 2, 3, 4].map(t => <Skeleton key={t} className="h-2 w-6" />)}
+                                                </div>
+                                                <div className="flex-1 flex flex-col">
+                                                    <div className="flex-1 flex items-end gap-1.5 border-l border-b border-slate-100 px-1 pb-1">
+                                                        {chart.skeletonBars.map((h, j) => <Skeleton key={j} className="flex-1 rounded-sm" style={{ height: h }} />)}
+                                                    </div>
+                                                    <div className="flex gap-1.5 mt-2 px-1">
+                                                        {chart.skeletonBars.map((_, j) => <Skeleton key={j} className="flex-1 h-2" />)}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            // ✅ ลบ collapsed prop ออก — ไม่ส่งเข้า RechartsWrapper อีกต่อไป
+                                            <RechartsWrapper
+                                                data={chart.data}
+                                                type={chart.type}
+                                                getBarColor={getBarColor}
+                                            />
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         ))}
@@ -805,39 +808,41 @@ export default function DashboardPage() {
                     {/* ── 3. Money Type Chart ── */}
                     <div className="bg-white rounded-xl border border-slate-200 shadow-sm px-5 py-5">
                         <p className="text-[13px] font-bold text-[#0f172a] mb-4">ประเภทเงิน</p>
-                        <div 
-                            className={cn(
-                                "outline-none transition-all duration-300 origin-center",
-                                isTransitioning ? "opacity-20 blur-[8px] scale-[0.98]" : "opacity-100 blur-0 scale-100"
-                            )}
-                            style={{ height: "280px" }}
-                        >
-                            {loading && !stats ? (
-                                <div className="flex gap-3 h-full">
-                                    <div className="flex flex-col justify-between pb-10 shrink-0">
-                                        {[1, 2, 3, 4].map(t => <Skeleton key={t} className="h-2 w-6" />)}
-                                    </div>
-                                    <div className="flex-1 flex flex-col">
-                                        <div className="flex-1 flex items-end gap-2 border-l border-b border-slate-100 px-2 pb-1">
-                                            {["30%", "55%", "25%", "80%", "45%", "70%", "35%", "60%"].map((h, j) => (
-                                                <Skeleton key={j} className="flex-1 rounded-sm" style={{ height: h }} />
-                                            ))}
-                                        </div>
-                                        <div className="flex gap-2 mt-2 px-2">
-                                            {["30%", "55%", "25%", "80%", "45%", "70%", "35%", "60%"].map((_, j) => (
-                                                <Skeleton key={j} className="flex-1 h-2" />
-                                            ))}
-                                        </div>
-                                    </div>
+                        <div className="relative outline-none" style={{ height: "280px" }}>
+                            {isTransitioning && (
+                                <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-white">
+                                    <div className="w-6 h-6 rounded-full border-2 border-slate-200 border-t-blue-500 animate-spin mb-2" />
+                                    <span className="text-[10px] text-slate-400 font-semibold tracking-wide">กำลังปรับขนาด...</span>
                                 </div>
-                            ) : (
-                                // ✅ isMoney chart — ไม่มี collapsed อยู่แล้ว ไม่ต้องเปลี่ยน
-                                <RechartsWrapper
-                                    data={stats?.moneyTypeCounts}
-                                    isMoney={true}
-                                    getBarColor={getBarColor}
-                                />
                             )}
+                            <div className={cn("h-full transition-opacity duration-150", isTransitioning ? "opacity-0" : "opacity-100")}>
+                                {loading && !stats ? (
+                                    <div className="flex gap-3 h-full">
+                                        <div className="flex flex-col justify-between pb-10 shrink-0">
+                                            {[1, 2, 3, 4].map(t => <Skeleton key={t} className="h-2 w-6" />)}
+                                        </div>
+                                        <div className="flex-1 flex flex-col">
+                                            <div className="flex-1 flex items-end gap-2 border-l border-b border-slate-100 px-2 pb-1">
+                                                {["30%", "55%", "25%", "80%", "45%", "70%", "35%", "60%"].map((h, j) => (
+                                                    <Skeleton key={j} className="flex-1 rounded-sm" style={{ height: h }} />
+                                                ))}
+                                            </div>
+                                            <div className="flex gap-2 mt-2 px-2">
+                                                {["30%", "55%", "25%", "80%", "45%", "70%", "35%", "60%"].map((_, j) => (
+                                                    <Skeleton key={j} className="flex-1 h-2" />
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    // ✅ isMoney chart — ไม่มี collapsed อยู่แล้ว ไม่ต้องเปลี่ยน
+                                    <RechartsWrapper
+                                        data={stats?.moneyTypeCounts}
+                                        isMoney={true}
+                                        getBarColor={getBarColor}
+                                    />
+                                )}
+                            </div>
                         </div>
                     </div>
 
