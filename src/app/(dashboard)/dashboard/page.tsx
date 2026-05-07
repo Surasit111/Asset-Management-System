@@ -217,6 +217,18 @@ export default function DashboardPage() {
     const [dashSortBy, setDashSortBy] = useState("fiscalYear");
     const [dashSortOrder, setDashSortOrder] = useState<"asc" | "desc">("desc");
 
+    const { collapsed } = useSidebar();
+    const [isTransitioning, setIsTransitioning] = useState(false);
+
+    // ── Sidebar Transition Effect ─────────────
+    useEffect(() => {
+        setIsTransitioning(true);
+        const timer = setTimeout(() => {
+            setIsTransitioning(false);
+        }, 300); // 300ms ตรงกับเวลา Transition ของ Sidebar
+        return () => clearTimeout(timer);
+    }, [collapsed]);
+
     const statsAbortRef = useRef<AbortController | null>(null);
 
     // ── outside click ──────────────────────────
@@ -405,7 +417,6 @@ export default function DashboardPage() {
         { id: "durable" as const, label: "แบบคงทน" },
     ];
 
-    const { collapsed } = useSidebar();
     const deptMaxWidth = collapsed ? "24rem" : "16rem";
 
     // ─────────────────────────────────────────
@@ -756,9 +767,14 @@ export default function DashboardPage() {
                                 skeletonBars: ["50%", "80%", "30%", "65%", "40%", "70%"],
                             },
                         ].map(chart => (
-                            <div key={chart.title} className="bg-white rounded-xl border border-slate-200 shadow-sm px-5 py-5">
+                            <div key={chart.title} className="bg-white rounded-xl border border-slate-200 shadow-sm px-5 py-5 overflow-hidden">
                                 <p className="text-[13px] font-bold text-[#0f172a] mb-4">{chart.title}</p>
-                                <div className="h-52 outline-none" style={{ outline: "none" }}>
+                                <div 
+                                    className={cn(
+                                        "h-52 outline-none transition-all duration-300 origin-center",
+                                        isTransitioning ? "opacity-30 blur-[4px] scale-[0.98]" : "opacity-100 blur-0 scale-100"
+                                    )}
+                                >
                                     {loading && !stats ? (
                                         <div className="flex gap-3 h-full">
                                             <div className="flex flex-col justify-between pb-6 shrink-0">
@@ -787,9 +803,15 @@ export default function DashboardPage() {
                     </div>
 
                     {/* ── 3. Money Type Chart ── */}
-                    <div className="bg-white rounded-xl border border-slate-200 shadow-sm px-5 py-5">
+                    <div className="bg-white rounded-xl border border-slate-200 shadow-sm px-5 py-5 overflow-hidden">
                         <p className="text-[13px] font-bold text-[#0f172a] mb-4">ประเภทเงิน</p>
-                        <div style={{ height: "280px", outline: "none" }} className="outline-none">
+                        <div 
+                            className={cn(
+                                "outline-none transition-all duration-300 origin-center",
+                                isTransitioning ? "opacity-30 blur-[4px] scale-[0.98]" : "opacity-100 blur-0 scale-100"
+                            )}
+                            style={{ height: "280px" }}
+                        >
                             {loading && !stats ? (
                                 <div className="flex gap-3 h-full">
                                     <div className="flex flex-col justify-between pb-10 shrink-0">
