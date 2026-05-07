@@ -12,10 +12,6 @@ import Image from "next/image";
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import {
-    BarChart, Bar, XAxis, YAxis, CartesianGrid,
-    ResponsiveContainer, Tooltip, Cell,
-} from "recharts";
 
 import { useSidebar } from "../client-layout";
 
@@ -183,6 +179,11 @@ const SkeletonStyle = () => (
 const AssetMap = dynamic(() => import("@/components/map/asset-map"), {
     ssr: false,
     loading: () => <div className="h-full w-full bg-gray-50 animate-pulse" />,
+});
+
+const RechartsWrapper = dynamic(() => import("@/components/dashboard/recharts-wrapper"), {
+    ssr: false,
+    loading: () => null,
 });
 
 // ─────────────────────────────────────────────
@@ -793,29 +794,8 @@ export default function DashboardPage() {
                                                 </div>
                                             </div>
                                         </div>
-                                    ) : chart.data?.length ? (
-                                        <ResponsiveContainer width="100%" height="100%">
-                                            <BarChart data={chart.data} barCategoryGap={collapsed ? "20%" : "15%"} accessibilityLayer={false} style={{ outline: "none", border: "none" }} tabIndex={-1}>
-                                                <CartesianGrid stroke="#e2e8f0" vertical={false} />
-                                                <XAxis dataKey="name" axisLine={false} tickLine={false}
-                                                    tick={{ fontSize: 10, fill: "#475569", fontWeight: 600 }}
-                                                    padding={{ left: 20, right: 20 }}
-                                                />
-                                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "#475569" }} allowDecimals={false} />
-                                                <Tooltip cursor={false}
-                                                    contentStyle={{ borderRadius: "0.75rem", border: "1px solid #e2e8f0", fontSize: "0.8125rem" }}
-                                                    formatter={(val) => [val, "จำนวน"]}
-                                                    animationDuration={0}
-                                                />
-                                                <Bar dataKey="value" radius={[6, 6, 0, 0]} maxBarSize={collapsed ? 35 : 28} isAnimationActive={false}>
-                                                    {chart.data.map((e, i) => (
-                                                        <Cell key={i} fill={getBarColor(e.name, chart.type, i, chart.data!.length)} />
-                                                    ))}
-                                                </Bar>
-                                            </BarChart>
-                                        </ResponsiveContainer>
                                     ) : (
-                                        <div className="h-full flex items-center justify-center text-sm text-gray-300">ยังไม่มีข้อมูล</div>
+                                        <RechartsWrapper data={chart.data} type={chart.type} collapsed={collapsed} getBarColor={getBarColor} />
                                     )}
                                 </div>
                             </div>
@@ -844,38 +824,8 @@ export default function DashboardPage() {
                                         </div>
                                     </div>
                                 </div>
-                            ) : stats?.moneyTypeCounts?.length ? (
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={stats.moneyTypeCounts} margin={{ top: 8, right: 8, left: 0, bottom: 80 }} accessibilityLayer={false} style={{ outline: "none", border: "none" }} tabIndex={-1}>
-                                        <CartesianGrid stroke="#e2e8f0" vertical={false} />
-                                        <XAxis dataKey="name" axisLine={false} tickLine={false} interval={0}
-                                            tick={(props: any) => {
-                                                const { x, y, payload } = props;
-                                                const numericX = Number(x);
-                                                const numericY = Number(y);
-                                                return (
-                                                    <text x={numericX} y={numericY + 4} transform={`rotate(-45, ${numericX}, ${numericY + 4})`}
-                                                        textAnchor="end" fill="#475569" fontSize={11} fontWeight={600}>
-                                                        {payload.value}
-                                                    </text>
-                                                );
-                                            }}
-                                        />
-                                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "#475569" }} allowDecimals={false} />
-                                        <Tooltip cursor={false}
-                                            contentStyle={{ borderRadius: "0.75rem", border: "1px solid #e2e8f0", fontSize: "0.8125rem" }}
-                                            formatter={(val) => [val, "จำนวน"]}
-                                            animationDuration={0}
-                                        />
-                                        <Bar dataKey="value" radius={[6, 6, 0, 0]} maxBarSize={36} isAnimationActive={false}>
-                                            {stats.moneyTypeCounts.map((e, i) => (
-                                                <Cell key={i} fill={getBarColor(e.name, "money", i, stats.moneyTypeCounts.length)} />
-                                            ))}
-                                        </Bar>
-                                    </BarChart>
-                                </ResponsiveContainer>
                             ) : (
-                                <div className="h-full flex items-center justify-center text-sm text-gray-300">ยังไม่มีข้อมูล</div>
+                                <RechartsWrapper data={stats?.moneyTypeCounts} isMoney={true} getBarColor={getBarColor} />
                             )}
                         </div>
                     </div>
