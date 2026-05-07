@@ -113,7 +113,7 @@ import type { MapPickerProps } from "@/components/map/map-picker";
 const MapPicker = dynamic<MapPickerProps>(() => import("@/components/map/map-picker"), {
     ssr: false,
     loading: () => (
-        <div className="h-[320px] bg-gray-50 border border-dashed border-slate-200 rounded-xl flex items-center justify-center text-gray-400 text-sm">
+        <div className="h-[320px] bg-gray-50 border border-dashed border-slate-200 rounded-xl flex items-center justify-center text-gray-500 text-sm">
             กำลังโหลดแผนที่
         </div>
     ),
@@ -216,7 +216,7 @@ function StepBar({ step }: { step: number }) {
                         "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-bold transition-all duration-300",
                         step === s.n ? "bg-[#0f172a] text-white shadow-md" :
                             step > s.n ? "text-emerald-600 bg-emerald-50 border border-emerald-200" :
-                                "text-slate-400 bg-slate-50 border border-slate-200"
+                                "text-slate-500 bg-slate-50 border border-slate-200"
                     )}>
                         <div className={cn(
                             "w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-extrabold shrink-0",
@@ -280,7 +280,7 @@ function BulkEditPanel({ selectedRows, receivers, recorders, onApply, onSaveRece
         toast.success(`ใช้กับ ${selectedRows.length} รายการแล้ว`);
     };
 
-    const inputCls = "w-full h-11 px-3 text-sm rounded-xl border border-slate-200 bg-white text-gray-800 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:text-gray-300 shadow-sm";
+    const inputCls = "w-full h-11 px-3 text-sm rounded-xl border border-slate-200 bg-white text-gray-800 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:text-gray-400 shadow-sm";
 
     return (
         <div className="bg-blue-50/60 border border-blue-200 rounded-xl px-5 py-4 space-y-4">
@@ -297,7 +297,7 @@ function BulkEditPanel({ selectedRows, receivers, recorders, onApply, onSaveRece
                 {/* ผู้รับของ */}
                 <div className="space-y-1.5">
                     <div className="flex items-center gap-2 px-1">
-                        <User size={12} className="text-slate-400" />
+                        <User size={12} className="text-slate-500" />
                         <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">ผู้รับของ</label>
                     </div>
                     <div className="flex gap-2">
@@ -326,7 +326,7 @@ function BulkEditPanel({ selectedRows, receivers, recorders, onApply, onSaveRece
                 {/* ผู้บันทึก */}
                 <div className="space-y-1.5">
                     <div className="flex items-center gap-2 px-1">
-                        <Users size={12} className="text-slate-400" />
+                        <Users size={12} className="text-slate-500" />
                         <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">ผู้บันทึก</label>
                     </div>
                     <div className="flex gap-2">
@@ -366,12 +366,12 @@ function BulkEditPanel({ selectedRows, receivers, recorders, onApply, onSaveRece
 
                 <div className="grid grid-cols-2 gap-2 mb-2">
                     <div>
-                        <label className="block text-[10px] text-slate-400 mb-1">ละติจูด</label>
+                        <label className="block text-[10px] text-slate-500 mb-1">ละติจูด</label>
                         <input type="number" className={inputCls} value={lat} placeholder="17.5371"
                             onChange={e => setLat(e.target.value)} />
                     </div>
                     <div>
-                        <label className="block text-[10px] text-slate-400 mb-1">ลองจิจูด</label>
+                        <label className="block text-[10px] text-slate-500 mb-1">ลองจิจูด</label>
                         <input type="number" className={inputCls} value={lng} placeholder="101.7178"
                             onChange={e => setLng(e.target.value)} />
                     </div>
@@ -452,15 +452,15 @@ const CustomSelect = ({ value, onChange, options, placeholder = "เลือก
                             disabled ? "cursor-not-allowed" : "cursor-pointer",
                             size === "sm" ? "h-9 px-3 text-[13px]" : "h-11 px-4 text-[14px]",
                             isOpen ? "border-blue-500 ring-4 ring-blue-500/10" : "border-slate-200 hover:border-slate-300",
-                            value ? "text-slate-900 font-bold" : "text-slate-400 font-medium",
+                            value ? "text-slate-900 font-bold" : "text-slate-500 font-medium",
                             disabled ? "opacity-50 grayscale cursor-not-allowed bg-slate-50" : "bg-white"
                         )}
                     >
                         <div className="flex items-center gap-2 truncate">
-                            {icon && <div className={cn(isOpen ? "text-blue-500" : "text-slate-400")}>{icon}</div>}
+                            {icon && <div className={cn(isOpen ? "text-blue-500" : "text-slate-500")}>{icon}</div>}
                             <span className="truncate">{selectedLabel}</span>
                         </div>
-                        <ChevronDown size={size === "sm" ? 14 : 16} className={cn("text-slate-400 transition-transform duration-200 shrink-0", isOpen && "rotate-180")} />
+                        <ChevronDown size={size === "sm" ? 14 : 16} className={cn("text-slate-500 transition-transform duration-200 shrink-0", isOpen && "rotate-180")} />
                     </button>
                 </PopoverTrigger>
                 <AnimatePresence>
@@ -601,7 +601,7 @@ export function LuxuryCombobox({
             <div className={cn("relative w-full flex items-center rounded-full transition-all border border-slate-200 shadow-sm",
                 inputHeight,
                 disabled ? "opacity-50 grayscale cursor-not-allowed bg-slate-50" : "bg-white focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10 cursor-text")}>
-                {icon && <div className="pl-3 text-slate-400 shrink-0">{icon}</div>}
+                {icon && <div className="pl-3 text-slate-500 shrink-0">{icon}</div>}
                 <input
                     ref={inputRef}
                     type="text"
@@ -611,7 +611,7 @@ export function LuxuryCombobox({
                     className={cn(
                         "flex-1 h-full px-3 text-[13px] bg-transparent border-0 focus:ring-0 focus:outline-none placeholder:text-slate-300",
                         disabled ? "cursor-text" : "cursor-text",
-                        search ? "text-slate-900 font-bold" : "text-slate-400 font-medium"
+                        search ? "text-slate-900 font-bold" : "text-slate-500 font-medium"
                     )}
                     onChange={e => {
                         const v = e.target.value;
@@ -632,7 +632,7 @@ export function LuxuryCombobox({
                 />
                 <ChevronDown
                     size={14}
-                    className={cn("mr-3 text-slate-400 transition-transform duration-200 shrink-0 pointer-events-none", isOpen && "rotate-180")}
+                    className={cn("mr-3 text-slate-500 transition-transform duration-200 shrink-0 pointer-events-none", isOpen && "rotate-180")}
                 />
             </div>
 
@@ -727,7 +727,7 @@ function Combobox({ value, onChange, options, placeholder, className, readOnly }
                     onClick={() => { if (readOnly) setOpen(!open); }}
                     onChange={e => { if (!readOnly) { onChange(e.target.value); setSearch(e.target.value); setOpen(true); } }}
                     onFocus={() => setOpen(true)} />
-                <ChevronDown size={14} className={cn("absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition-transform pointer-events-none", open && "rotate-180")} />
+                <ChevronDown size={14} className={cn("absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 transition-transform pointer-events-none", open && "rotate-180")} />
             </div>
             {open && (filtered.length > 0 || search) && (
                 <div className="absolute z-50 top-full left-0 right-0 mt-1.5 bg-white rounded-xl border border-slate-200 shadow-2xl py-1.5 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
@@ -748,7 +748,7 @@ function Combobox({ value, onChange, options, placeholder, className, readOnly }
                             ))
                         ) : (
                             <div className="px-3 py-4 text-center">
-                                <p className="text-[11px] text-slate-400 italic">ไม่พบรายชื่อ {!readOnly && "- พิมพ์เพื่อเพิ่มใหม่"}</p>
+                                <p className="text-[11px] text-slate-500 italic">ไม่พบรายชื่อ {!readOnly && "- พิมพ์เพื่อเพิ่มใหม่"}</p>
                             </div>
                         )}
                     </div>
@@ -938,7 +938,7 @@ const EditableCell = ({ value, onChange, placeholder, readOnly, type = "text", i
                 {!readOnly && (
                     <Popover modal={false}>
                         <PopoverTrigger asChild>
-                            <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded-md transition-all">
+                            <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-slate-500 hover:text-blue-500 hover:bg-blue-50 rounded-md transition-all">
                                 <Calendar size={14} />
                             </button>
                         </PopoverTrigger>
@@ -1593,19 +1593,19 @@ export default function ImportPage() {
                                     >
                                         <button onClick={() => downloadTemplate("normal")} className="w-full flex flex-col items-start p-2.5 rounded-lg hover:bg-amber-50 transition-colors text-left group cursor-pointer">
                                             <span className="text-[13px] font-bold text-slate-700">1. แบบมาตรฐาน</span>
-                                            <span className="text-[11px] text-slate-400 font-medium">(ตัดคอลัมน์หน่วยออก / รวมในช่องจำนวน)</span>
+                                            <span className="text-[11px] text-slate-500 font-medium">(ตัดคอลัมน์หน่วยออก / รวมในช่องจำนวน)</span>
                                         </button>
                                         <button onClick={() => downloadTemplate("bulk")} className="w-full flex flex-col items-start p-2.5 rounded-lg hover:bg-blue-50 transition-colors text-left group border-t border-slate-50 mt-1 cursor-pointer">
                                             <span className="text-[13px] font-bold text-slate-700">2. แบบแยกจำนวนและหน่วย</span>
-                                            <span className="text-[11px] text-slate-400 font-medium">(มีทั้งคอลัมน์จำนวน และคอลัมน์หน่วย)</span>
+                                            <span className="text-[11px] text-slate-500 font-medium">(มีทั้งคอลัมน์จำนวน และคอลัมน์หน่วย)</span>
                                         </button>
                                         <button onClick={() => downloadTemplate("status")} className="w-full flex flex-col items-start p-2.5 rounded-lg hover:bg-emerald-50 transition-colors text-left group border-t border-slate-50 mt-1 cursor-pointer">
                                             <span className="text-[13px] font-bold text-slate-700">3. แบบแยกสถานะ (รวมจำนวน/หน่วย)</span>
-                                            <span className="text-[11px] text-slate-400 font-medium">(รวมหน่วยในคอลัมน์จำนวน + 5 คอลัมน์สถานะ | พิมพ์ "1" หรืออะไรก็ได้)</span>
+                                            <span className="text-[11px] text-slate-500 font-medium">(รวมหน่วยในคอลัมน์จำนวน + 5 คอลัมน์สถานะ | พิมพ์ "1" หรืออะไรก็ได้)</span>
                                         </button>
                                         <button onClick={() => downloadTemplate("status_unit")} className="w-full flex flex-col items-start p-2.5 rounded-lg hover:bg-purple-50 transition-colors text-left group border-t border-slate-50 mt-1 cursor-pointer">
                                             <span className="text-[13px] font-bold text-slate-700">4. แบบแยกสถานะและหน่วย</span>
-                                            <span className="text-[11px] text-slate-400 font-medium">(แยกคอลัมน์จำนวน และคอลัมน์หน่วย + 5 คอลัมน์สถานะ | พิมพ์ "1" หรืออะไรก็ได้)</span>
+                                            <span className="text-[11px] text-slate-500 font-medium">(แยกคอลัมน์จำนวน และคอลัมน์หน่วย + 5 คอลัมน์สถานะ | พิมพ์ "1" หรืออะไรก็ได้)</span>
                                         </button>
                                     </motion.div>
                                 )}
@@ -1630,10 +1630,10 @@ export default function ImportPage() {
                         >
                             <div className="px-5 py-3.5 border-b border-slate-200 flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <History size={14} className="text-slate-400" />
+                                    <History size={14} className="text-slate-500" />
                                     <p className="text-[13px] font-bold text-[#0f172a]">ประวัติการนำเข้า</p>
                                 </div>
-                                <button onClick={() => setShowHistory(false)} className="text-slate-400 hover:text-slate-600 cursor-pointer"><X size={15} /></button>
+                                <button onClick={() => setShowHistory(false)} className="text-slate-500 hover:text-slate-600 cursor-pointer"><X size={15} /></button>
                             </div>
                             <div className="divide-y divide-slate-100 max-h-64 overflow-y-auto">
                                 {loadingHistory ? (
@@ -1652,7 +1652,7 @@ export default function ImportPage() {
                                             </div>
                                         ))}
                                         <div className="py-4 flex justify-center border-t-0">
-                                            <div className="flex items-center gap-2 text-slate-400">
+                                            <div className="flex items-center gap-2 text-slate-500">
                                                 <Loader2 size={16} className="animate-spin" />
                                                 <span className="text-[11px] font-bold">กำลังโหลดประวัติ...</span>
                                             </div>
@@ -1663,7 +1663,7 @@ export default function ImportPage() {
                                         <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 mb-3">
                                             <History size={24} />
                                         </div>
-                                        <p className="text-[13px] font-bold text-slate-400">ยังไม่มีประวัติการนำเข้า</p>
+                                        <p className="text-[13px] font-bold text-slate-500">ยังไม่มีประวัติการนำเข้า</p>
                                     </div>
                                 ) : (
                                     <div className="divide-y divide-slate-100">
@@ -1675,14 +1675,14 @@ export default function ImportPage() {
                                                 <div className="flex-1 min-w-0">
                                                     <p className="text-[13px] font-semibold text-[#0f172a] truncate">{h.fileName}</p>
                                                     <div className="flex gap-3 mt-0.5">
-                                                        <span className="text-[11px] text-slate-400 flex items-center gap-1"><Clock size={9} />{new Date(h.importedAt).toLocaleString("th-TH")}</span>
-                                                        {h.department && <span className="text-[11px] text-slate-400 flex items-center gap-1"><Building2 size={9} />{h.department}</span>}
+                                                        <span className="text-[11px] text-slate-500 flex items-center gap-1"><Clock size={9} />{new Date(h.importedAt).toLocaleString("th-TH")}</span>
+                                                        {h.department && <span className="text-[11px] text-slate-500 flex items-center gap-1"><Building2 size={9} />{h.department}</span>}
                                                     </div>
                                                 </div>
                                                 <div className="flex gap-1.5 shrink-0">
                                                     <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">+{h.imported}</span>
                                                     {h.updated > 0 && <span className="text-[11px] font-bold text-blue-600 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full">↑{h.updated}</span>}
-                                                    {h.skipped > 0 && <span className="text-[11px] font-bold text-slate-400 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-full">ข้าม {h.skipped}</span>}
+                                                    {h.skipped > 0 && <span className="text-[11px] font-bold text-slate-500 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-full">ข้าม {h.skipped}</span>}
                                                 </div>
                                             </div>
                                         ))}
@@ -1703,7 +1703,7 @@ export default function ImportPage() {
                                 </div>
                                 <div>
                                     <p className="text-sm font-bold text-gray-900">อัปโหลดไฟล์ข้อมูล</p>
-                                    <p className="text-xs text-gray-400 mt-0.5">รองรับ .xlsx, .xls, .csv</p>
+                                    <p className="text-xs text-gray-500 mt-0.5">รองรับ .xlsx, .xls, .csv</p>
                                 </div>
                             </div>
                             <div className="p-6">
@@ -1714,11 +1714,11 @@ export default function ImportPage() {
                                     className={cn("flex flex-col items-center justify-center gap-4 py-16 rounded-xl border-2 border-dashed cursor-pointer transition-all duration-200",
                                         dragging ? "border-blue-400 bg-blue-50/50 scale-[1.01]" : "border-slate-200 hover:border-blue-300 hover:bg-slate-50/50")}>
                                     <div className={cn("w-16 h-16 rounded-2xl flex items-center justify-center transition-all", dragging ? "bg-blue-100" : "bg-slate-100")}>
-                                        <Upload size={28} className={dragging ? "text-blue-500" : "text-slate-400"} />
+                                        <Upload size={28} className={dragging ? "text-blue-500" : "text-slate-500"} />
                                     </div>
                                     <div className="text-center">
                                         <p className="text-[15px] font-bold text-slate-700">{dragging ? "วางไฟล์ที่นี่เลย!" : "คลิกหรือลากไฟล์มาวาง"}</p>
-                                        <p className="text-[13px] text-slate-400 mt-1">รองรับ Excel (.xlsx, .xls) และ CSV</p>
+                                        <p className="text-[13px] text-slate-500 mt-1">รองรับ Excel (.xlsx, .xls) และ CSV</p>
                                     </div>
                                 </div>
                                 <input ref={fileInputRef} type="file" accept=".xlsx,.xls,.csv" className="hidden"
@@ -1741,12 +1741,12 @@ export default function ImportPage() {
                                 </div>
                                 <div>
                                     <p className="text-sm font-bold text-gray-900">ตั้งค่าเริ่มต้น</p>
-                                    <p className="text-xs text-gray-400 mt-0.5">ใช้กับแถวที่ช่องว่าง — สามารถแก้รายการได้อีกครั้งในขั้นถัดไป</p>
+                                    <p className="text-xs text-gray-500 mt-0.5">ใช้กับแถวที่ช่องว่าง — สามารถแก้รายการได้อีกครั้งในขั้นถัดไป</p>
                                 </div>
                             </div>
                             <div className="p-5 grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-[11px] font-semibold text-gray-400 mb-1.5 uppercase tracking-wide">ประเภทครุภัณฑ์ <span className="text-red-400">*</span></label>
+                                    <label className="block text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">ประเภทครุภัณฑ์ <span className="text-red-400">*</span></label>
                                     <div className="flex gap-2">
                                         {[{ k: "general", l: "แบบทั่วไป" }, { k: "durable", l: "แบบคงทน" }].map(t => (
                                             <button key={t.k} type="button" onClick={() => setDefaults(p => ({ ...p, assetType: t.k as any }))}
@@ -1758,7 +1758,7 @@ export default function ImportPage() {
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-[11px] font-semibold text-gray-400 mb-1.5 uppercase tracking-wide">หน่วยงาน <span className="text-red-500">*</span></label>
+                                    <label className="block text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">หน่วยงาน <span className="text-red-500">*</span></label>
                                     <CustomSelect
                                         value={defaults.department}
                                         onChange={val => setDefaults(p => ({ ...p, department: val }))}
@@ -1770,9 +1770,9 @@ export default function ImportPage() {
                             </div>
                             <div className="px-5 pb-8 border-t border-slate-100 pt-8 flex flex-col items-center">
                                 <div className="max-w-xs w-full space-y-3 text-center">
-                                    <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-widest">ปีงบประมาณ <span className="text-red-500">*</span></label>
+                                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest">ปีงบประมาณ <span className="text-red-500">*</span></label>
                                     <div className="relative group">
-                                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-500 transition-colors">
                                             <Calendar size={18} />
                                         </div>
                                         <input type="text"
@@ -1812,7 +1812,7 @@ export default function ImportPage() {
                                 </div>
                                 <div>
                                     <p className="text-sm font-bold text-gray-900">จับคู่คอลัมน์</p>
-                                    <p className="text-xs text-gray-400 mt-0.5">{fileName} — {rawHeaders.length} คอลัมน์, {rawData.length} แถว</p>
+                                    <p className="text-xs text-gray-500 mt-0.5">{fileName} — {rawHeaders.length} คอลัมน์, {rawData.length} แถว</p>
                                 </div>
                             </div>
                             <div className="p-5 space-y-8">
@@ -1820,7 +1820,7 @@ export default function ImportPage() {
 
                                 {/* General Mapping Section */}
                                 <div className="space-y-4">
-                                    <p className="text-[12px] font-bold text-slate-400 mb-1 uppercase tracking-wide flex items-center gap-2">
+                                    <p className="text-[12px] font-bold text-slate-500 mb-1 uppercase tracking-wide flex items-center gap-2">
                                         <Filter size={14} className="text-slate-300" /> การจับคู่คอลัมน์จากไฟล์
                                     </p>
                                     <div className="space-y-2">
@@ -1853,7 +1853,7 @@ export default function ImportPage() {
 
                                 {/* Mapping Checklist Section */}
                                 <div className="pt-6 border-t border-slate-100">
-                                    <p className="text-[12px] font-bold text-slate-400 mb-4 uppercase tracking-wide flex items-center gap-2">
+                                    <p className="text-[12px] font-bold text-slate-500 mb-4 uppercase tracking-wide flex items-center gap-2">
                                         <CheckCircle2 size={14} className="text-slate-300" /> ตรวจสอบความครบถ้วนของคอลัมน์ระบบ
                                     </p>
                                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
@@ -1978,7 +1978,7 @@ export default function ImportPage() {
                                     <span className="text-[13px] font-bold text-blue-600">{rows.length} รายการ</span>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-2 text-slate-400">
+                            <div className="flex items-center gap-2 text-slate-500">
                                 <span className="text-[10px] font-bold uppercase tracking-wider">File Information</span>
                                 <Info size={14} className="opacity-50" />
                             </div>
@@ -2023,7 +2023,7 @@ export default function ImportPage() {
                                             setBulkNote("");
                                         }}
                                         disabled={step5Selection.size === 0}
-                                        className="text-[10px] font-bold text-slate-400 hover:text-blue-600 transition-all flex items-center gap-1 cursor-pointer disabled:opacity-0"
+                                        className="text-[10px] font-bold text-slate-500 hover:text-blue-600 transition-all flex items-center gap-1 cursor-pointer disabled:opacity-0"
                                     >
                                         <RotateCcw size={10} />
                                         ล้างตัวกรองข้อมูล
@@ -2031,7 +2031,7 @@ export default function ImportPage() {
                                 </div>
                                 <div className="grid grid-cols-1 lg:grid-cols-7 gap-2 items-end">
                                     <div className="space-y-1">
-                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight px-1">ผู้บันทึก</label>
+                                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight px-1">ผู้บันทึก</label>
                                         <LuxuryCombobox
                                             value={bulkRecorder}
                                             onChange={setBulkRecorder}
@@ -2046,7 +2046,7 @@ export default function ImportPage() {
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight px-1">ผู้รับของ</label>
+                                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight px-1">ผู้รับของ</label>
                                         <LuxuryCombobox
                                             value={bulkRecipient}
                                             onChange={setBulkRecipient}
@@ -2061,7 +2061,7 @@ export default function ImportPage() {
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight px-1">สถานะ</label>
+                                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight px-1">สถานะ</label>
                                         <CustomSelect
                                             value={bulkStatus}
                                             onChange={setBulkStatus}
@@ -2076,7 +2076,7 @@ export default function ImportPage() {
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight px-1">สถานที่</label>
+                                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight px-1">สถานที่</label>
                                         <CustomSelect
                                             value={bulkLocation}
                                             onChange={setBulkLocation}
@@ -2091,7 +2091,7 @@ export default function ImportPage() {
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight px-1">ประเภทเงิน</label>
+                                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight px-1">ประเภทเงิน</label>
                                         <CustomSelect
                                             value={bulkMoneyType}
                                             onChange={setBulkMoneyType}
@@ -2105,7 +2105,7 @@ export default function ImportPage() {
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight px-1">วิธีได้มา</label>
+                                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight px-1">วิธีได้มา</label>
                                         <CustomSelect
                                             value={bulkMethod}
                                             onChange={setBulkMethod}
@@ -2119,7 +2119,7 @@ export default function ImportPage() {
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight px-1">หมายเหตุ</label>
+                                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight px-1">หมายเหตุ</label>
                                         <input type="text" value={bulkNote} onChange={e => setBulkNote(e.target.value)} placeholder="หมายเหตุ"
                                             disabled={step5Selection.size === 0}
                                             className={cn("w-full h-9 px-3 rounded-lg border border-slate-200 shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-[12px] font-bold transition-all placeholder:text-slate-300",
@@ -2177,7 +2177,7 @@ export default function ImportPage() {
                                         <div className="flex items-center justify-between w-full px-1">
                                             <span className="text-[11px] font-bold text-slate-500">ความพร้อมของข้อมูล</span>
                                             <span className="text-[11px] font-black text-blue-600">
-                                                {normalRows.length}/{rows.length} <span className="text-slate-400 font-medium">(เสร็จสิ้นไปแล้ว {Math.round((normalRows.length / (rows.length || 1)) * 100)}%)</span>
+                                                {normalRows.length}/{rows.length} <span className="text-slate-500 font-medium">(เสร็จสิ้นไปแล้ว {Math.round((normalRows.length / (rows.length || 1)) * 100)}%)</span>
                                             </span>
                                         </div>
                                         <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200/50 p-px">
@@ -2193,7 +2193,7 @@ export default function ImportPage() {
                                 <div className="px-6 py-4 border-b border-slate-100 bg-white flex flex-col gap-3">
                                     <div className="flex items-center gap-2">
                                         <div className="w-1 h-4 bg-amber-500 rounded-full" />
-                                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">ตัวกรองตามคอลัมน์ (แสดงเฉพาะแถวที่มีข้อมูลว่าง)</span>
+                                        <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">ตัวกรองตามคอลัมน์ (แสดงเฉพาะแถวที่มีข้อมูลว่าง)</span>
                                     </div>
                                     <div className="grid grid-cols-7 gap-2">
                                         {[
@@ -2237,9 +2237,9 @@ export default function ImportPage() {
 
                             <div ref={tableScrollRef} className="overflow-x-auto">
                                 <table className="w-full text-left border-collapse" style={{ minWidth: "2200px" }}>
-                                    <thead className="bg-slate-50/80 sticky top-0 z-10">
+                                    <thead className="bg-[#fafafa] sticky top-0 z-10 border-b border-slate-200">
                                         <tr className="border-b border-slate-100">
-                                            <th className="w-[50px] px-6 py-4 text-center bg-slate-50/80">
+                                            <th className="w-[50px] px-6 py-4 text-center">
                                                 <input type="checkbox" className="w-4 h-4 rounded accent-blue-600 cursor-pointer"
                                                     checked={rows.filter(r => {
                                                         if (step5Filter === "all_rows") return true;
@@ -2260,22 +2260,22 @@ export default function ImportPage() {
                                                         return r.isIncomplete;
                                                     }))} />
                                             </th>
-                                            <th className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-400 text-center">#</th>
-                                            <th id="col-head-date" className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-400">ว/ด/ป ที่รับ</th>
-                                            <th id="col-head-name" className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-400">รายการ</th>
-                                            <th id="col-head-code" className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-400">รหัสครุภัณฑ์</th>
-                                            <th id="col-head-qty" className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-400 text-center">จำนวน</th>
-                                            <th id="col-head-unit" className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-400">หน่วย</th>
-                                            <th id="col-head-price" className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-400 text-right">ราคาต่อหน่วย</th>
-                                            <th id="col-head-total" className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-400 text-right">มูลค่ารวม</th>
-                                            <th id="col-head-money" className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-400">ประเภทเงิน</th>
-                                            <th id="col-head-method" className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-400">วิธีการได้มา</th>
-                                            <th id="col-head-loc" className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-400">ใช้ประจำที่ไหน</th>
-                                            <th id="col-head-stat" className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-400">สถานะ</th>
-                                            <th id="col-head-rec" className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-400 text-center border-l border-slate-100">ผู้บันทึก</th>
-                                            <th id="col-head-recei" className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-400 text-center">ผู้รับของ</th>
-                                            <th id="col-head-note" className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-400 text-center">หมายเหตุ</th>
-                                            <th className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-400 text-center border-l border-slate-100">ตรวจสอบ</th>
+                                            <th className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-500 text-center">#</th>
+                                            <th id="col-head-date" className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-500">ว/ด/ป ที่รับ</th>
+                                            <th id="col-head-name" className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-500">รายการ</th>
+                                            <th id="col-head-code" className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-500">รหัสครุภัณฑ์</th>
+                                            <th id="col-head-qty" className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-500 text-center">จำนวน</th>
+                                            <th id="col-head-unit" className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-500">หน่วย</th>
+                                            <th id="col-head-price" className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-500 text-right">ราคาต่อหน่วย</th>
+                                            <th id="col-head-total" className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-500 text-right">มูลค่ารวม</th>
+                                            <th id="col-head-money" className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-500">ประเภทเงิน</th>
+                                            <th id="col-head-method" className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-500">วิธีการได้มา</th>
+                                            <th id="col-head-loc" className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-500">ใช้ประจำที่ไหน</th>
+                                            <th id="col-head-stat" className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-500">สถานะ</th>
+                                            <th id="col-head-rec" className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-500 text-center border-l border-slate-100">ผู้บันทึก</th>
+                                            <th id="col-head-recei" className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-500 text-center">ผู้รับของ</th>
+                                            <th id="col-head-note" className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-500 text-center">หมายเหตุ</th>
+                                            <th className="px-3 py-3 text-[10px] uppercase tracking-wide font-extrabold text-slate-500 text-center border-l border-slate-100">ตรวจสอบ</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-100">
@@ -2362,7 +2362,7 @@ export default function ImportPage() {
                                                         <input type="checkbox" className="w-4 h-4 rounded accent-blue-600 cursor-pointer"
                                                             checked={step5Selection.has(row._rowIndex)} onChange={() => toggleStep5Row(row._rowIndex)} />
                                                     </td>
-                                                    <td className="px-3 py-3 text-slate-400 text-center font-medium">{row._rowIndex}</td>
+                                                    <td className="px-3 py-3 text-slate-500 text-center font-medium">{row._rowIndex}</td>
                                                     <td className={cn("p-1", changedCls("receivedDate"))}>
                                                         <EditableCell value={row.receivedDate || ""} isDate readOnly={!isEdit("receivedDate")} placeholder="วว/ดด/ปปปป" onChange={(v: string) => upd("receivedDate", v)} onFocus={() => setActiveRowIndex(row._rowIndex)} onBlur={() => setActiveRowIndex(null)} />
                                                     </td>
@@ -2456,7 +2456,7 @@ export default function ImportPage() {
                                                             <CheckCircle2 size={40} />
                                                         </div>
                                                         <h3 className="text-[18px] font-extrabold text-[#0f172a] tracking-tight">ไม่มีข้อมูลที่ต้องแก้ไข</h3>
-                                                        <p className="text-[13px] text-slate-400 mt-2 max-w-[280px] mx-auto leading-relaxed">ข้อมูลทั้งหมดอยู่ในสถานะพร้อมนำเข้าเข้าสู่ระบบแล้ว</p>
+                                                        <p className="text-[13px] text-slate-500 mt-2 max-w-[280px] mx-auto leading-relaxed">ข้อมูลทั้งหมดอยู่ในสถานะพร้อมนำเข้าเข้าสู่ระบบแล้ว</p>
                                                     </td>
                                                 </tr>
                                             )}
@@ -2504,7 +2504,7 @@ export default function ImportPage() {
                                     <CheckCircle2 size={40} className="text-emerald-500" />
                                 </div>
                                 <h2 className="text-[24px] font-black text-[#0f172a] tracking-tight m-0 leading-tight">นำเข้าข้อมูลสำเร็จ!</h2>
-                                <p className="text-[14px] text-slate-400 mt-2 font-medium">ระบบได้บันทึกข้อมูลเข้าสู่ฐานข้อมูลเรียบร้อยแล้ว</p>
+                                <p className="text-[14px] text-slate-500 mt-2 font-medium">ระบบได้บันทึกข้อมูลเข้าสู่ฐานข้อมูลเรียบร้อยแล้ว</p>
 
                                 <div className="flex gap-3 mt-8">
                                     {[
@@ -2519,7 +2519,7 @@ export default function ImportPage() {
                                                     s.c === "blue" ? "text-blue-600" : "text-slate-500")}>{s.n}</span>
                                             <span className={cn("text-[11px] font-bold mt-1 uppercase tracking-wider",
                                                 s.c === "emerald" ? "text-emerald-500" :
-                                                    s.c === "blue" ? "text-blue-500" : "text-slate-400")}>{s.l}</span>
+                                                    s.c === "blue" ? "text-blue-500" : "text-slate-500")}>{s.l}</span>
                                         </div>
                                     ))}
                                 </div>

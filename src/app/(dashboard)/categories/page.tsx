@@ -580,7 +580,7 @@ export default function CategoriesPage() {
     // ── Render ─────────────────────────────────────────────────────────────
     if (sessionPending) {
         return (
-            <div className="flex-1 flex items-center justify-center bg-transparent min-h-screen">
+            <div className="flex-1 flex items-center justify-center bg-slate-100 min-h-screen">
                 <div className="flex flex-col items-center gap-3">
                     <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
                     <p className="text-sm font-medium text-slate-500">กำลังตรวจสอบสิทธิ์...</p>
@@ -622,7 +622,7 @@ export default function CategoriesPage() {
             </AnimatePresence>
 
             {/* ── Page ── */}
-            <div className="min-h-screen bg-transparent -m-6">
+            <div className="min-h-screen bg-slate-100 -m-6">
 
                 <main className="pt-8 pb-5 px-10 h-[calc(100vh-52px)] w-full">
                     <div className="flex flex-col bg-white rounded-xl border border-slate-200 overflow-hidden h-full" style={{ boxShadow: "0 0 40px rgba(0,0,0,0.06), 0 0 20px rgba(0,0,0,0.04), 0 2px 10px rgba(0,0,0,0.02)" }}>

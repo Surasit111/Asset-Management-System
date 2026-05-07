@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef, useMemo, useCallback, memo } from "react";
+import Image from "next/image";
 import dynamic from "next/dynamic";
 import {
     MapPin as MapIcon,
@@ -177,11 +178,11 @@ const PinCard = memo(({ pin, assetCount, isActive, onClick }: {
         >
             <div style={{ height: '100%', position: 'relative', overflow: 'hidden', background: '#f8fafc' }}>
                 {getSafeUrl(pin.cardImageUrl) ? (
-                    <img src={getSafeUrl(pin.cardImageUrl)!} alt={pin.name}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                    <Image src={getSafeUrl(pin.cardImageUrl)!} alt={pin.name} fill sizes="(max-width: 768px) 100vw, 300px"
+                        style={{ objectFit: 'cover', display: 'block' }} />
                 ) : thumbUrl ? (
-                    <img src={thumbUrl} alt={pin.name}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                    <Image src={thumbUrl} alt={pin.name} fill sizes="(max-width: 768px) 100vw, 300px"
+                        style={{ objectFit: 'cover', display: 'block' }} />
                 ) : (
                     <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <MapIcon size={24} style={{ opacity: 0.1, color: '#0f172a' }} />
@@ -526,7 +527,7 @@ export default function MapPage() {
     return (
         <div style={{
             position: 'relative', height: '100vh', margin: '-1.5rem',
-            background: '#ffffff', display: 'flex', flexDirection: 'column',
+            background: '#f1f5f9', display: 'flex', flexDirection: 'column',
             overflow: 'hidden',
             fontFamily: 'var(--font-plus-jakarta), var(--font-noto-sans-thai), sans-serif'
         }}>
@@ -611,9 +612,9 @@ export default function MapPage() {
 
             {/* ── HEADER ── */}
             <header style={{
-                height: '64px', background: '#ffffff', borderBottom: '1px solid #e5e7eb',
+                height: '80px', background: '#ffffff', borderBottom: '1px solid #cbd5e1',
                 display: 'flex', alignItems: 'center', padding: '0 20px', gap: '16px',
-                flexShrink: 0, zIndex: 50, boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                flexShrink: 0, zIndex: 50,
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <span style={{ color: '#111827', fontSize: '15px', fontWeight: '800' }}>แผนที่ครุภัณฑ์</span>
@@ -848,9 +849,9 @@ export default function MapPage() {
                                             <a key={asset.id || `asset-${idx}`} href={`/assets/${asset.id}`}
                                                 onClick={() => window.dispatchEvent(new Event('am_saveMapState'))}
                                                 className="asset-card-sidebar">
-                                                <div style={{ width: '72px', height: '72px', borderRadius: '12px', background: '#f8fafc', border: '1px solid #f1f5f9', flexShrink: 0, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                <div style={{ position: 'relative', width: '72px', height: '72px', borderRadius: '12px', background: '#f8fafc', border: '1px solid #f1f5f9', flexShrink: 0, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                                     {asset.images?.[0] ? (
-                                                        <img src={asset.images[0].url} alt={asset.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                        <Image src={asset.images[0].url} alt={asset.name} fill sizes="72px" style={{ objectFit: 'cover' }} />
                                                     ) : (
                                                         <Box size={24} style={{ opacity: 0.2, color: '#64748b' }} />
                                                     )}

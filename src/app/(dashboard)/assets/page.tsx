@@ -536,20 +536,20 @@ export default function AssetManagementPage() {
 
     // ─────────────────────────────────────────────────────────────────────────
     return (
-        <div className="min-h-screen bg-transparent font-['Plus_Jakarta_Sans','Noto_Sans_Thai',sans-serif] -m-6">
+        <div className="min-h-screen bg-slate-100 font-['Plus_Jakarta_Sans','Noto_Sans_Thai',sans-serif] -m-6">
 
             {/* ══ Header ════════════════════════════════════════════════════════ */}
-            <header className="sticky top-0 z-50 bg-white border-b border-[#cbd5e1] flex items-center transition-none shrink-0" style={{ minHeight: "80px" }}>
+            <header className="sticky top-0 z-50 bg-[#ffffff] border-b border-[#cbd5e1] flex items-center transition-none shrink-0" style={{ minHeight: "80px" }}>
                 <div className="w-full px-10 flex items-center justify-between flex-nowrap gap-4">
                     <div className="flex items-center gap-4 flex-1">
                         <h1 className="text-[26px] font-extrabold text-[#0f172a] tracking-tight m-0 whitespace-nowrap">รายการครุภัณฑ์</h1>
                         <div className="w-px h-8 bg-slate-200 shrink-0" />
                         <div className="flex items-center gap-2 shrink-0">
-                            <span className="text-[14px] text-slate-400 font-medium">{countLabel}</span>
-                            <span className={`text-[20px] font-extrabold tabular-nums ${loading ? "text-slate-300" : countAccentColor}`}>
+                            <span className="text-[14px] text-slate-500 font-medium">{countLabel}</span>
+                            <span className={`text-[20px] font-extrabold tabular-nums ${loading ? "text-slate-400" : countAccentColor}`}>
                                 {total.toLocaleString("th-TH")}
                             </span>
-                            <span className="text-[14px] text-slate-400 font-medium">รายการ</span>
+                            <span className="text-[14px] text-slate-500 font-medium">รายการ</span>
                         </div>
                     </div>
 
@@ -599,9 +599,9 @@ export default function AssetManagementPage() {
 
                         {/* Search */}
                         <div className="relative">
-                            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                            <input type="text" placeholder="ค้นหารหัส, ชื่อ..." value={search} onChange={e => setSearch(e.target.value)}
-                                className="pl-9 pr-4 py-2 rounded-lg border border-slate-200 bg-slate-50/50 text-[13px] outline-none hover:border-blue-400 focus:border-blue-500 focus:bg-white transition-all duration-300"
+                            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
+                            <input type="text" aria-label="ค้นหารหัส หรือชื่อครุภัณฑ์" placeholder="ค้นหารหัส, ชื่อ..." value={search} onChange={e => setSearch(e.target.value)}
+                                className="pl-9 pr-4 py-2 rounded-lg border border-slate-300 bg-slate-50/50 text-[13px] outline-none hover:border-blue-400 focus:border-blue-500 focus:bg-white transition-all duration-300"
                                 style={{ width: "14rem", fontFamily: "inherit" }} />
                         </div>
 
@@ -650,8 +650,8 @@ export default function AssetManagementPage() {
             <main className="flex-1 w-full pl-10 pr-[34.7px] pt-5 pb-10">
                 {loading ? (
                     <div className="flex flex-col items-center justify-center" style={{ height: "520px" }}>
-                        <Loader2 className="w-8 h-8 text-blue-500 animate-spin mb-4" />
-                        <p className="text-[13px] font-bold text-slate-400">กำลังโหลดข้อมูล...</p>
+                        <Loader2 className="w-8 h-8 text-blue-600 animate-spin mb-4" />
+                        <p className="text-[13px] font-bold text-slate-500">กำลังโหลดข้อมูล...</p>
                     </div>
                 ) : (
                     <div className="animate-in fade-in duration-300">
@@ -753,7 +753,7 @@ export default function AssetManagementPage() {
                                                 : [{ value: "", label: "ทั้งหมด" }, ...(f.options || [])];
                                             return (
                                                 <div key={f.label} className="relative">
-                                                    <label className="block text-[11px] font-semibold text-slate-400 mb-1 uppercase tracking-wide select-none">{f.label}</label>
+                                                    <label className="block text-[11px] font-semibold text-slate-500 mb-1 uppercase tracking-wide select-none">{f.label}</label>
                                                     <button type="button" data-menu-trigger onClick={() => setActiveDropdown(isOpen ? null : f.label)}
                                                         className={cn("w-full flex items-center justify-between px-3 py-1.5 rounded-lg border text-[13px] font-bold transition-all cursor-pointer",
                                                             (isOpen || f.value) ? "bg-white border-blue-600 text-blue-600 shadow-sm" : "bg-gray-50 border-gray-200 text-slate-500 hover:bg-white hover:border-blue-600 hover:text-blue-600"
@@ -802,7 +802,7 @@ export default function AssetManagementPage() {
                                         <div className="flex flex-col justify-end pb-1.5">
                                             <div className="flex items-center h-10">
                                                 <button onClick={() => { setFiscalYear(""); setStartMonth(""); setEndMonth(""); setStatusFilter(""); setAcquisitionFilter(""); setMoneyTypeFilter(""); }}
-                                                    className="p-0 bg-transparent border-none text-[11px] font-semibold text-gray-400 cursor-pointer uppercase tracking-wide hover:text-blue-600 transition-colors select-none"
+                                                    className="p-0 bg-transparent border-none text-[11px] font-semibold text-slate-500 cursor-pointer uppercase tracking-wide hover:text-blue-700 transition-colors select-none"
                                                     style={{ fontFamily: "inherit", whiteSpace: "nowrap" }}>
                                                     ล้างตัวกรองทั้งหมด
                                                 </button>
@@ -834,7 +834,7 @@ export default function AssetManagementPage() {
                                     <thead className="sticky top-0 z-10 bg-[#fafafa] border-b border-slate-200">
                                         <tr>
                                             <th className="w-[50px] px-4 py-3.5 text-center">
-                                                <input type="checkbox" className="w-4 h-4 rounded border-gray-300 accent-blue-600 cursor-pointer"
+                                                <input type="checkbox" aria-label="เลือกข้อมูลทั้งหมดบนหน้านี้" className="w-4 h-4 rounded border-gray-400 accent-blue-600 cursor-pointer"
                                                     checked={assets.length > 0 && assets.every(a => selectedIds.has(a.id))} onChange={toggleAll} />
                                             </th>
                                             <th onClick={() => handleSort("receivedDate")} className="px-4 py-3 cursor-pointer hover:bg-gray-100 transition-colors align-middle group select-none">
@@ -902,7 +902,7 @@ export default function AssetManagementPage() {
                                                     )}
                                                     onClick={() => handleRowClick(asset)}>
                                                     <td className="px-4 py-3 w-10" onClick={e => e.stopPropagation()}>
-                                                        <input type="checkbox" checked={selectedIds.has(asset.id)} onChange={() => toggleOne(asset.id)} className="w-4 h-4 rounded accent-blue-600 cursor-pointer" />
+                                                        <input type="checkbox" aria-label={`เลือก ${asset.name}`} checked={selectedIds.has(asset.id)} onChange={() => toggleOne(asset.id)} className="w-4 h-4 rounded border-gray-400 accent-blue-600 cursor-pointer" />
                                                     </td>
                                                     <td className="pl-4 pr-3 py-3 w-32">
                                                         <div className="flex flex-col">
@@ -954,15 +954,15 @@ export default function AssetManagementPage() {
                                                         {selectedIds.size === 0 && (
                                                             <>
                                                                 <td className="px-2 py-3 text-center w-12 whitespace-nowrap" onClick={e => e.stopPropagation()}>
-                                                                    <button title="QR Code" onClick={() => { setQrAsset(asset); setQrOpen(true); }}
-                                                                        className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:bg-slate-200 hover:text-gray-700 transition-all cursor-pointer">
+                                                                    <button aria-label="แสดง QR Code" title="QR Code" onClick={() => { setQrAsset(asset); setQrOpen(true); }}
+                                                                        className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-500 hover:bg-slate-200 hover:text-slate-800 transition-all cursor-pointer">
                                                                         <QrCode size={16} />
                                                                     </button>
                                                                 </td>
                                                                 <td className="px-2 py-3 text-right w-12 relative whitespace-nowrap" onClick={e => e.stopPropagation()}>
-                                                                    <button data-menu-trigger
+                                                                    <button data-menu-trigger aria-label="ตัวเลือกเพิ่มเติม"
                                                                         onClick={e => { e.stopPropagation(); const id = `context-${asset.id}`; setActiveDropdown(activeDropdown === id ? null : id); }}
-                                                                        className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:bg-slate-200 hover:text-gray-700 transition-all cursor-pointer">
+                                                                        className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-500 hover:bg-slate-200 hover:text-slate-800 transition-all cursor-pointer">
                                                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                                                                             <circle cx="12" cy="5" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="12" cy="19" r="2" />
                                                                         </svg>

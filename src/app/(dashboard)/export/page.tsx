@@ -73,7 +73,7 @@ const getAlignment = (colId: string, isStatus: boolean) => {
 // ── Preview Row Component ──────────────────────────────────────────────────
 const PreviewRow = React.memo(({ asset, idx, allColumns }: { asset: Asset; idx: number; allColumns: any[] }) => (
     <tr className="group transition-colors duration-150 hover:bg-slate-100/80 border-b border-slate-200 last:border-0">
-        <td className="px-4 py-3 text-[13px] text-slate-400 text-center font-medium">{idx + 1}</td>
+        <td className="px-4 py-3 text-[13px] text-slate-500 text-center font-medium">{idx + 1}</td>
         {allColumns.map(col => {
             const align = getAlignment(col.id, !!col.isStatus);
             return (
@@ -466,14 +466,13 @@ export default function ExportPage() {
     };
 
     return (
-        <div className="min-h-screen bg-transparent -m-6 flex flex-col">
+        <div className="min-h-screen bg-slate-100 -m-6 flex flex-col">
+            <header className="sticky top-0 z-50 bg-[#ffffff] border-b border-[#cbd5e1] flex items-center shrink-0 px-10" style={{ minHeight: "80px" }}>
+                <h1 className="text-[22px] font-extrabold text-[#0f172a] tracking-tight m-0 leading-tight">ส่งออกข้อมูลครุภัณฑ์</h1>
+            </header>
 
             <main className="flex-1 w-full px-10 pt-8 pb-5 flex flex-col gap-4">
                 <div className="w-full bg-white rounded-xl border border-slate-200 relative z-10" style={{ boxShadow: "0 0 40px rgba(0,0,0,0.06), 0 0 20px rgba(0,0,0,0.04), 0 2px 10px rgba(0,0,0,0.02)" }}>
-                    {/* ── Card Header ── */}
-                    <div className="px-6 py-5 border-b border-slate-200 shrink-0">
-                        <h1 className="text-[22px] font-extrabold text-[#0f172a] tracking-tight m-0 leading-tight">ส่งออกข้อมูลครุภัณฑ์</h1>
-                    </div>
                     {/* Top Section: Stats & Action */}
                     <div className="py-5 px-6 flex flex-col md:flex-row md:items-center gap-6">
                         {/* Left Side: Stats */}
@@ -493,7 +492,7 @@ export default function ExportPage() {
                         {/* Right Side: Actions */}
                         <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto flex-1 justify-end">
                             <div className="flex flex-col gap-1.5 w-full sm:w-72">
-                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">ตั้งชื่อไฟล์ส่งออก (ถ้ามี)</label>
+                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest pl-1">ตั้งชื่อไฟล์ส่งออก (ถ้ามี)</label>
                                 <input
                                     type="text"
                                     value={customFileName}
@@ -525,14 +524,14 @@ export default function ExportPage() {
                                 </div>
                                 <h2 className="text-[12px] font-extrabold text-slate-700">ตัวกรองข้อมูลที่ต้องการ</h2>
                             </div>
-                            <button onClick={handleClearFilters} className="text-[10px] font-bold text-slate-400 hover:text-blue-600 transition-colors cursor-pointer border-none bg-transparent">
+                            <button onClick={handleClearFilters} className="text-[10px] font-bold text-slate-500 hover:text-blue-600 transition-colors cursor-pointer border-none bg-transparent">
                                 ล้างตัวกรองทั้งหมด
                             </button>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div className="flex flex-col gap-1.5" ref={deptRef}>
-                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">หน่วยงาน/แผนก</label>
+                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest pl-1">หน่วยงาน/แผนก</label>
                                 <div className="relative">
                                     <button
                                         onClick={() => setActiveDropdown(activeDropdown === "dept" ? null : "dept")}
@@ -544,7 +543,7 @@ export default function ExportPage() {
                                         )}
                                     >
                                         <span className="truncate">{departmentFilter || "ทั้งหมดทุกหน่วยงาน"}</span>
-                                        <ChevronDown size={14} className={cn("transition-transform duration-200", (activeDropdown === "dept" || departmentFilter) ? "text-blue-600" : "text-slate-400", activeDropdown === "dept" && "rotate-180")} />
+                                        <ChevronDown size={14} className={cn("transition-transform duration-200", (activeDropdown === "dept" || departmentFilter) ? "text-blue-600" : "text-slate-500", activeDropdown === "dept" && "rotate-180")} />
                                     </button>
 
                                     {activeDropdown === "dept" && (
@@ -580,7 +579,7 @@ export default function ExportPage() {
                             </div>
 
                             <div className="flex flex-col gap-1.5" ref={typeRef}>
-                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">ประเภทครุภัณฑ์</label>
+                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest pl-1">ประเภทครุภัณฑ์</label>
                                 <div className="relative">
                                     <button
                                         onClick={() => setActiveDropdown(activeDropdown === "type" ? null : "type")}
@@ -592,7 +591,7 @@ export default function ExportPage() {
                                         )}
                                     >
                                         <span className="truncate">{assetType === "durable" ? "ครุภัณฑ์คงทน" : assetType === "general" ? "ครุภัณฑ์ทั่วไป" : "ทั้งหมดทุกประเภท"}</span>
-                                        <ChevronDown size={14} className={cn("transition-transform duration-200", (activeDropdown === "type" || assetType) ? "text-blue-600" : "text-slate-400", activeDropdown === "type" && "rotate-180")} />
+                                        <ChevronDown size={14} className={cn("transition-transform duration-200", (activeDropdown === "type" || assetType) ? "text-blue-600" : "text-slate-500", activeDropdown === "type" && "rotate-180")} />
                                     </button>
 
                                     {activeDropdown === "type" && (
@@ -622,7 +621,7 @@ export default function ExportPage() {
                             </div>
 
                             <div className="flex flex-col gap-1.5" ref={yearRef}>
-                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">ปีงบประมาณ</label>
+                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest pl-1">ปีงบประมาณ</label>
                                 <div className="relative">
                                     <button
                                         onClick={() => setActiveDropdown(activeDropdown === "year" ? null : "year")}
@@ -634,7 +633,7 @@ export default function ExportPage() {
                                         )}
                                     >
                                         <span className="truncate">{fiscalYear || "ทั้งหมดทุกปี"}</span>
-                                        <ChevronDown size={14} className={cn("transition-transform duration-200", (activeDropdown === "year" || fiscalYear) ? "text-blue-600" : "text-slate-400", activeDropdown === "year" && "rotate-180")} />
+                                        <ChevronDown size={14} className={cn("transition-transform duration-200", (activeDropdown === "year" || fiscalYear) ? "text-blue-600" : "text-slate-500", activeDropdown === "year" && "rotate-180")} />
                                     </button>
 
                                     {activeDropdown === "year" && (
@@ -675,7 +674,7 @@ export default function ExportPage() {
                 {/* Preview Table Background (General) */}
                 <div className="bg-white rounded-xl border border-slate-200 overflow-hidden mb-2" style={{ boxShadow: "0 0 40px rgba(0,0,0,0.06), 0 0 20px rgba(0,0,0,0.04), 0 2px 10px rgba(0,0,0,0.02)" }}>
                     <div className="px-6 py-4 border-b border-slate-200 flex items-center gap-2 bg-slate-50/50">
-                        <TableIcon size={18} className="text-slate-400" />
+                        <TableIcon size={18} className="text-slate-500" />
                         <h2 className="text-sm font-extrabold text-slate-700">พรีวิวตารางข้อมูล (5 รายการแรก)</h2>
                     </div>
                     <div className="overflow-x-auto">
@@ -853,7 +852,7 @@ export default function ExportPage() {
                                             <div className="flex flex-col gap-5">
                                                 {/* Group 1: Standard */}
                                                 <div>
-                                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 pl-1">รูปแบบมาตรฐาน</p>
+                                                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 pl-1">รูปแบบมาตรฐาน</p>
                                                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
                                                         {DATE_FORMATS.slice(0, 3).map(fmt => (
                                                             <button
@@ -875,7 +874,7 @@ export default function ExportPage() {
                                                 {/* Divider & Label */}
                                                 <div className="flex items-center gap-4 py-1">
                                                     <div className="h-px bg-slate-200 flex-1" />
-                                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">รูปแบบอื่นๆ</span>
+                                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">รูปแบบอื่นๆ</span>
                                                     <div className="h-px bg-slate-200 flex-1" />
                                                 </div>
 
@@ -947,7 +946,7 @@ export default function ExportPage() {
                                         onClick={() => modalSortOrder && handleExport(modalSortOrder)}
                                         className={`px-12 py-3 rounded-xl font-bold text-sm flex items-center gap-3 transition-all shadow-md active:scale-95 ${modalSortOrder
                                             ? "bg-blue-600 text-white hover:bg-blue-500 cursor-pointer"
-                                            : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                                            : "bg-slate-200 text-slate-500 cursor-not-allowed"
                                             }`}
                                     >
                                         {exporting ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} />}

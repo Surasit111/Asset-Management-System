@@ -8,6 +8,7 @@ import {
     ChevronLeft, ChevronRight,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -432,7 +433,7 @@ export default function DashboardPage() {
     // ─────────────────────────────────────────
 
     return (
-        <div className="min-h-screen bg-transparent -m-6">
+        <div className="min-h-screen bg-slate-100 -m-6">
             <style>{`
                 .recharts-surface:focus,
                 .recharts-wrapper:focus,
@@ -618,7 +619,7 @@ export default function DashboardPage() {
 
                                         return (
                                             <div key={f.label} className="relative">
-                                                <label className="block text-[11px] font-semibold text-slate-400 mb-1 uppercase tracking-wide select-none cursor-default">
+                                                <label className="block text-[11px] font-semibold text-slate-500 mb-1 uppercase tracking-wide select-none cursor-default">
                                                     {f.label}
                                                 </label>
                                                 <button type="button"
@@ -631,7 +632,7 @@ export default function DashboardPage() {
                                                             : "bg-gray-50 border-gray-200 text-slate-500 hover:bg-white hover:border-blue-600 hover:text-blue-600"
                                                     )}
                                                 >
-                                                    <span className={cn("truncate", !f.value && "text-gray-400")}>
+                                                    <span className={cn("truncate", !f.value && "text-slate-500")}>
                                                         {displayValue || "ทั้งหมด"}
                                                     </span>
                                                     <ChevronDown size={14} className={cn("opacity-40 transition-transform duration-200", isOpen && "rotate-180 opacity-80")} />
@@ -1077,10 +1078,10 @@ export default function DashboardPage() {
                                                     <div className="px-4 py-2.5 border-b border-slate-100 flex items-center justify-between shrink-0 bg-slate-50/50">
                                                         <div>
                                                             <p className="text-[13px] font-bold text-[#0f172a] line-clamp-1">{selectedPin.name}</p>
-                                                            <p className="text-[10px] text-gray-400 font-medium">พบครุภัณฑ์ {sidebarAssets.length} รายการ</p>
+                                                            <p className="text-[10px] text-slate-500 font-medium">พบครุภัณฑ์ {sidebarAssets.length} รายการ</p>
                                                         </div>
-                                                        <button onClick={() => setSelectedPinId(null)}
-                                                            className="w-7 h-7 rounded-lg bg-gray-50 hover:bg-gray-100 border border-slate-200 flex items-center justify-center text-gray-400 hover:text-gray-700 transition-colors">
+                                                        <button aria-label="ปิดรายการครุภัณฑ์" onClick={() => setSelectedPinId(null)}
+                                                            className="w-7 h-7 rounded-lg bg-gray-50 hover:bg-gray-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-colors">
                                                             <X size={12} />
                                                         </button>
                                                     </div>
@@ -1091,15 +1092,15 @@ export default function DashboardPage() {
                                                             {paginatedSidebarAssets.length > 0 ? paginatedSidebarAssets.map(asset => (
                                                                 <Link key={asset.id} href={`/assets/${asset.id}`}
                                                                     className="flex gap-2.5 p-2.5 rounded-xl border border-slate-200 hover:border-blue-300 hover:bg-blue-50/30 transition-all group">
-                                                                    <div className="w-11 h-11 rounded-lg bg-gray-100 shrink-0 overflow-hidden">
+                                                                    <div className="w-11 h-11 rounded-lg bg-gray-100 shrink-0 overflow-hidden relative">
                                                                         {asset.images?.[0]?.url
-                                                                            ? <img src={asset.images[0].url} alt={asset.name} className="w-full h-full object-cover" />
-                                                                            : <div className="w-full h-full flex items-center justify-center text-gray-300"><Package className="w-5 h-5" /></div>
+                                                                            ? <Image src={asset.images[0].url} alt={asset.name} fill sizes="44px" className="object-cover" />
+                                                                            : <div className="w-full h-full flex items-center justify-center text-slate-400"><Package className="w-5 h-5" /></div>
                                                                         }
                                                                     </div>
                                                                     <div className="flex-1 min-w-0">
                                                                         <p className="text-[12px] font-bold text-[#0f172a] line-clamp-2 group-hover:text-blue-600 transition-colors leading-tight">{asset.name}</p>
-                                                                        <p className="text-[10px] text-gray-400 mt-0.5">{asset.assetCode}</p>
+                                                                        <p className="text-[10px] text-slate-500 mt-0.5">{asset.assetCode}</p>
                                                                         <div className="flex gap-1 mt-1.5">
                                                                             <span className="px-1.5 py-0.5 rounded bg-slate-100 text-[9px] font-bold text-slate-600">{asset.status || "—"}</span>
                                                                             <span className={cn(
@@ -1112,7 +1113,7 @@ export default function DashboardPage() {
                                                             )) : (
                                                                 <div className="flex flex-col items-center justify-center h-full py-8 text-gray-300">
                                                                     <Package className="w-8 h-8 mb-2" />
-                                                                    <p className="text-xs font-bold text-gray-400">ไม่มีครุภัณฑ์ในสถานที่นี้</p>
+                                                                    <p className="text-xs font-bold text-slate-500">ไม่มีครุภัณฑ์ในสถานที่นี้</p>
                                                                 </div>
                                                             )}
                                                         </div>
@@ -1122,6 +1123,7 @@ export default function DashboardPage() {
                                                     {sidebarTotalPages > 1 && (
                                                         <div className="px-4 py-2.5 border-t border-slate-100 flex items-center justify-between shrink-0 bg-white">
                                                             <button
+                                                                aria-label="ย้อนกลับ"
                                                                 disabled={sidebarPage === 1}
                                                                 onClick={() => setSidebarPage(p => p - 1)}
                                                                 className="w-7 h-7 flex items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:text-blue-600 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
@@ -1151,6 +1153,7 @@ export default function DashboardPage() {
                                                             </div>
 
                                                             <button
+                                                                aria-label="ถัดไป"
                                                                 disabled={sidebarPage === sidebarTotalPages}
                                                                 onClick={() => setSidebarPage(p => p + 1)}
                                                                 className="w-7 h-7 flex items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:text-blue-600 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
