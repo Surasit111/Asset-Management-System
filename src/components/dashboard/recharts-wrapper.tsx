@@ -35,7 +35,7 @@ export default function RechartsWrapper({ data, type, collapsed, getBarColor, is
                         formatter={(val) => [val, "จำนวน"]}
                         animationDuration={0}
                     />
-                    <Bar dataKey="value" radius={[6, 6, 0, 0]} maxBarSize={36}>
+                    <Bar dataKey="value" radius={[6, 6, 0, 0]} maxBarSize={36} isAnimationActive={false}>
                         {data.map((e: any, i: number) => (
                             <Cell key={i} fill={getBarColor(e.name, "money", i, data.length)} />
                         ))}
@@ -59,7 +59,7 @@ export default function RechartsWrapper({ data, type, collapsed, getBarColor, is
                     formatter={(val) => [val, "จำนวน"]}
                     animationDuration={0}
                 />
-                <Bar dataKey="value" radius={[6, 6, 0, 0]} maxBarSize={32}>
+                <Bar dataKey="value" radius={[6, 6, 0, 0]} maxBarSize={32} isAnimationActive={false}>
                     {data.map((e: any, i: number) => (
                         <Cell key={i} fill={getBarColor(e.name, type, i, data.length)} />
                     ))}

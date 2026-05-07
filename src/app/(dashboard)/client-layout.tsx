@@ -127,11 +127,9 @@ export default function ClientLayout({
                     color: "#1e293b",
                     display: "flex",
                     flexDirection: "column",
-                    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                    position: "fixed",
-                    top: 0,
-                    left: mobileOpen ? 0 : undefined,
-                    bottom: 0,
+                    transition: "width 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                    position: "relative",
+                    flexShrink: 0,
                     zIndex: 100,
                     boxShadow: "none",
                     borderRight: "1px solid #cbd5e1",
@@ -623,8 +621,6 @@ export default function ClientLayout({
                 id="main-scroll"
                 style={{
                     flex: 1,
-                    marginLeft: collapsed ? "4.5rem" : "16rem",
-                    transition: "margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                     height: "100vh",
                     overflowY: "auto",
                     overflowX: "hidden",
@@ -643,6 +639,9 @@ export default function ClientLayout({
             <style>{`
         @media (max-width: 768px) {
           .sidebar-desktop {
+            position: fixed !important;
+            top: 0; bottom: 0;
+            left: 0;
             transform: translateX(${mobileOpen ? "0" : "-100%"});
             width: 16rem !important;
           }
