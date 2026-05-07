@@ -178,10 +178,10 @@ const PinCard = memo(({ pin, assetCount, isActive, onClick }: {
         >
             <div style={{ height: '100%', position: 'relative', overflow: 'hidden', background: '#f8fafc' }}>
                 {getSafeUrl(pin.cardImageUrl) ? (
-                    <Image src={getSafeUrl(pin.cardImageUrl)!} alt={pin.name} fill sizes="(max-width: 768px) 100vw, 300px"
+                    <Image src={getSafeUrl(pin.cardImageUrl)!} alt={pin.name} fill sizes="250px"
                         style={{ objectFit: 'cover', display: 'block' }} />
                 ) : thumbUrl ? (
-                    <Image src={thumbUrl} alt={pin.name} fill sizes="(max-width: 768px) 100vw, 300px"
+                    <Image src={thumbUrl} alt={pin.name} fill sizes="250px"
                         style={{ objectFit: 'cover', display: 'block' }} />
                 ) : (
                     <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
