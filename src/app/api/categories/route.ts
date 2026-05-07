@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
         headers: await headers(),
     });
 
-    if (!session || session.user.role !== "admin") {
+    if (!session) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
