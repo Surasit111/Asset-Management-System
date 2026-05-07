@@ -35,7 +35,7 @@ export default function RechartsWrapper({ data, type, collapsed, getBarColor, is
                         formatter={(val) => [val, "จำนวน"]}
                         animationDuration={0}
                     />
-                    <Bar dataKey="value" radius={[6, 6, 0, 0]} maxBarSize={36} isAnimationActive={false}>
+                    <Bar dataKey="value" radius={[6, 6, 0, 0]} maxBarSize={36}>
                         {data.map((e: any, i: number) => (
                             <Cell key={i} fill={getBarColor(e.name, "money", i, data.length)} />
                         ))}
@@ -47,7 +47,7 @@ export default function RechartsWrapper({ data, type, collapsed, getBarColor, is
 
     return (
         <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} barCategoryGap={collapsed ? "20%" : "15%"} accessibilityLayer={false} style={{ outline: "none", border: "none" }} tabIndex={-1}>
+            <BarChart data={data} barCategoryGap="15%" accessibilityLayer={false} style={{ outline: "none", border: "none" }} tabIndex={-1}>
                 <CartesianGrid stroke="#e2e8f0" vertical={false} />
                 <XAxis dataKey="name" axisLine={false} tickLine={false}
                     tick={{ fontSize: 10, fill: "#475569", fontWeight: 600 }}
@@ -59,7 +59,7 @@ export default function RechartsWrapper({ data, type, collapsed, getBarColor, is
                     formatter={(val) => [val, "จำนวน"]}
                     animationDuration={0}
                 />
-                <Bar dataKey="value" radius={[6, 6, 0, 0]} maxBarSize={collapsed ? 35 : 28} isAnimationActive={false}>
+                <Bar dataKey="value" radius={[6, 6, 0, 0]} maxBarSize={32}>
                     {data.map((e: any, i: number) => (
                         <Cell key={i} fill={getBarColor(e.name, type, i, data.length)} />
                     ))}
