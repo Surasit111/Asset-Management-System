@@ -13,11 +13,11 @@ export async function GET() {
             deptRows,
             yearRows
         ] = await Promise.all([
-            prisma.asset.findMany({ distinct: ["status"], select: { status: true }, where: { status: { not: null, not: "" } } }),
-            prisma.asset.findMany({ distinct: ["acquisitionMethod"], select: { acquisitionMethod: true }, where: { acquisitionMethod: { not: null, not: "" } } }),
-            prisma.asset.findMany({ distinct: ["moneyType"], select: { moneyType: true }, where: { moneyType: { not: null, not: "" } } }),
-            prisma.asset.findMany({ distinct: ["location"], select: { location: true }, where: { location: { not: null, not: "" } } }),
-            prisma.asset.findMany({ distinct: ["fiscalYear"], select: { fiscalYear: true }, where: { fiscalYear: { not: null, not: "" } } }),
+            prisma.asset.findMany({ distinct: ["status"], select: { status: true }, where: { status: { not: null } } }),
+            prisma.asset.findMany({ distinct: ["acquisitionMethod"], select: { acquisitionMethod: true }, where: { acquisitionMethod: { not: null } } }),
+            prisma.asset.findMany({ distinct: ["moneyType"], select: { moneyType: true }, where: { moneyType: { not: null } } }),
+            prisma.asset.findMany({ distinct: ["location"], select: { location: true }, where: { location: { not: null } } }),
+            prisma.asset.findMany({ distinct: ["fiscalYear"], select: { fiscalYear: true }, where: { fiscalYear: { not: null } } }),
         ]);
 
         return NextResponse.json({
