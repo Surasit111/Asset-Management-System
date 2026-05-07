@@ -225,7 +225,7 @@ export default function DashboardPage() {
         setIsTransitioning(true);
         const timer = setTimeout(() => {
             setIsTransitioning(false);
-        }, 300); // 300ms ตรงกับเวลา Transition ของ Sidebar
+        }, 400); // 300ms (Sidebar transition) + 100ms (Recharts debounce)
         return () => clearTimeout(timer);
     }, [collapsed]);
 

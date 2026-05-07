@@ -29,7 +29,7 @@ function RechartsWrapperInner({ data, type, getBarColor, isMoney = false }: Rech
 
     if (isMoney) {
         return (
-            <ResponsiveContainer width="100%" height="100%" debounce={200}>
+            <ResponsiveContainer width="100%" height="100%" debounce={100}>
                 <BarChart
                     data={data}
                     margin={{ top: 8, right: 8, left: 0, bottom: 80 }}
@@ -94,7 +94,7 @@ function RechartsWrapperInner({ data, type, getBarColor, isMoney = false }: Rech
     }
 
     return (
-        <ResponsiveContainer width="100%" height="100%" debounce={200}>
+        <ResponsiveContainer width="100%" height="100%" debounce={100}>
             <BarChart
                 data={data}
                 barCategoryGap="15%"
