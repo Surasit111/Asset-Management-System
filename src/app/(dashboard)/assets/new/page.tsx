@@ -8,10 +8,11 @@ import {
     ArrowLeft, Save, Upload, X, MapPin, Image as ImageIcon,
     Plus, AlertCircle, Package, Settings, ChevronDown, Check
 } from "lucide-react";
-import { ImageModal } from "@/components/ui/image-modal";
 import { toast } from "react-hot-toast";
-import { ConfirmModal } from "@/components/ui/confirm-modal";
-import { ThaiDateInput } from "@/components/ui/thai-date-input";
+
+const ImageModal = dynamic(() => import("@/components/ui/image-modal").then(mod => mod.ImageModal), { ssr: false });
+const ConfirmModal = dynamic(() => import("@/components/ui/confirm-modal").then(mod => mod.ConfirmModal), { ssr: false });
+const ThaiDateInput = dynamic(() => import("@/components/ui/thai-date-input").then(mod => mod.ThaiDateInput), { ssr: false });
 
 const cn = (...classes: (string | boolean | undefined)[]) =>
     classes.filter(Boolean).join(" ");
