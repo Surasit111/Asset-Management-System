@@ -26,6 +26,12 @@ function InlineCropEditor({ src, mode, confirmedBlob, onBlob }: EditorProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const cropR = (contW / 2) * 0.64;
 
+    // ── display frame size (พื้นที่ crop จริงที่ user เห็น) ────
+    // pin: วงกลม diameter = cropR * 2
+    // card: สี่เหลี่ยม = cardMaskW × cardMaskH
+    const displayFW = mode === "pin" ? cropR * 2 : cardMaskW;
+    const displayFH = mode === "pin" ? cropR * 2 : cardMaskH;
+
     const [zoom, setZoom] = useState(1);
     const [offset, setOffset] = useState({ x: 0, y: 0 });
     const [rotation, setRotation] = useState(0);
@@ -76,16 +82,14 @@ function InlineCropEditor({ src, mode, confirmedBlob, onBlob }: EditorProps) {
     const handleLoad = useCallback(() => {
         const img = imgRef.current!;
         const natW = img.naturalWidth, natH = img.naturalHeight;
-        const fw = mode === "pin" ? (cropR * 2) : cardMaskW;
-        const fh = mode === "pin" ? (cropR * 2) : cardMaskH;
-        const base = Math.max(fw / natW, fh / natH);
+        const base = Math.max(displayFW / natW, displayFH / natH);
         const dim = { w: natW * base, h: natH * base, base };
-        const minZ = Math.max(fw / dim.w, fh / dim.h, 1);
+        const minZ = Math.max(displayFW / dim.w, displayFH / dim.h, 1);
         minZoomRef.current = minZ;
         setImgDim(dim); imgDimRef.current = dim;
         setZoom(minZ); zoomRef.current = minZ;
         setOffset({ x: 0, y: 0 }); offsetRef.current = { x: 0, y: 0 };
-    }, [contW, contH, cropR, cardMaskW, cardMaskH, mode]);
+    }, [displayFW, displayFH]);
 
     useEffect(() => {
         const img = imgRef.current;
@@ -160,6 +164,20 @@ function InlineCropEditor({ src, mode, confirmedBlob, onBlob }: EditorProps) {
     };
 
     // ── canvas export ──────────────────────────────────────────
+    // CSS บนหน้าจอ: ภาพอยู่ที่ center ของ container + offset
+    //   → scale(zoom) uniform, transformOrigin: center
+    //   → สิ่งที่ user เห็นใน frame = ส่วนกลางของภาพ ขนาด displayFW × displayFH
+    //
+    // Canvas: ต้องการ "ถ่าย" เฉพาะส่วนใน frame นั้น แล้วขยายให้พอดี output
+    //   sx = outW / displayFW  → 1 display-px = กี่ output-px ในแกน X
+    //   sy = outH / displayFH  → 1 display-px = กี่ output-px ในแกน Y
+    //
+    //   totalScale: scale รวมสำหรับ drawImage (uniform, ตาม CSS)
+    //     = base × zoom × sx
+    //     (ใช้ sx เพราะ pin square → sx===sy, card → sx เป็น scale หลักแกน X)
+    //
+    //   translate offset: แปลงจาก display space → output canvas space แยก X/Y
+    //     offset.x * sx, offset.y * sy
     const handleConfirm = () => {
         const img = imgRef.current;
         if (!img || imgDimRef.current.w === 0) return;
@@ -177,16 +195,10 @@ function InlineCropEditor({ src, mode, confirmedBlob, onBlob }: EditorProps) {
             ctx.closePath(); ctx.clip();
         }
 
-        const fw = mode === "pin" ? (cropR * 2) : cardMaskW;
-        const fh = mode === "pin" ? (cropR * 2) : cardMaskH;
-
-        // แยก scale X และ Y ตาม output จริงของแต่ละแกน (แก้ bug geometric mean)
-        const sx = outW / fw;
-        const sy = outH / fh;
+        const sx = outW / displayFW;
+        const sy = outH / displayFH;
 
         const dim = imgDimRef.current;
-        // totalScale ต้องตรงกับ CSS scale() ที่เป็น uniform — ใช้ sx เป็นหลัก
-        // sy ใช้แค่สำหรับ remap offset แกน Y เท่านั้น
         const totalScale = dim.base * zoomRef.current * sx;
 
         ctx.translate(
@@ -195,10 +207,10 @@ function InlineCropEditor({ src, mode, confirmedBlob, onBlob }: EditorProps) {
         );
         ctx.rotate((rotRef.current * Math.PI) / 180);
         ctx.drawImage(img,
-            -img.naturalWidth  / 2 * totalScale,
+            -img.naturalWidth / 2 * totalScale,
             -img.naturalHeight / 2 * totalScale,
-             img.naturalWidth      * totalScale,
-             img.naturalHeight     * totalScale
+            img.naturalWidth * totalScale,
+            img.naturalHeight * totalScale
         );
 
         const dataUrl = canvas.toDataURL("image/png");
@@ -265,6 +277,7 @@ function InlineCropEditor({ src, mode, confirmedBlob, onBlob }: EditorProps) {
                         transformOrigin: "center",
                         width: imgLoaded ? imgDim.w : "auto",
                         height: imgLoaded ? imgDim.h : "auto",
+                        maxWidth: "none", maxHeight: "none",
                         pointerEvents: "none", display: "block", objectFit: "fill"
                     }}
                 />
