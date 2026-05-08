@@ -360,15 +360,15 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
         const preferredSides = useMemo(() => {
             const sides: Record<string, 'left' | 'right'> = {};
             const sorted = [...masterPins].sort((a, b) => a.longitude - b.longitude);
-            
+
             for (let i = 0; i < sorted.length; i++) {
                 const p = sorted[i];
                 if (sides[p.id]) continue;
 
                 // Find neighbors in a very small cluster (~80-100m)
-                const neighbors = sorted.filter(n => 
-                    n.id !== p.id && 
-                    Math.abs(n.latitude - p.latitude) < 0.0008 && 
+                const neighbors = sorted.filter(n =>
+                    n.id !== p.id &&
+                    Math.abs(n.latitude - p.latitude) < 0.0008 &&
                     Math.abs(n.longitude - p.longitude) < 0.0008
                 );
 
@@ -396,9 +396,9 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
                     const lbl = entry.marker.getElement()?.querySelector<HTMLElement>('.pin-label');
                     if (lbl) { lbl.style.opacity = '0'; lbl.style.pointerEvents = 'none'; }
                 });
+                return;
             }
             const LABEL_EST_W = 160, LABEL_EST_H = 24;
-            const mapSize = map.getSize();
             const rects = pinEntriesRef.current.map(entry => {
                 const pt = map.latLngToContainerPoint(L.latLng(entry.pin.latitude, entry.pin.longitude));
                 return {
@@ -415,70 +415,51 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
 
             for (let i = 0; i < rects.length; i++) {
                 const r = rects[i];
-                if (r.entry.isActive) {
-                    r.visible = true;
-                    // Active pin ALWAYS follows its preferred side for consistency during fly/zoom
-                    r.side = preferredSides[r.entry.pin.id] || 'right';
-                    continue;
-                }
+                const pref = preferredSides[r.entry.pin.id] || 'right';
+                const other: 'left' | 'right' = pref === 'right' ? 'left' : 'right';
 
-                const checkSide = (side: 'left' | 'right') => {
+                const mapW = map.getSize().x;
+
+                const sideOk = (side: 'left' | 'right') => {
                     const rect = side === 'right' ? r.labelRectRight : r.labelRectLeft;
-                    // Check map boundaries (prevent text from going off-screen)
-                    if (rect.left < 10 || rect.right > mapSize.x - 10) return false;
-
+                    // Off-screen check
+                    if (rect.left < 10 || rect.right > mapW - 10) return false;
+                    // Collision with other pins/labels
                     for (let j = 0; j < rects.length; j++) {
                         if (i === j) continue;
                         if (intersect(rect, rects[j].pinRect)) return false;
                         if (j < i && rects[j].visible) {
-                            const otherLabelRect = rects[j].side === 'right' ? rects[j].labelRectRight : rects[j].labelRectLeft;
-                            if (intersect(rect, otherLabelRect)) return false;
+                            const otherLblRect = rects[j].side === 'right' ? rects[j].labelRectRight : rects[j].labelRectLeft;
+                            if (intersect(rect, otherLblRect)) return false;
                         }
                     }
                     return true;
                 };
 
-                // Zoom 18, 19, 20: Use the pre-calculated Cluster side for total stability
-                if (zoom >= 18) {
-                    let side = preferredSides[r.entry.pin.id] || 'right';
-                    
-                    // Override preferred side if it goes off-screen
-                    if (side === 'right' && r.labelRectRight.right > mapSize.x - 10 && r.labelRectLeft.left >= 10) {
-                        side = 'left';
-                    } else if (side === 'left' && r.labelRectLeft.left < 10 && r.labelRectRight.right <= mapSize.x - 10) {
-                        side = 'right';
-                    }
+                if (r.entry.isActive) {
+                    r.visible = true;
+                    // Active pin: prefer its natural side, but bounce off screen edge if needed
+                    r.side = sideOk(pref) ? pref : (sideOk(other) ? other : pref);
+                    continue;
+                }
 
-                    r.side = side;
-                    
-                    // Only hide if the preferred side is blocked by a PIN body
-                    let blockedByPin = false;
-                    const rect = side === 'right' ? r.labelRectRight : r.labelRectLeft;
-                    for (let j = 0; j < rects.length; j++) {
-                        if (i === j) continue;
-                        if (intersect(rect, rects[j].pinRect)) { blockedByPin = true; break; }
-                    }
-                    r.visible = !blockedByPin;
-                } 
-                // Zoom 17 and below: Try Right, if blocked try Left, otherwise hide
-                else {
-                    if (checkSide('right')) {
-                        r.side = 'right';
-                        r.visible = true;
-                    } else if (checkSide('left')) {
-                        r.side = 'left';
-                        r.visible = true;
-                    } else {
-                        r.side = 'right';
-                        r.visible = false;
-                    }
+                // At ALL zoom levels: Try preferred side first, fallback to other side, then hide
+                if (sideOk(pref)) {
+                    r.side = pref;
+                    r.visible = true;
+                } else if (sideOk(other)) {
+                    r.side = other;
+                    r.visible = true;
+                } else {
+                    r.side = pref;
+                    r.visible = false;
                 }
             }
             rects.forEach(({ entry, visible, side }) => {
                 const el = entry.marker.getElement();
                 const root = el?.querySelector<HTMLElement>('.pin-root');
                 const lbl = el?.querySelector<HTMLElement>('.pin-label');
-                
+
                 if (root) {
                     root.style.flexDirection = side === 'left' ? 'row-reverse' : 'row';
                     // Set CSS variables for warp and origin
