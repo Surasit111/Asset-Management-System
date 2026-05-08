@@ -396,9 +396,9 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
                     const lbl = entry.marker.getElement()?.querySelector<HTMLElement>('.pin-label');
                     if (lbl) { lbl.style.opacity = '0'; lbl.style.pointerEvents = 'none'; }
                 });
-                return;
             }
             const LABEL_EST_W = 160, LABEL_EST_H = 24;
+            const mapSize = map.getSize();
             const rects = pinEntriesRef.current.map(entry => {
                 const pt = map.latLngToContainerPoint(L.latLng(entry.pin.latitude, entry.pin.longitude));
                 return {
@@ -424,6 +424,9 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
 
                 const checkSide = (side: 'left' | 'right') => {
                     const rect = side === 'right' ? r.labelRectRight : r.labelRectLeft;
+                    // Check map boundaries (prevent text from going off-screen)
+                    if (rect.left < 10 || rect.right > mapSize.x - 10) return false;
+
                     for (let j = 0; j < rects.length; j++) {
                         if (i === j) continue;
                         if (intersect(rect, rects[j].pinRect)) return false;
@@ -437,7 +440,15 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
 
                 // Zoom 18, 19, 20: Use the pre-calculated Cluster side for total stability
                 if (zoom >= 18) {
-                    const side = preferredSides[r.entry.pin.id] || 'right';
+                    let side = preferredSides[r.entry.pin.id] || 'right';
+                    
+                    // Override preferred side if it goes off-screen
+                    if (side === 'right' && r.labelRectRight.right > mapSize.x - 10 && r.labelRectLeft.left >= 10) {
+                        side = 'left';
+                    } else if (side === 'left' && r.labelRectLeft.left < 10 && r.labelRectRight.right <= mapSize.x - 10) {
+                        side = 'right';
+                    }
+
                     r.side = side;
                     
                     // Only hide if the preferred side is blocked by a PIN body
@@ -449,10 +460,18 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
                     }
                     r.visible = !blockedByPin;
                 } 
-                // Zoom 17 and below: Only try Right, otherwise hide (Original behavior)
+                // Zoom 17 and below: Try Right, if blocked try Left, otherwise hide
                 else {
-                    r.side = 'right';
-                    r.visible = checkSide('right');
+                    if (checkSide('right')) {
+                        r.side = 'right';
+                        r.visible = true;
+                    } else if (checkSide('left')) {
+                        r.side = 'left';
+                        r.visible = true;
+                    } else {
+                        r.side = 'right';
+                        r.visible = false;
+                    }
                 }
             }
             rects.forEach(({ entry, visible, side }) => {
