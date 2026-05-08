@@ -123,6 +123,16 @@ function injectCarouselScript() {
     document.head.appendChild(s);
 }
 
+// ─── Pin Thumbnail URL helper ───────────────────────────────────────────────
+// Routes external images through our proxy with resize+WebP for map pin rings.
+// Only used for the tiny 36x36 ring — large popup images are NOT affected.
+function pinThumbUrl(url: string | null | undefined): string | null {
+    if (!url || url.trim() === '' || url.startsWith('{')) return null;
+    // Skip already-proxied or internal URLs
+    if (url.startsWith('/api/proxy-image') || url.startsWith('/')) return url;
+    return `/api/proxy-image?url=${encodeURIComponent(url)}&w=80&h=80`;
+}
+
 // ─── Asset dot ────────────────────────────────────────────────────────────────
 const assetDotIcon = L.divIcon({
     className: "custom-div-icon",
@@ -153,8 +163,9 @@ function buildMasterPinIcon(
     const safeImgUrl = getSafe(imageUrl);
 
     let ringContent: string;
-    if (safePinUrl) {
-        ringContent = `<img src="${safePinUrl}" alt="" draggable="false" width="36" height="36" class="pin-cropped-img">`;
+    const thumbPinUrl = pinThumbUrl(safePinUrl);
+    if (thumbPinUrl) {
+        ringContent = `<img src="${thumbPinUrl}" alt="" draggable="false" width="36" height="36" class="pin-cropped-img">`;
     } else if (safeImgUrl) {
         ringContent = buildLeafletPinRingHtml(safeImgUrl, adj, 32);
     } else {
@@ -221,7 +232,7 @@ function buildPopup(pin: MasterPin): string {
             <img src="${imgs[0]}" alt="" style="${buildAdjustedImageStyleString(pin.cardAdjustment)}">
             <div style="position:absolute;top:10px;left:10px;width:36px;height:36px;border-radius:50%;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);overflow:hidden;background:white;z-index:10;">
                 ${pin.pinImageUrl
-                ? `<img src="${pin.pinImageUrl}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">`
+                ? `<img src="${pinThumbUrl(pin.pinImageUrl) ?? pin.pinImageUrl}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">`
                 : buildLeafletPinRingHtml(imgs[0], pin.pinAdjustment, 32)}
             </div>
         </div>`;
