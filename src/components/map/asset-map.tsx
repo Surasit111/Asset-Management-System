@@ -51,6 +51,8 @@ const STYLES = `
 .map-readonly .pin-root.pin-active { transform: translateX(var(--pin-offset, 0px)) !important; transition: none !important; }
 .map-readonly .pin-root:hover:not(.pin-active) .photo-pin-body { filter: none !important; transform: none !important; }
 .map-readonly .pin-root.pin-active .photo-pin-body { filter: drop-shadow(0 8px 18px rgba(239,68,68,0.45)) !important; transform: none !important; }
+.map-readonly .pin-root:hover:not(.pin-active) .pin-label { transform: none !important; }
+.map-readonly .pin-root.pin-active .pin-label { transform: none !important; }
 .map-readonly .leaflet-interactive,
 .map-readonly .pin-root,
 .map-readonly .pin-label,
@@ -105,7 +107,13 @@ const STYLES = `
 
 .pin-label {
     pointer-events: auto; cursor: pointer; line-height: 1.1; white-space: normal;
-    transition: none;
+    transition: transform 0.22s cubic-bezier(0.2, 0, 0, 1);
+    transform-origin: var(--label-origin, left center);
+    will-change: transform;
+}
+.pin-root:hover .pin-label,
+.pin-root.pin-active .pin-label {
+    transform: scale(1.12);
 }
 
 .pop-carousel-btn{position:absolute;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.45);color:#fff;border:none;cursor:pointer;font-size:18px;font-weight:bold;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;z-index:5;line-height:1;}
@@ -212,11 +220,11 @@ function buildMasterPinIcon(
 
     const flexDir = side === 'left' ? 'row-reverse' : 'row';
     const pinOffset = side === 'left' ? 'calc(-100% + 36px)' : '0px';
-    const pinOrigin = side === 'left' ? 'calc(100% - 18px) 45px' : '18px 45px';
+    const labelOrigin = side === 'left' ? 'right center' : 'left center';
 
     return L.divIcon({
         className: "custom-master-pin-icon",
-        html: `<div class="pin-root${activeClass}${readOnlyClass}" style="flex-direction:${flexDir};--pin-offset:${pinOffset};--pin-origin:${pinOrigin};">${pinBodyHtml}${labelHtml}</div>`,
+        html: `<div class="pin-root${activeClass}${readOnlyClass}" style="flex-direction:${flexDir};--pin-offset:${pinOffset};--label-origin:${labelOrigin};">${pinBodyHtml}${labelHtml}</div>`,
         iconSize: [36, 45],
         iconAnchor: [18, 45],
     });
@@ -493,7 +501,7 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
                     root.style.flexDirection = side === 'left' ? 'row-reverse' : 'row';
                     // Set CSS variables for warp and origin
                     root.style.setProperty('--pin-offset', side === 'left' ? 'calc(-100% + 36px)' : '0px');
-                    root.style.setProperty('--pin-origin', side === 'left' ? 'calc(100% - 18px) 45px' : '18px 45px');
+                    root.style.setProperty('--label-origin', side === 'left' ? 'right center' : 'left center');
                 }
 
                 if (lbl) {
