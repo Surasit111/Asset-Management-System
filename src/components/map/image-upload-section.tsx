@@ -185,8 +185,9 @@ function InlineCropEditor({ src, mode, confirmedBlob, onBlob }: EditorProps) {
         const sy = outH / fh;
 
         const dim = imgDimRef.current;
-        const totalScaleX = dim.base * zoomRef.current * sx;
-        const totalScaleY = dim.base * zoomRef.current * sy;
+        // totalScale ต้องตรงกับ CSS scale() ที่เป็น uniform — ใช้ sx เป็นหลัก
+        // sy ใช้แค่สำหรับ remap offset แกน Y เท่านั้น
+        const totalScale = dim.base * zoomRef.current * sx;
 
         ctx.translate(
             outW / 2 + offsetRef.current.x * sx,
@@ -194,10 +195,10 @@ function InlineCropEditor({ src, mode, confirmedBlob, onBlob }: EditorProps) {
         );
         ctx.rotate((rotRef.current * Math.PI) / 180);
         ctx.drawImage(img,
-            -img.naturalWidth  / 2 * totalScaleX,
-            -img.naturalHeight / 2 * totalScaleY,
-             img.naturalWidth      * totalScaleX,
-             img.naturalHeight     * totalScaleY
+            -img.naturalWidth  / 2 * totalScale,
+            -img.naturalHeight / 2 * totalScale,
+             img.naturalWidth      * totalScale,
+             img.naturalHeight     * totalScale
         );
 
         const dataUrl = canvas.toDataURL("image/png");
