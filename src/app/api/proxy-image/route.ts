@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
                 .webp({ quality: 80 })
                 .toBuffer();
 
-            return new NextResponse(resized, {
+            return new NextResponse(new Uint8Array(resized), {
                 headers: {
                     "Content-Type": "image/webp",
                     "Cache-Control": "public, max-age=604800, stale-while-revalidate=86400",
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
         }
 
         // No resize → pass through as-is with 7-day cache
-        return new NextResponse(buffer, {
+        return new NextResponse(new Uint8Array(buffer), {
             headers: {
                 "Content-Type": response.headers.get("Content-Type") || "image/jpeg",
                 "Cache-Control": "public, max-age=604800, stale-while-revalidate=86400",
