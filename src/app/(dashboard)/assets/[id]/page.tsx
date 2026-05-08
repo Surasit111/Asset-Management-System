@@ -491,18 +491,18 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
 
 
                     {/* ── Action Buttons ── */}
-                    <div className="flex items-center gap-2.5 shrink-0">
+                    <div className="flex items-center gap-3 md:gap-2.5 shrink-0">
                         {editing ? (
                             <>
                                 {/* ยกเลิกแก้ไข */}
                                 <button type="button" onClick={() => { setEditing(false); fetchAsset(); }}
-                                    className="group relative flex items-center gap-2 h-10 px-5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-[13px] font-semibold text-slate-500 hover:text-slate-700 transition-all duration-200 shadow-sm active:scale-[0.97] cursor-pointer">
+                                    className="group relative flex items-center gap-2 h-12 md:h-10 px-5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-[13px] font-semibold text-slate-500 hover:text-slate-700 transition-all duration-200 shadow-sm active:scale-[0.97] cursor-pointer">
                                     <X size={15} className="opacity-60 group-hover:opacity-100 group-hover:rotate-90 transition-all duration-200" />
                                     ยกเลิก
                                 </button>
                                 {/* บันทึก */}
                                 <button type="button" onClick={handleSave} disabled={saving}
-                                    className="group relative flex items-center gap-2 h-10 px-6 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:bg-slate-300 text-white text-[13px] font-bold transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.97] overflow-hidden cursor-pointer">
+                                    className="group relative flex items-center gap-2 h-12 md:h-10 px-6 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:bg-slate-300 text-white text-[13px] font-bold transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.97] overflow-hidden cursor-pointer">
                                     {saving ? (
                                         <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /><span>กำลังบันทึก...</span></>
                                     ) : (
@@ -514,19 +514,19 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
                             <>
                                 {/* QR Code */}
                                 <button type="button" onClick={() => setShowQrModal(true)}
-                                    className="group flex items-center gap-2 h-10 px-4 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-[13px] font-semibold text-slate-500 hover:text-slate-700 transition-all duration-200 shadow-sm active:scale-[0.97] cursor-pointer">
+                                    className="group flex items-center gap-2 h-12 md:h-10 px-4 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-[13px] font-semibold text-slate-500 hover:text-slate-700 transition-all duration-200 shadow-sm active:scale-[0.97] cursor-pointer">
                                     <QrCode size={15} className="opacity-60 group-hover:opacity-100 transition-opacity" />
                                     QR Code
                                 </button>
                                 {/* แก้ไข */}
                                 <button type="button" onClick={() => setEditing(true)}
-                                    className="group flex items-center gap-2 h-10 px-5 rounded-lg border border-blue-200 bg-blue-50 hover:bg-blue-100 hover:border-blue-300 text-[13px] font-semibold text-blue-600 hover:text-blue-700 transition-all duration-200 shadow-sm active:scale-[0.97] cursor-pointer">
+                                    className="group flex items-center gap-2 h-12 md:h-10 px-5 rounded-lg border border-blue-200 bg-blue-50 hover:bg-blue-100 hover:border-blue-300 text-[13px] font-semibold text-blue-600 hover:text-blue-700 transition-all duration-200 shadow-sm active:scale-[0.97] cursor-pointer">
                                     <Pencil size={14} className="opacity-80 group-hover:opacity-100 transition-opacity" />
                                     แก้ไข
                                 </button>
                                 {/* ลบ */}
                                 <button type="button" onClick={() => setShowConfirmDelete(true)}
-                                    className="group flex items-center gap-2 h-10 px-5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 hover:border-red-300 text-[13px] font-semibold text-red-700 hover:text-red-800 transition-all duration-200 shadow-sm active:scale-[0.97] cursor-pointer">
+                                    className="group flex items-center gap-2 h-12 md:h-10 px-5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 hover:border-red-300 text-[13px] font-semibold text-red-700 hover:text-red-800 transition-all duration-200 shadow-sm active:scale-[0.97] cursor-pointer">
                                     <Trash2 size={14} className="opacity-80 group-hover:opacity-100 transition-opacity" />
                                     ลบ
                                 </button>
