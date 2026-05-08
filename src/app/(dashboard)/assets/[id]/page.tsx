@@ -75,7 +75,7 @@ function SectionHeader({ icon, label, sub, accent }: {
             </div>
             <div>
                 <p className="text-[15px] font-bold text-gray-900 tracking-tight">{label}</p>
-                {sub && <p className="text-[12px] text-gray-400 mt-0.5">{sub}</p>}
+                {sub && <p className="text-[12px] text-slate-600 mt-0.5 font-medium">{sub}</p>}
             </div>
         </div>
     );
@@ -83,7 +83,7 @@ function SectionHeader({ icon, label, sub, accent }: {
 
 function FieldLabel({ children, required }: { children: React.ReactNode; required?: boolean }) {
     return (
-        <label className="block text-[13px] font-semibold text-slate-500 mb-1.5">
+        <label className="block text-[13px] font-semibold text-slate-600 mb-1.5">
             {children}
             {required && <span className="text-red-500 ml-1">*</span>}
         </label>
@@ -464,6 +464,8 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
 
                     {/* ย้อนกลับ */}
                     <button type="button" onClick={() => router.back()}
+                        aria-label="ย้อนกลับ"
+                        title="ย้อนกลับ"
                         className="w-12 h-12 flex items-center justify-center rounded-xl border border-slate-200 bg-white hover:bg-gray-50 transition-colors shrink-0 shadow-sm cursor-pointer">
                         <ArrowLeft size={20} className="text-gray-600" />
                     </button>
@@ -873,6 +875,8 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
                                                     onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
                                                 {editing && !isUrlPreview && (
                                                     <button type="button" onClick={() => removeImage(uploadIdx)}
+                                                        aria-label="ลบรูปภาพประกอบ"
+                                                        title="ลบรูปภาพ"
                                                         className="absolute top-1 right-1 w-5 h-5 bg-black/50 hover:bg-red-500 text-white rounded-full items-center justify-center hidden group-hover:flex transition-colors">
                                                         <X size={10} />
                                                     </button>

@@ -50,7 +50,7 @@ function SectionHeader({
             </div>
             <div>
                 <p className="text-[15px] font-bold text-gray-900 tracking-tight">{label}</p>
-                {sub && <p className="text-[12px] text-gray-400 mt-0.5">{sub}</p>}
+                {sub && <p className="text-[12px] text-slate-600 mt-0.5 font-medium">{sub}</p>}
             </div>
         </div>
     );
@@ -58,7 +58,7 @@ function SectionHeader({
 
 function FieldLabel({ children, required }: { children: React.ReactNode; required?: boolean }) {
     return (
-        <label className="block text-[13px] font-semibold text-slate-500 mb-1.5">
+        <label className="block text-[13px] font-semibold text-slate-600 mb-1.5">
             {children}
             {required && <span className="text-red-500 ml-1">*</span>}
         </label>
@@ -472,6 +472,8 @@ export default function NewAssetPageV2() {
 
                     <Link
                         href="/assets"
+                        aria-label="ย้อนกลับไปหน้ารายการครุภัณฑ์"
+                        title="ย้อนกลับ"
                         className="w-10 h-10 flex items-center justify-center rounded-xl border border-slate-200 bg-white hover:bg-blue-50 hover:border-blue-500 transition-all duration-300 shrink-0 shadow-sm cursor-pointer"
                     >
                         <ArrowLeft size={20} className="text-gray-600 hover:text-blue-600" />
@@ -844,7 +846,7 @@ export default function NewAssetPageV2() {
                                 <Plus size={14} /> เพิ่มจากลิงก์
                             </button>
                         </div>
-                        <p className="text-[11px] text-slate-400 mb-4">
+                        <p className="text-[11px] text-slate-600 mb-4 font-medium">
                             คลิกขวาที่รูป → คัดลอกที่อยู่รูปภาพ (Copy Image Address)
                         </p>
 
@@ -875,14 +877,14 @@ export default function NewAssetPageV2() {
                             </div>
                             <div>
                                 <p className="text-sm text-gray-500">{uploading ? "กำลังอัปโหลด..." : "คลิกหรือลากไฟล์มาวางที่นี่"}</p>
-                                <p className="text-[11px] text-slate-400 mt-0.5">รองรับ JPG, PNG, WEBP — เลือกหลายไฟล์ได้</p>
+                                <p className="text-[11px] text-slate-600 mt-0.5 font-medium">รองรับ JPG, PNG, WEBP — เลือกหลายไฟล์ได้</p>
                             </div>
                         </button>
                         <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" />
 
                         {allImages.length > 0 && (
                             <div className="mt-4">
-                                <p className="text-[11px] text-gray-400 mb-2">รูปภาพที่เลือก ({allImages.length})</p>
+                                <p className="text-[11px] text-slate-600 mb-2 font-medium">รูปภาพที่เลือก ({allImages.length})</p>
                                 <div className="flex flex-wrap gap-2">
                                     {allImages.map((url, idx) => {
                                         const isUrlPreview = form.imageUrl?.startsWith("http") && idx === 0;
@@ -898,6 +900,8 @@ export default function NewAssetPageV2() {
                                                 {!isUrlPreview && (
                                                     <button
                                                         type="button" onClick={() => removeImage(uploadIdx)}
+                                                        aria-label="ลบรูปภาพประกอบ"
+                                                        title="ลบรูปภาพ"
                                                         className="absolute top-1 right-1 w-5 h-5 bg-black/50 hover:bg-red-500 text-white rounded-full items-center justify-center hidden group-hover:flex transition-colors"
                                                     >
                                                         <X size={10} />
