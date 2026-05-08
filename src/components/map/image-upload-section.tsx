@@ -179,18 +179,26 @@ function InlineCropEditor({ src, mode, confirmedBlob, onBlob }: EditorProps) {
 
         const fw = mode === "pin" ? (cropR * 2) : cardMaskW;
         const fh = mode === "pin" ? (cropR * 2) : cardMaskH;
-        const sx = outW / fw, sy = outH / fh;
-        const s = mode === "pin" ? sx : Math.sqrt(sx * sy);
-        const dim = imgDimRef.current;
-        const totalScale = dim.base * zoomRef.current * s;
 
-        ctx.translate(outW / 2 + offsetRef.current.x * sx, outH / 2 + offsetRef.current.y * sy);
+        // แยก scale X และ Y ตาม output จริงของแต่ละแกน (แก้ bug geometric mean)
+        const sx = outW / fw;
+        const sy = outH / fh;
+
+        const dim = imgDimRef.current;
+        const totalScaleX = dim.base * zoomRef.current * sx;
+        const totalScaleY = dim.base * zoomRef.current * sy;
+
+        ctx.translate(
+            outW / 2 + offsetRef.current.x * sx,
+            outH / 2 + offsetRef.current.y * sy
+        );
         ctx.rotate((rotRef.current * Math.PI) / 180);
         ctx.drawImage(img,
-            -img.naturalWidth / 2 * totalScale,
-            -img.naturalHeight / 2 * totalScale,
-            img.naturalWidth * totalScale,
-            img.naturalHeight * totalScale);
+            -img.naturalWidth  / 2 * totalScaleX,
+            -img.naturalHeight / 2 * totalScaleY,
+             img.naturalWidth      * totalScaleX,
+             img.naturalHeight     * totalScaleY
+        );
 
         const dataUrl = canvas.toDataURL("image/png");
         setProcessing(false);
