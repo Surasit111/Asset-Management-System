@@ -859,7 +859,7 @@ export default function NewAssetPageV2() {
                                     onClick={() => setViewingIndex(0)}
                                 >
                                     <img
-                                        src={form.imageUrl} alt="preview"
+                                        src={`/api/proxy-image?url=${encodeURIComponent(form.imageUrl)}&w=160&h=160`} alt="preview"
                                         className="w-full h-full object-cover hover:opacity-90 transition-opacity"
                                         onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                                     />
@@ -893,7 +893,7 @@ export default function NewAssetPageV2() {
                                         return (
                                             <div key={idx} className="group relative w-16 h-16 rounded-lg overflow-hidden border border-slate-200 bg-gray-50 shrink-0">
                                                 <img
-                                                    src={url} alt={`img-${idx}`}
+                                                    src={`/api/proxy-image?url=${encodeURIComponent(url)}&w=160&h=160`} alt={`img-${idx}`}
                                                     onClick={() => setViewingIndex(idx)}
                                                     className="w-full h-full object-cover cursor-pointer group-hover:scale-105 transition-transform duration-200"
                                                     onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}

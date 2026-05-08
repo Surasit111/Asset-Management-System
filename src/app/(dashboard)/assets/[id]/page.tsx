@@ -485,7 +485,7 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
                                 {asset.assetType === "durable" ? "คงทน" : "ทั่วไป"}
                             </span>
                         </div>
-                        <p className="text-[22px] text-[#94a3b8] font-extrabold m-0 tracking-tight truncate leading-tight">{asset.assetCode}</p>
+                        <p className="text-[22px] text-[#64748b] font-extrabold m-0 tracking-tight truncate leading-tight">{asset.assetCode}</p>
                     </div>
 
 
@@ -525,7 +525,7 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
                                 </button>
                                 {/* ลบ */}
                                 <button type="button" onClick={() => setShowConfirmDelete(true)}
-                                    className="group flex items-center gap-2 h-10 px-5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 hover:border-red-300 text-[13px] font-semibold text-red-500 hover:text-red-600 transition-all duration-200 shadow-sm active:scale-[0.97] cursor-pointer">
+                                    className="group flex items-center gap-2 h-10 px-5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 hover:border-red-300 text-[13px] font-semibold text-red-700 hover:text-red-800 transition-all duration-200 shadow-sm active:scale-[0.97] cursor-pointer">
                                     <Trash2 size={14} className="opacity-80 group-hover:opacity-100 transition-opacity" />
                                     ลบ
                                 </button>
@@ -557,7 +557,7 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
                             <div key={i} className="flex items-center gap-3">
                                 {i > 0 && <div className="w-px h-6 bg-slate-200 shrink-0" />}
                                 <div>
-                                    <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{item.label}</p>
+                                    <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">{item.label}</p>
                                     <p className="text-[13px] font-bold text-[#0f172a] mt-0.5 leading-tight">{item.value}</p>
                                     {/* No .time property on items */}
                                 </div>
@@ -565,9 +565,9 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
                         ))}
                         <div className="ml-auto flex items-center gap-2">
                             <div className="text-right">
-                                <span className="text-[11px] text-gray-400 block leading-tight">อัปเดตเมื่อ</span>
+                                <span className="text-[11px] text-slate-500 block leading-tight">อัปเดตเมื่อ</span>
                                 <span className="text-[12px] text-[#0f172a] font-bold block mt-0.5">{formatDate(asset.updatedAt)}</span>
-                                <span className="text-[10px] text-gray-400 block mt-0.5">{formatTime(asset.updatedAt)}</span>
+                                <span className="text-[10px] text-slate-500 block mt-0.5">{formatTime(asset.updatedAt)}</span>
                             </div>
                         </div>
                     </div>
@@ -842,7 +842,7 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
                                     <div className="mb-4">
                                         <FieldLabel>ตัวอย่างจากลิงก์</FieldLabel>
                                         <div className="w-20 h-20 rounded-lg overflow-hidden border border-slate-200 bg-gray-50 cursor-pointer" onClick={() => setViewingIndex(0)}>
-                                            <img src={form.imageUrl} alt="preview" className="w-full h-full object-cover hover:opacity-90 transition-opacity" onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                                            <img src={`/api/proxy-image?url=${encodeURIComponent(form.imageUrl)}&w=160&h=160`} alt="preview" className="w-full h-full object-cover hover:opacity-90 transition-opacity" onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
                                         </div>
                                     </div>
                                 )}
@@ -869,9 +869,10 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
                                     {allImages.map((url, idx) => {
                                         const isUrlPreview = form.imageUrl?.startsWith("http") && idx === 0;
                                         const uploadIdx = form.imageUrl?.startsWith("http") ? idx - 1 : idx;
+                                        const thumbnailUrl = `/api/proxy-image?url=${encodeURIComponent(url)}&w=160&h=160`;
                                         return (
                                             <div key={idx} className="group relative w-20 h-20 rounded-lg overflow-hidden border border-slate-200 bg-gray-50 shrink-0">
-                                                <img src={url} alt={`img-${idx}`} onClick={() => setViewingIndex(idx)}
+                                                <img src={thumbnailUrl} alt={`img-${idx}`} onClick={() => setViewingIndex(idx)}
                                                     className="w-full h-full object-cover cursor-pointer group-hover:scale-105 transition-transform duration-200"
                                                     onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
                                                 {editing && !isUrlPreview && (
@@ -899,9 +900,9 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
                         {/* Timestamps */}
                         <div className="mt-4 pt-4 border-t border-slate-100 flex flex-wrap gap-x-8 gap-y-3">
                             <div>
-                                <p className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">สร้างเมื่อ</p>
+                                <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">สร้างเมื่อ</p>
                                 <p className="text-[12px] text-[#0f172a] font-bold mt-0.5">{formatDate(asset.createdAt)}</p>
-                                <p className="text-[11px] text-gray-400 mt-0.5">{formatTime(asset.createdAt)}</p>
+                                <p className="text-[11px] text-slate-500 mt-0.5">{formatTime(asset.createdAt)}</p>
                             </div>
                         </div>
                     </div>
