@@ -465,7 +465,7 @@ export default function NewAssetPageV2() {
     };
 
     return (
-        <div className="min-h-screen bg-transparent -m-6">
+        <div className="min-h-screen bg-slate-100 -m-6">
 
             <header className="sticky top-0 z-110 bg-[#ffffff] border-b border-[#cbd5e1] flex items-center transition-[left] duration-300 shrink-0" style={{ minHeight: "80px" }}>
                 <div className="w-full px-10 flex items-center gap-4">

@@ -456,7 +456,7 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
     ];
 
     return (
-        <div className="min-h-screen bg-transparent -m-6">
+        <div className="min-h-screen bg-slate-100 -m-6">
 
             {/* ══ Fixed Navbar ══════════════════════════════════════════════════ */}
             <header className="sticky top-0 z-110 bg-[#ffffff] border-b border-[#cbd5e1] flex items-center transition-[left] duration-300 shrink-0" style={{ minHeight: "80px" }}>
