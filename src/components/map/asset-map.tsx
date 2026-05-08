@@ -349,6 +349,8 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
         const markersLayerRef = useRef<L.LayerGroup | null>(null);
         const pinEntriesRef = useRef<Array<{ marker: L.Marker; pin: MasterPin; isActive: boolean }>>([]);
         const activePinIdRef = useRef<string | null>(null);
+        // Persists the side each pin's label has been assigned — once flipped, stays flipped
+        const decidedSidesRef = useRef<Record<string, 'left' | 'right'>>({});
 
         const latestProps = useRef({ assets, masterPins, onPinClick, pinAssetCounts, onMapClick, onSelectLocation, forcedActivePinId, initialMapState, readOnly });
         useEffect(() => {
@@ -387,6 +389,11 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
             return sides;
         }, [masterPins]);
 
+        // Reset decided sides whenever pin layout changes
+        useEffect(() => {
+            decidedSidesRef.current = {};
+        }, [masterPins]);
+
         const refreshLabels = () => {
             const map = mapRef.current;
             if (!map) return;
@@ -415,8 +422,12 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
 
             for (let i = 0; i < rects.length; i++) {
                 const r = rects[i];
-                const pref = preferredSides[r.entry.pin.id] || 'right';
+                const pinId = r.entry.pin.id;
+                const pref = preferredSides[pinId] || 'right';
                 const other: 'left' | 'right' = pref === 'right' ? 'left' : 'right';
+                // Use the permanently decided side if already flipped, otherwise use preferred
+                const current = decidedSidesRef.current[pinId] ?? pref;
+                const alt: 'left' | 'right' = current === 'right' ? 'left' : 'right';
 
                 const sideOk = (side: 'left' | 'right') => {
                     const rect = side === 'right' ? r.labelRectRight : r.labelRectLeft;
@@ -433,19 +444,22 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
 
                 if (r.entry.isActive) {
                     r.visible = true;
-                    r.side = sideOk(pref) ? pref : (sideOk(other) ? other : pref);
+                    r.side = current;
                     continue;
                 }
 
-                // Try preferred side first, fallback to other side, then hide
-                if (sideOk(pref)) {
-                    r.side = pref;
+                // If the current decided side is clear → stay on it
+                if (sideOk(current)) {
+                    r.side = current;
                     r.visible = true;
-                } else if (sideOk(other)) {
-                    r.side = other;
+                } else if (sideOk(alt)) {
+                    // Current side is blocked → flip permanently to the other side
+                    decidedSidesRef.current[pinId] = alt;
+                    r.side = alt;
                     r.visible = true;
                 } else {
-                    r.side = pref;
+                    // Both sides blocked → hide, keep current decided side
+                    r.side = current;
                     r.visible = false;
                 }
             }
