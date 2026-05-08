@@ -113,7 +113,11 @@ const STYLES = `
 }
 .pin-root:hover .pin-label,
 .pin-root.pin-active .pin-label {
-    transform: scale(1.12);
+    transform: translateX(var(--label-translate, 4px)) scale(1.12);
+}
+.pin-root:active .pin-label {
+    transform: translateX(var(--label-translate, 4px)) scale(0.95) !important;
+    transition: transform 0.1s ease !important;
 }
 
 .pop-carousel-btn{position:absolute;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.45);color:#fff;border:none;cursor:pointer;font-size:18px;font-weight:bold;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;z-index:5;line-height:1;}
@@ -221,10 +225,11 @@ function buildMasterPinIcon(
     const flexDir = side === 'left' ? 'row-reverse' : 'row';
     const pinOffset = side === 'left' ? 'calc(-100% + 36px)' : '0px';
     const labelOrigin = side === 'left' ? 'right center' : 'left center';
+    const labelTranslate = side === 'left' ? '-4px' : '4px';
 
     return L.divIcon({
         className: "custom-master-pin-icon",
-        html: `<div class="pin-root${activeClass}${readOnlyClass}" style="flex-direction:${flexDir};--pin-offset:${pinOffset};--label-origin:${labelOrigin};">${pinBodyHtml}${labelHtml}</div>`,
+        html: `<div class="pin-root${activeClass}${readOnlyClass}" style="flex-direction:${flexDir};--pin-offset:${pinOffset};--label-origin:${labelOrigin};--label-translate:${labelTranslate};">${pinBodyHtml}${labelHtml}</div>`,
         iconSize: [36, 45],
         iconAnchor: [18, 45],
     });
@@ -502,6 +507,7 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
                     // Set CSS variables for warp and origin
                     root.style.setProperty('--pin-offset', side === 'left' ? 'calc(-100% + 36px)' : '0px');
                     root.style.setProperty('--label-origin', side === 'left' ? 'right center' : 'left center');
+                    root.style.setProperty('--label-translate', side === 'left' ? '-4px' : '4px');
                 }
 
                 if (lbl) {
