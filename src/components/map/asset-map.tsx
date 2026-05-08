@@ -167,7 +167,7 @@ function buildMasterPinIcon(
     if (thumbPinUrl) {
         ringContent = `<img src="${thumbPinUrl}" alt="" draggable="false" width="36" height="36" class="pin-cropped-img">`;
     } else if (safeImgUrl) {
-        ringContent = buildLeafletPinRingHtml(safeImgUrl, adj, 32);
+        ringContent = buildLeafletPinRingHtml(pinThumbUrl(safeImgUrl) || safeImgUrl, adj, 32);
     } else {
         ringContent = `<div class="pin-fallback-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -233,7 +233,7 @@ function buildPopup(pin: MasterPin): string {
             <div style="position:absolute;top:10px;left:10px;width:36px;height:36px;border-radius:50%;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);overflow:hidden;background:white;z-index:10;">
                 ${pin.pinImageUrl
                 ? `<img src="${pinThumbUrl(pin.pinImageUrl) ?? pin.pinImageUrl}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">`
-                : buildLeafletPinRingHtml(imgs[0], pin.pinAdjustment, 32)}
+                : buildLeafletPinRingHtml(pinThumbUrl(imgs[0]) || imgs[0], pin.pinAdjustment, 32)}
             </div>
         </div>`;
     } else {
