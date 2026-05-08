@@ -37,16 +37,20 @@ interface LocationManagerProps {
     initialEditPinId?: string | null;
 }
 
-async function uploadDataUrl(dataUrl: string, filename: string): Promise<string | null> {
-    try {
-        const res = await fetch(dataUrl);
-        const blob = await res.blob();
-        const fd = new FormData();
-        fd.append("file", new File([blob], filename, { type: blob.type }));
-        const r = await fetch("/api/upload", { method: "POST", body: fd });
-        const d = await r.json();
-        return d.url || d.path || null;
-    } catch { return null; }
+async function uploadDataUrl(dataUrl: string, filename: string): Promise<string> {
+    const res = await fetch(dataUrl);
+    if (!res.ok) throw new Error("แปลงไฟล์รูปภาพครอปไม่สำเร็จ");
+    const blob = await res.blob();
+    const fd = new FormData();
+    fd.append("file", new File([blob], filename, { type: "image/png" }));
+    const r = await fetch("/api/upload", { method: "POST", body: fd });
+    const d = await r.json();
+    if (!r.ok) {
+        throw new Error(d.error || `อัปโหลดไฟล์ล้มเหลว (${r.status})`);
+    }
+    const finalUrl = d.url || d.path || null;
+    if (!finalUrl) throw new Error("ไม่ได้รับ URL รูปภาพจากการอัปโหลด");
+    return finalUrl;
 }
 
 const PinListCard = React.memo(({ pin, isActive, onClick, onDelete }: {
@@ -302,7 +306,13 @@ export function LocationManager({ isOpen, onClose, onPinUpdated, initialEditPinI
                 setImageUrl(""); setAddCardBlobUrl(null); setAddPinBlobUrl(null);
                 await fetchPins();
                 onPinUpdated();
+            } else {
+                const d = await res.json().catch(() => ({}));
+                throw new Error(d.error || `บันทึกข้อมูลล้มเหลว (${res.status})`);
             }
+        } catch (error: any) {
+            console.error("Create pin error:", error);
+            toast.error(error.message || 'เกิดข้อผิดพลาดในการบันทึกสถานที่');
         } finally {
             setLoading(false); setGenerating(false);
         }
@@ -329,7 +339,13 @@ export function LocationManager({ isOpen, onClose, onPinUpdated, initialEditPinI
                 setEditingPin(null); setEditCardBlobUrl(null); setEditPinBlobUrl(null); setTempEditImageUrl(null);
                 await fetchPins();
                 onPinUpdated();
+            } else {
+                const d = await res.json().catch(() => ({}));
+                throw new Error(d.error || `อัปเดตข้อมูลล้มเหลว (${res.status})`);
             }
+        } catch (error: any) {
+            console.error("Edit pin error:", error);
+            toast.error(error.message || 'เกิดข้อผิดพลาดในการแก้ไขสถานที่');
         } finally {
             setLoading(false); setGenerating(false);
         }
