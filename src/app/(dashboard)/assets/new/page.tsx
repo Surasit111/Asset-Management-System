@@ -69,7 +69,7 @@ function FakeReadonly({ value, placeholder }: { value: string; placeholder?: str
     return (
         <div className={cn(
             "h-9 px-3 rounded-lg border border-slate-200 bg-slate-100 flex items-center text-sm cursor-not-allowed",
-            value ? "text-gray-700" : "text-gray-400"
+            value ? "text-gray-800 font-medium" : "text-slate-600 font-medium"
         )}>
             {value || placeholder || "—"}
         </div>
@@ -310,7 +310,7 @@ export default function NewAssetPageV2() {
     };
 
     /* ── shared field renderers ── */
-    const inputCls = "w-full h-10 px-3 text-sm rounded-xl border border-slate-200 bg-white text-gray-800 focus:outline-none focus:border-blue-500 hover:border-blue-400 transition-all placeholder:text-gray-400";
+    const inputCls = "w-full h-10 px-3 text-sm rounded-xl border border-slate-200 bg-white text-gray-800 focus:outline-none focus:border-blue-500 hover:border-blue-400 transition-all placeholder:text-slate-500 font-medium";
     const selectCls = "w-full h-10 px-3 text-sm rounded-xl border border-slate-200 bg-white text-gray-800 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M2%204L6%208L10%204%22%20stroke%3D%22%2364748b%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E')] bg-[right_10px_center] bg-no-repeat focus:outline-none focus:border-blue-500 hover:border-blue-400 transition-all";
 
     const renderInput = (
@@ -328,10 +328,10 @@ export default function NewAssetPageV2() {
             ) : (
                 <input
                     type={type} className={cn(
-                        "w-full h-10 px-3 text-sm rounded-xl border border-slate-200 text-gray-800 focus:outline-none transition-all placeholder:text-gray-400",
+                        "w-full h-10 px-3 text-sm rounded-xl border border-slate-200 text-gray-800 focus:outline-none transition-all",
                         readOnly
-                            ? "bg-slate-100 text-slate-500 cursor-not-allowed"
-                            : "bg-white hover:border-blue-400 focus:border-blue-500"
+                            ? "bg-slate-100 text-slate-600 cursor-not-allowed placeholder:text-slate-600 font-medium"
+                            : "bg-white hover:border-blue-400 focus:border-blue-500 placeholder:text-slate-500 font-medium"
                     )} min={min}
                     value={form[field as keyof typeof form] as string}
                     onChange={(e) => !readOnly && updateForm(field, e.target.value)}
@@ -393,7 +393,7 @@ export default function NewAssetPageV2() {
                             isOpen && "border-blue-500 shadow-sm"
                         )}
                     >
-                        <span className={cn(!value && "text-gray-400")}>{value || "— เลือก —"}</span>
+                        <span className={cn(!value ? "text-slate-600 font-medium" : "text-gray-800 font-medium")}>{value || "— เลือก —"}</span>
                         <ChevronDown size={14} className={cn("transition-transform duration-200 opacity-40", isOpen && "rotate-180 opacity-80")} />
                     </button>
 
@@ -572,7 +572,7 @@ export default function NewAssetPageV2() {
                                     onClick={() => setAssetType(tab.key)}
                                     className={cn(
                                         "px-5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer",
-                                        assetType === tab.key ? tab.active : "text-gray-500 hover:text-blue-600"
+                                        assetType === tab.key ? tab.active : "text-slate-600 hover:text-blue-600 font-semibold"
                                     )}
                                 >
                                     {tab.label}

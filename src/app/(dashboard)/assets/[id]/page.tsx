@@ -96,7 +96,7 @@ function ReadonlyField({ label, value, mono }: { label: string; value: string; m
             <FieldLabel>{label}</FieldLabel>
             <div className={cn(
                 "min-h-9 px-3 py-2 rounded-lg border border-slate-200 bg-slate-100 flex items-center text-sm",
-                value ? "text-gray-700" : "text-gray-400",
+                value ? "text-gray-800 font-medium" : "text-slate-600 font-medium",
                 mono && "tracking-wide"
             )}>
                 {value || "—"}
@@ -348,7 +348,7 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
     /* ── searchable dropdown shared styles ── */
     const dropdownListCls = "absolute top-full left-0 right-0 mt-1 bg-white border border-gray-100 rounded-xl shadow-lg z-50 animate-in fade-in zoom-in-95 duration-200";
     const dropdownItemCls = "w-full text-left px-3 py-1.5 text-[13px] font-medium text-[#0f172a] rounded-lg hover:bg-indigo-100/50 hover:text-blue-600 transition-all cursor-pointer";
-    const inputCls = "w-full h-10 px-3 text-sm rounded-xl border border-slate-200 bg-white text-gray-800 focus:outline-none focus:border-blue-500 hover:border-blue-400 transition-all placeholder:text-gray-400";
+    const inputCls = "w-full h-10 px-3 text-sm rounded-xl border border-slate-200 bg-white text-gray-800 focus:outline-none focus:border-blue-500 hover:border-blue-400 transition-all placeholder:text-slate-500 font-medium";
 
     const SaveChip = ({ onClick, disabled }: { onClick: () => void; disabled: boolean }) => (
         <button type="button" 
@@ -376,10 +376,10 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
                 ) : (
                     <input type={type} 
                         className={cn(
-                            "w-full h-10 px-3 text-sm rounded-xl border border-slate-200 text-gray-800 focus:outline-none transition-all placeholder:text-gray-400",
+                            "w-full h-10 px-3 text-sm rounded-xl border border-slate-200 text-gray-800 focus:outline-none transition-all",
                             readOnly 
-                                ? "bg-slate-100 text-slate-500 cursor-not-allowed border-slate-200" 
-                                : "bg-white hover:border-blue-400 focus:border-blue-500"
+                                ? "bg-slate-100 text-slate-600 cursor-not-allowed border-slate-200 placeholder:text-slate-600 font-medium" 
+                                : "bg-white hover:border-blue-400 focus:border-blue-500 placeholder:text-slate-500 font-medium"
                         )} 
                         min={min} value={form[field] || ""} onChange={e => !readOnly && updateForm(field, e.target.value)} 
                         placeholder={placeholder} required={required} readOnly={readOnly} />
@@ -403,7 +403,7 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
                     <div ref={isOpen ? dropdownRef : null} className="relative">
                         <button type="button" onClick={() => setOpenDropdown(isOpen ? null : field)}
                             className={cn(inputCls, "flex items-center justify-between cursor-pointer text-left", isOpen && "border-blue-500 shadow-sm")}>
-                            <span className={cn(!value && "text-gray-400")}>{value || "— เลือก —"}</span>
+                            <span className={cn(!value ? "text-slate-600 font-medium" : "text-gray-800 font-medium")}>{value || "— เลือก —"}</span>
                             <ChevronDown size={14} className={cn("transition-transform duration-200 opacity-40", isOpen && "rotate-180 opacity-80")} />
                         </button>
 
@@ -593,7 +593,7 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
                                 ].map(tab => (
                                     <div key={tab.key} className={cn(
                                         "px-5 py-2 rounded-lg text-xs font-bold transition-all",
-                                        asset.assetType === tab.key ? tab.active : "text-gray-500"
+                                        asset.assetType === tab.key ? tab.active : "text-slate-600 font-semibold"
                                     )}>
                                         {tab.label}
                                     </div>
