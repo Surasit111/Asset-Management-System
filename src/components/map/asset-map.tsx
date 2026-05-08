@@ -418,13 +418,8 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
                 const pref = preferredSides[r.entry.pin.id] || 'right';
                 const other: 'left' | 'right' = pref === 'right' ? 'left' : 'right';
 
-                const mapW = map.getSize().x;
-
                 const sideOk = (side: 'left' | 'right') => {
                     const rect = side === 'right' ? r.labelRectRight : r.labelRectLeft;
-                    // Off-screen check
-                    if (rect.left < 10 || rect.right > mapW - 10) return false;
-                    // Collision with other pins/labels
                     for (let j = 0; j < rects.length; j++) {
                         if (i === j) continue;
                         if (intersect(rect, rects[j].pinRect)) return false;
@@ -438,12 +433,11 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
 
                 if (r.entry.isActive) {
                     r.visible = true;
-                    // Active pin: prefer its natural side, but bounce off screen edge if needed
                     r.side = sideOk(pref) ? pref : (sideOk(other) ? other : pref);
                     continue;
                 }
 
-                // At ALL zoom levels: Try preferred side first, fallback to other side, then hide
+                // Try preferred side first, fallback to other side, then hide
                 if (sideOk(pref)) {
                     r.side = pref;
                     r.visible = true;
