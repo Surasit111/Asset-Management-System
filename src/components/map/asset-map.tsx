@@ -33,9 +33,7 @@ const STYLES = `
     gap: 6px;
     pointer-events: none;
     user-select: none;
-    transform-origin: var(--pin-origin, 18px 45px);
     transform: translateX(var(--pin-offset, 0px));
-    transition: filter 0.22s ease;
     will-change: transform;
     backface-visibility: hidden;
     -webkit-font-smoothing: subpixel-antialiased;
@@ -43,17 +41,16 @@ const STYLES = `
 }
 .pin-root * { box-sizing: border-box; }
 .pin-root:hover, .pin-root.pin-active {
-    transform: translateX(var(--pin-offset, 0px)) scale(1.18);
-    filter: drop-shadow(0 12px 20px rgba(0,0,0,0.25));
+    transform: translateX(var(--pin-offset, 0px));
     z-index: 1000 !important;
 }
-.pin-root:active { transform: translateX(var(--pin-offset, 0px)) scale(0.95) !important; transition: transform 0.1s ease !important; }
+.pin-root:active { transform: translateX(var(--pin-offset, 0px)) !important; }
 
 .map-readonly .pin-root:hover,
 .map-readonly .pin-root:active,
-.map-readonly .pin-root.pin-active { transform: none !important; transition: none !important; }
-.map-readonly .pin-root:hover:not(.pin-active) .photo-pin-body { filter: none !important; }
-.map-readonly .pin-root.pin-active .photo-pin-body { filter: drop-shadow(0 8px 18px rgba(239,68,68,0.45)) !important; }
+.map-readonly .pin-root.pin-active { transform: translateX(var(--pin-offset, 0px)) !important; transition: none !important; }
+.map-readonly .pin-root:hover:not(.pin-active) .photo-pin-body { filter: none !important; transform: none !important; }
+.map-readonly .pin-root.pin-active .photo-pin-body { filter: drop-shadow(0 8px 18px rgba(239,68,68,0.45)) !important; transform: none !important; }
 .map-readonly .leaflet-interactive,
 .map-readonly .pin-root,
 .map-readonly .pin-label,
@@ -62,7 +59,20 @@ const STYLES = `
 .photo-pin-body {
     pointer-events: auto; cursor: pointer; display: flex; flex-direction: column;
     align-items: center; flex-shrink: 0; position: relative;
+    transform-origin: bottom center;
+    transition: transform 0.22s cubic-bezier(0.2, 0, 0, 1), filter 0.22s ease;
+    will-change: transform;
 }
+.pin-root:hover .photo-pin-body,
+.pin-root.pin-active .photo-pin-body {
+    transform: scale(1.18);
+    filter: drop-shadow(0 10px 16px rgba(0,0,0,0.22));
+}
+.pin-root:active .photo-pin-body {
+    transform: scale(0.95) !important;
+    transition: transform 0.1s ease !important;
+}
+
 .photo-pin-ring {
     width: 36px; height: 36px; border-radius: 50%; border: 2px solid white;
     box-shadow: 0 3px 10px rgba(0,0,0,0.28), 0 0 0 1px rgba(0,0,0,0.08);
