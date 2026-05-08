@@ -2,10 +2,9 @@
 import React, { useState, useRef, useCallback } from "react";
 import { X, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
 
-// Output sizes
 export const PIN_CROP_SIZE = 192;
 export const CARD_CROP_W   = 480;
-export const CARD_CROP_H   = 270;
+export const CARD_CROP_H   = 214;
 
 // Display container width (fixed)
 const CONT_W = 380;
