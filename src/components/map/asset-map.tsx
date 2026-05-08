@@ -588,6 +588,27 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
                 const entry = { marker: m, pin, isActive };
                 pinEntriesRef.current.push(entry);
 
+                // Attach direct DOM click event to the pin root to capture overflow label and gap clicks
+                const el = m.getElement();
+                const root = el?.querySelector<HTMLElement>('.pin-root');
+                if (root) {
+                    root.addEventListener('click', (e) => {
+                        const { onPinClick: cb, readOnly: ro } = latestProps.current;
+                        if (ro) return;
+                        e.stopPropagation();
+                        e.preventDefault();
+                        if (activePinIdRef.current === pin.id) {
+                            setActivePin(null);
+                            if (cb) cb(null);
+                            if (latestProps.current.onSelectLocation) latestProps.current.onSelectLocation(0, 0, undefined, undefined);
+                        } else {
+                            setActivePin(pin.id);
+                            if (cb) cb(pin.id, pin.name, pin.latitude, pin.longitude);
+                            if (latestProps.current.onSelectLocation) latestProps.current.onSelectLocation(pin.latitude, pin.longitude, pin.id, pin.name);
+                        }
+                    });
+                }
+
                 m.on('click', (e: L.LeafletMouseEvent) => {
                     const { onPinClick: cb, readOnly: ro } = latestProps.current;
                     if (ro) return;
