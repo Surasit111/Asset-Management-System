@@ -30,7 +30,7 @@ const STYLES = `
 .pin-root {
     display: inline-flex;
     align-items: flex-end;
-    gap: 6px;
+    gap: 0px;
     pointer-events: none;
     user-select: none;
     transform: translateX(var(--pin-offset, 0px));
@@ -110,6 +110,8 @@ const STYLES = `
     transition: transform 0.22s cubic-bezier(0.2, 0, 0, 1);
     transform-origin: var(--label-origin, left center);
     will-change: transform;
+    padding-left: var(--label-pad-left, 6px);
+    padding-right: var(--label-pad-right, 0px);
 }
 .pin-root:hover .pin-label,
 .pin-root.pin-active .pin-label {
@@ -226,10 +228,12 @@ function buildMasterPinIcon(
     const pinOffset = side === 'left' ? 'calc(-100% + 36px)' : '0px';
     const labelOrigin = side === 'left' ? 'right center' : 'left center';
     const labelTranslate = side === 'left' ? '-4px' : '4px';
+    const padLeft = side === 'left' ? '0px' : '6px';
+    const padRight = side === 'left' ? '6px' : '0px';
 
     return L.divIcon({
         className: "custom-master-pin-icon",
-        html: `<div class="pin-root${activeClass}${readOnlyClass}" style="flex-direction:${flexDir};--pin-offset:${pinOffset};--label-origin:${labelOrigin};--label-translate:${labelTranslate};">${pinBodyHtml}${labelHtml}</div>`,
+        html: `<div class="pin-root${activeClass}${readOnlyClass}" style="flex-direction:${flexDir};--pin-offset:${pinOffset};--label-origin:${labelOrigin};--label-translate:${labelTranslate};--label-pad-left:${padLeft};--label-pad-right:${padRight};">${pinBodyHtml}${labelHtml}</div>`,
         iconSize: [36, 45],
         iconAnchor: [18, 45],
     });
@@ -508,6 +512,8 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
                     root.style.setProperty('--pin-offset', side === 'left' ? 'calc(-100% + 36px)' : '0px');
                     root.style.setProperty('--label-origin', side === 'left' ? 'right center' : 'left center');
                     root.style.setProperty('--label-translate', side === 'left' ? '-4px' : '4px');
+                    root.style.setProperty('--label-pad-left', side === 'left' ? '0px' : '6px');
+                    root.style.setProperty('--label-pad-right', side === 'left' ? '6px' : '0px');
                 }
 
                 if (lbl) {
