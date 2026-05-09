@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -63,6 +63,114 @@ interface Asset {
 }
 
 interface Category { id: string; name: string; type: string; }
+
+/* ─── Skeleton Components ──────────────────────────────────────────── */
+
+function SkeletonBlock({ className }: { className?: string }) {
+    return <div className={cn("bg-slate-200 rounded-lg animate-pulse", className)} />;
+}
+
+function AssetDetailSkeleton() {
+    return (
+        <div className="min-h-screen bg-slate-100 -m-6">
+            {/* Header skeleton */}
+            <header className="sticky top-0 z-110 bg-white border-b border-slate-200 shrink-0" style={{ minHeight: "80px" }}>
+                <div className="w-full px-10 flex items-center gap-4 h-full" style={{ minHeight: "80px" }}>
+                    <SkeletonBlock className="w-12 h-12 rounded-xl" />
+                    <div className="flex-1 space-y-2">
+                        <SkeletonBlock className="h-5 w-56" />
+                        <SkeletonBlock className="h-4 w-36" />
+                    </div>
+                    <div className="flex gap-2">
+                        <SkeletonBlock className="w-28 h-10 rounded-lg" />
+                        <SkeletonBlock className="w-24 h-10 rounded-lg" />
+                        <SkeletonBlock className="w-20 h-10 rounded-lg" />
+                    </div>
+                </div>
+            </header>
+
+            <div className="w-full px-10 pt-6 pb-16 space-y-4">
+                {/* Status bar skeleton */}
+                <div className="bg-white rounded-xl border border-slate-200 px-5 py-4 shadow-sm">
+                    <div className="flex items-center gap-6">
+                        {[120, 80, 100, 140].map((w, i) => (
+                            <div key={i} className="flex items-center gap-6">
+                                {i > 0 && <div className="w-px h-6 bg-slate-200" />}
+                                <div className="space-y-1.5">
+                                    <SkeletonBlock className="h-2.5 w-16" />
+                                    <SkeletonBlock className={`h-4 w-${w > 100 ? '28' : w > 80 ? '24' : '20'}`} />
+                                </div>
+                            </div>
+                        ))}
+                        <div className="ml-auto space-y-1.5 text-right">
+                            <SkeletonBlock className="h-2.5 w-16 ml-auto" />
+                            <SkeletonBlock className="h-4 w-24 ml-auto" />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Section 1 skeleton */}
+                <div className="bg-white rounded-xl border border-slate-200 px-5 py-5 shadow-sm">
+                    <div className="flex items-center gap-3 mb-6">
+                        <SkeletonBlock className="w-9 h-9 rounded-xl" />
+                        <div className="space-y-1.5">
+                            <SkeletonBlock className="h-4 w-32" />
+                            <SkeletonBlock className="h-3 w-20" />
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-12 gap-3">
+                        {[2, 7, 3, 2, 2, 4, 4, 3, 3, 3, 3, 6, 6, 12].map((span, i) => (
+                            <div key={i} className={`col-span-${span} space-y-1.5`}>
+                                <SkeletonBlock className="h-3 w-20" />
+                                <SkeletonBlock className="h-10 w-full rounded-xl" />
+                            </div>
+                        ))}
+                        <div className="col-span-12 space-y-1.5">
+                            <SkeletonBlock className="h-3 w-16" />
+                            <SkeletonBlock className="h-[72px] w-full rounded-lg" />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Section 2 skeleton */}
+                <div className="bg-white rounded-xl border border-slate-200 px-5 py-5 shadow-sm">
+                    <div className="flex items-center gap-3 mb-6">
+                        <SkeletonBlock className="w-9 h-9 rounded-xl" />
+                        <div className="space-y-1.5">
+                            <SkeletonBlock className="h-4 w-28" />
+                            <SkeletonBlock className="h-3 w-36" />
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-12 gap-3 mb-4">
+                        {[3, 5, 2, 2].map((span, i) => (
+                            <div key={i} className={`col-span-${span} space-y-1.5`}>
+                                <SkeletonBlock className="h-3 w-20" />
+                                <SkeletonBlock className="h-10 w-full rounded-xl" />
+                            </div>
+                        ))}
+                    </div>
+                    <SkeletonBlock className="h-[300px] w-full rounded-xl" />
+                </div>
+
+                {/* Section 3 skeleton */}
+                <div className="bg-white rounded-xl border border-slate-200 px-5 py-5 shadow-sm">
+                    <div className="flex items-center gap-3 mb-6">
+                        <SkeletonBlock className="w-9 h-9 rounded-xl" />
+                        <div className="space-y-1.5">
+                            <SkeletonBlock className="h-4 w-24" />
+                            <SkeletonBlock className="h-3 w-20" />
+                        </div>
+                    </div>
+                    <div className="flex gap-2">
+                        {[0, 1, 2].map(i => (
+                            <SkeletonBlock key={i} className="w-20 h-20 rounded-lg" />
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
 
 /* ─── sub-components ──────────────────────────────────────────────── */
 
@@ -140,7 +248,7 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
     // ── Dropdown & Search States ──
     const [openDropdown, setOpenDropdown] = useState<string | null>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
-    
+
     const [moneyTypeSearch, setMoneyTypeSearch] = useState("");
     const [receiverSearch, setReceiverSearch] = useState("");
     const [recorderSearch, setRecorderSearch] = useState("");
@@ -157,11 +265,38 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
     const [activeShortcut, setActiveShortcut] = useState<string | null>(null);
     const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+    // ── IntersectionObserver for lazy map (view mode) ──
+    const [mapReady, setMapReady] = useState(false);
+    const mapContainerRef = useRef<HTMLDivElement>(null);
+
     useEffect(() => {
-        fetchAsset();
-        fetchCategories();
+        // เริ่ม fetch ทั้งคู่พร้อมกันจริงๆ
+        Promise.all([fetchAsset(), fetchCategories()]);
         if (searchParams.get("edit") === "true") setEditing(true);
     }, [id, searchParams]);
+
+    // ── Setup IntersectionObserver เมื่อ asset โหลดเสร็จและอยู่ใน view mode ──
+    useEffect(() => {
+        if (!asset?.latitude || !asset?.longitude || editing) return;
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setMapReady(true);
+                    observer.disconnect();
+                }
+            },
+            { rootMargin: "200px" } // เริ่ม load ก่อนเลื่อนถึง 200px
+        );
+
+        if (mapContainerRef.current) observer.observe(mapContainerRef.current);
+        return () => observer.disconnect();
+    }, [asset, editing]);
+
+    // reset mapReady เมื่อสลับ mode
+    useEffect(() => {
+        if (editing) setMapReady(false);
+    }, [editing]);
 
     useEffect(() => {
         const handler = (e: MouseEvent) => {
@@ -352,16 +487,16 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
     const inputCls = "w-full h-10 px-3 text-sm rounded-xl border border-slate-200 bg-white text-gray-800 focus:outline-none focus:border-blue-500 hover:border-blue-400 transition-all placeholder:text-slate-500 font-medium";
 
     const SaveChip = ({ onClick, disabled }: { onClick: () => void; disabled: boolean }) => (
-        <button type="button" 
+        <button type="button"
             onMouseDown={(e) => {
                 e.preventDefault();
                 onClick();
-            }} 
+            }}
             disabled={disabled}
             className={cn(
                 "h-10 px-4 flex items-center gap-2 rounded-xl border border-slate-200 text-xs font-bold transition-all shrink-0 shadow-sm",
-                disabled 
-                    ? "bg-gray-50 text-gray-300 cursor-not-allowed opacity-50" 
+                disabled
+                    ? "bg-gray-50 text-gray-300 cursor-not-allowed opacity-50"
                     : "bg-gray-50 text-gray-500 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600 cursor-pointer active:scale-95"
             )}>
             <Save size={12} /> บันทึก
@@ -375,14 +510,14 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
                 type === "date" ? (
                     <ThaiDateInput value={form[field] || ""} onChange={val => updateForm(field, val)} required={required} />
                 ) : (
-                    <input type={type} 
+                    <input type={type}
                         className={cn(
                             "w-full h-10 px-3 text-sm rounded-xl border border-slate-200 text-gray-800 focus:outline-none transition-all",
-                            readOnly 
-                                ? "bg-slate-100 text-slate-600 cursor-not-allowed border-slate-200 placeholder:text-slate-600 font-medium" 
+                            readOnly
+                                ? "bg-slate-100 text-slate-600 cursor-not-allowed border-slate-200 placeholder:text-slate-600 font-medium"
                                 : "bg-white hover:border-blue-400 focus:border-blue-500 placeholder:text-slate-500 font-medium"
-                        )} 
-                        min={min} value={form[field] || ""} onChange={e => !readOnly && updateForm(field, e.target.value)} 
+                        )}
+                        min={min} value={form[field] || ""} onChange={e => !readOnly && updateForm(field, e.target.value)}
                         placeholder={placeholder} required={required} readOnly={readOnly} />
                 )
             ) : (
@@ -412,7 +547,7 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
                             <div className={cn(dropdownListCls, "p-1.5 z-100")}>
                                 <div className="max-h-52 overflow-y-auto custom-scrollbar flex flex-col gap-1">
                                     {options.map(o => (
-                                        <button key={o.id} type="button" 
+                                        <button key={o.id} type="button"
                                             className={cn(dropdownItemCls, value === o.name && "bg-blue-50 text-blue-600 font-bold")}
                                             onClick={() => { updateForm(field, o.name); setOpenDropdown(null); }}>
                                             <div className="flex items-center justify-between w-full">
@@ -431,15 +566,8 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
         );
     };
 
-    /* ── loading ── */
-    if (loading) return (
-        <div className="min-h-screen bg-transparent -m-6 flex items-center justify-center">
-            <div className="flex flex-col items-center gap-3">
-                <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
-                <p className="text-sm font-medium text-slate-500">กำลังโหลดข้อมูลครุภัณฑ์...</p>
-            </div>
-        </div>
-    );
+    /* ── loading — แสดง Skeleton แทน spinner ── */
+    if (loading) return <AssetDetailSkeleton />;
 
     if (!asset) return (
         <div className="min-h-screen bg-transparent -m-6 flex items-center justify-center">
@@ -471,7 +599,6 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
                         <ArrowLeft size={20} className="text-gray-600" />
                     </button>
 
-
                     {/* Title + badge */}
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2.5">
@@ -487,7 +614,6 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
                         </div>
                         <p className="text-[22px] text-[#64748b] font-extrabold m-0 tracking-tight truncate leading-tight">{asset.assetCode}</p>
                     </div>
-
 
                     {/* ── Action Buttons ── */}
                     <div className="flex items-center gap-3 md:gap-2.5 shrink-0">
@@ -559,7 +685,6 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
                                 <div>
                                     <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">{item.label}</p>
                                     <p className="text-[13px] font-bold text-[#0f172a] mt-0.5 leading-tight">{item.value}</p>
-                                    {/* No .time property on items */}
                                 </div>
                             </div>
                         ))}
@@ -780,18 +905,33 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
                             </div>
                         )}
 
+                        {/* ── View mode map: IntersectionObserver lazy load ── */}
                         {(asset.latitude && asset.longitude && !editing) && (
-                            <div className="mt-2 rounded-xl overflow-hidden border border-slate-200">
-                                <MapPicker 
-                                    latitude={asset.latitude} 
-                                    longitude={asset.longitude} 
-                                    mapPinId={asset.mapPinId}
-                                    readOnly={true} 
-                                    zoom={18}
-                                />
+                            <div
+                                ref={mapContainerRef}
+                                className="mt-2 rounded-xl overflow-hidden border border-slate-200"
+                                style={{ minHeight: "300px" }}
+                            >
+                                {mapReady ? (
+                                    <MapPicker
+                                        latitude={asset.latitude}
+                                        longitude={asset.longitude}
+                                        mapPinId={asset.mapPinId}
+                                        readOnly={true}
+                                        zoom={18}
+                                    />
+                                ) : (
+                                    <div className="h-[300px] bg-slate-100 animate-pulse rounded-xl flex items-center justify-center">
+                                        <div className="flex flex-col items-center gap-2 text-slate-300">
+                                            <MapPin size={24} />
+                                            <span className="text-xs font-medium">กำลังโหลดแผนที่...</span>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
 
+                        {/* ── Edit mode map ── */}
                         {(editing && showMap) && (
                             <div className="mt-4 rounded-xl overflow-hidden border border-slate-200">
                                 <MapPicker
@@ -829,8 +969,8 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
                                     <button type="button" onClick={handleAddImageUrl} disabled={!form.imageUrl?.trim()}
                                         className={cn(
                                             "h-10 px-4 flex items-center gap-1.5 rounded-xl border border-slate-200 bg-gray-50 text-[12px] font-bold text-gray-500 transition-all whitespace-nowrap shadow-sm",
-                                            !form.imageUrl?.trim() 
-                                                ? "opacity-30 cursor-not-allowed" 
+                                            !form.imageUrl?.trim()
+                                                ? "opacity-30 cursor-not-allowed"
                                                 : "cursor-pointer active:scale-95 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600"
                                         )}>
                                         <Plus size={14} /> เพิ่มจากลิงก์
