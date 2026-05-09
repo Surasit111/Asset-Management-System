@@ -145,7 +145,6 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
     const [receiverSearch, setReceiverSearch] = useState("");
     const [recorderSearch, setRecorderSearch] = useState("");
     const [showMap, setShowMap] = useState(false);
-    const [loadMap, setLoadMap] = useState(false);
 
     const [showSaveReceiverConfirm, setShowSaveReceiverConfirm] = useState(false);
     const [isSavingReceiver, setIsSavingReceiver] = useState(false);
@@ -783,26 +782,13 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
 
                         {(asset.latitude && asset.longitude && !editing) && (
                             <div className="mt-2 rounded-xl overflow-hidden border border-slate-200">
-                                {!loadMap ? (
-                                    <button type="button" onClick={() => setLoadMap(true)}
-                                        className="w-full h-[300px] bg-slate-50 hover:bg-slate-100/70 flex flex-col items-center justify-center gap-2.5 transition-all duration-300 group cursor-pointer focus:outline-none">
-                                        <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center group-hover:scale-110 group-active:scale-95 transition-all shadow-sm">
-                                            <MapPin size={22} className="animate-bounce" style={{ animationDuration: '2s' }} />
-                                        </div>
-                                        <div className="text-center">
-                                            <p className="text-[14px] font-bold text-slate-700">คลิกเพื่อแสดงแผนที่พิกัด</p>
-                                            <p className="text-[11px] text-slate-500 mt-0.5 font-medium">ละติจูด: {asset.latitude} • ลองจิจูด: {asset.longitude}</p>
-                                        </div>
-                                    </button>
-                                ) : (
-                                    <MapPicker 
-                                        latitude={asset.latitude} 
-                                        longitude={asset.longitude} 
-                                        mapPinId={asset.mapPinId}
-                                        readOnly={true} 
-                                        zoom={18}
-                                    />
-                                )}
+                                <MapPicker 
+                                    latitude={asset.latitude} 
+                                    longitude={asset.longitude} 
+                                    mapPinId={asset.mapPinId}
+                                    readOnly={true} 
+                                    zoom={18}
+                                />
                             </div>
                         )}
 
