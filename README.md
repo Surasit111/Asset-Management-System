@@ -32,16 +32,17 @@
 ### 🗺️ Interactive Map
 ระบุตำแหน่งครุภัณฑ์บนแผนที่ แยกตามอาคาร/สถานที่ พร้อมแสดงรายการครุภัณฑ์ในหมุดนั้นๆ
 ![Map View](./docs/screenshots/Map.png)
+<video src="./docs/screenshots/map-video.mp4" muted autoplay loop playsinline width="100%"></video>
 
 ### 📥 Smart Excel Import
 กระบวนการนำเข้าข้อมูลจาก Excel ที่ชาญฉลาด แมปคอลัมน์อัตโนมัติ และตรวจสอบความถูกต้องก่อนบันทึก
-![Excel Import](./docs/screenshots/import-gif.gif)
+<video src="./docs/screenshots/import-video.mp4" muted autoplay loop playsinline width="100%"></video>
 
 ### 📍 Bulk Operations (Map & Images)
 จัดการตำแหน่งแผนที่และรูปภาพสำหรับหลายรายการพร้อมกันในคลิกเดียว
 | Bulk Map Pinning | Bulk Image Management |
 |:---:|:---:|
-| ![Bulk Map](./docs/screenshots/map-pin-group.gif) | ![Bulk Images](./docs/screenshots/upload-image-group.gif) |
+| <video src="./docs/screenshots/map-pin-video.mp4" muted autoplay loop playsinline width="100%"></video> | <video src="./docs/screenshots/upload-image-video.mp4" muted autoplay loop playsinline width="100%"></video> |
 
 ### 🏷️ QR Code System
 สร้างและพิมพ์ QR Code สำหรับติดบนตัวครุภัณฑ์ เพื่อการตรวจสอบที่รวดเร็ว
