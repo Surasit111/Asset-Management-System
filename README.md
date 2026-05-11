@@ -12,7 +12,6 @@
 🔗 **[Live Demo](https://asset-management-system-bice.vercel.app)**
 
 ### 🔐 Demo Credentials
-หากต้องการทดลองใช้งานผ่านระบบ Demo สามารถเข้าสู่ระบบด้วยบัญชีดังนี้:
 
 | Role | Email | Password |
 |---|---|---|
@@ -21,26 +20,6 @@
 
 > [!NOTE]
 > บัญชี Admin สามารถจัดการหมวดหมู่และผู้ใช้งานได้ ส่วนบัญชี User สามารถจัดการข้อมูลครุภัณฑ์และนำเข้า Excel ได้ตามปกติ
-
----
-
-## ✨ Key Features
-
-| Feature | รายละเอียด |
-|---|---|
-| **📥 นำเข้าข้อมูล Excel** | อ่านไฟล์ Excel แล้วแมปคอลัมน์อัตโนมัติ ตรวจสอบข้อมูลก่อนบันทึกจริง พร้อมบันทึกประวัติการนำเข้าทุกครั้ง |
-| **📤 ส่งออกรายงาน Excel** | กรองข้อมูลตามปีงบประมาณ ประเภท หรือหน่วยงาน แล้วดาวน์โหลดเป็นไฟล์ Excel พร้อม Styling และเลือกรูปแบบวันที่ได้ |
-| **🗺️ แผนที่ระบุตำแหน่ง** | ปักหมุดครุภัณฑ์บนแผนที่ Interactive แต่ละหมุดมีชื่ออาคาร รูปภาพ และรายการครุภัณฑ์ในพื้นที่นั้น |
-| **🔍 ค้นหาและกรองข้อมูล** | กรองได้หลายเงื่อนไขพร้อมกัน ผลลัพธ์แสดงทันทีโดยไม่ต้องโหลดหน้าใหม่ |
-| **☑️ เลือกหลายรายการพร้อมกัน** | เลือกหลายรายการแล้วลบ สร้าง QR Code หรือดูรูปภาพรวมได้ในคลิกเดียว |
-| **🖼️ จัดการรูปภาพกลุ่ม** | เปิดดูและจัดการรูปภาพของหลายรายการพร้อมกัน (Bulk Image Modal) |
-| **📍 ระบุพิกัดกลุ่ม** | ระบุตำแหน่งแผนที่ให้หลายรายการในคราวเดียว (Bulk Map Modal) |
-| **🔒 ระบบสิทธิ์ผู้ใช้ (RBAC)** | แยก Admin / User ชัดเจน พร้อมระบบลืมรหัสผ่านผ่าน Email |
-| **🏷️ สร้าง QR Code** | สร้าง QR Code รายเดียวหรือหลายรายการ ดาวน์โหลดหรือพิมพ์ได้ทันที |
-| **🗂️ จัดการหมวดหมู่** | เพิ่ม แก้ไข ลบหมวดหมู่และประเภทหมวดหมู่ได้แบบยืดหยุ่น |
-| **👥 จัดการผู้ใช้งาน** | Admin เพิ่มผู้ใช้ ตั้งสิทธิ์ และระงับบัญชีได้จากหน้าเดียว |
-| **🖼️ แกลเลอรีรูปภาพ** | อัปโหลด ดู และลบรูปภาพของแต่ละครุภัณฑ์ พร้อม Modal Viewer เต็มจอ |
-| **🧹 ล้างรูปภาพอัตโนมัติ** | ลบรูปภาพที่ไม่มีรายการครุภัณฑ์อ้างอิงแล้วออกโดยอัตโนมัติ |
 
 ---
 
@@ -67,6 +46,26 @@
 ### 🏷️ QR Code System
 สร้างและพิมพ์ QR Code สำหรับติดบนตัวครุภัณฑ์ เพื่อการตรวจสอบที่รวดเร็ว
 ![QR Code](./docs/screenshots/QR-Code.png)
+
+---
+
+## ✨ Key Features
+
+| Feature | รายละเอียด |
+|---|---|
+| **📥 นำเข้าข้อมูล Excel** | อ่านไฟล์ Excel แล้วแมปคอลัมน์อัตโนมัติ ตรวจสอบข้อมูลก่อนบันทึกจริง พร้อมบันทึกประวัติการนำเข้าทุกครั้ง |
+| **📤 ส่งออกรายงาน Excel** | กรองข้อมูลตามปีงบประมาณ ประเภท หรือหน่วยงาน แล้วดาวน์โหลดเป็นไฟล์ Excel พร้อม Styling และเลือกรูปแบบวันที่ได้ |
+| **🗺️ แผนที่ระบุตำแหน่ง** | ปักหมุดครุภัณฑ์บนแผนที่ Interactive แต่ละหมุดมีชื่ออาคาร รูปภาพ และรายการครุภัณฑ์ในพื้นที่นั้น |
+| **🔍 ค้นหาและกรองข้อมูล** | กรองได้หลายเงื่อนไขพร้อมกัน ผลลัพธ์แสดงทันทีโดยไม่ต้องโหลดหน้าใหม่ |
+| **☑️ เลือกหลายรายการพร้อมกัน** | เลือกหลายรายการแล้วลบ สร้าง QR Code หรือดูรูปภาพรวมได้ในคลิกเดียว |
+| **🖼️ จัดการรูปภาพกลุ่ม** | เปิดดูและจัดการรูปภาพของหลายรายการพร้อมกัน (Bulk Image Modal) |
+| **📍 ระบุพิกัดกลุ่ม** | ระบุตำแหน่งแผนที่ให้หลายรายการในคราวเดียว (Bulk Map Modal) |
+| **🔒 ระบบสิทธิ์ผู้ใช้ (RBAC)** | แยก Admin / User ชัดเจน พร้อมระบบลืมรหัสผ่านผ่าน Email |
+| **🏷️ สร้าง QR Code** | สร้าง QR Code รายเดียวหรือหลายรายการ ดาวน์โหลดหรือพิมพ์ได้ทันที |
+| **🗂️ จัดการหมวดหมู่** | เพิ่ม แก้ไข ลบหมวดหมู่และประเภทหมวดหมู่ได้แบบยืดหยุ่น |
+| **👥 จัดการผู้ใช้งาน** | Admin เพิ่มผู้ใช้ ตั้งสิทธิ์ และระงับบัญชีได้จากหน้าเดียว |
+| **🖼️ แกลเลอรีรูปภาพ** | อัปโหลด ดู และลบรูปภาพของแต่ละครุภัณฑ์ พร้อม Modal Viewer เต็มจอ |
+| **🧹 ล้างรูปภาพอัตโนมัติ** | ลบรูปภาพที่ไม่มีรายการครุภัณฑ์อ้างอิงแล้วออกโดยอัตโนมัติ |
 
 ---
 
@@ -102,75 +101,6 @@
 | จัดการหมวดหมู่ (Categories) | ✅ | ❌ |
 | จัดการผู้ใช้ (Users) | ✅ | ❌ |
 | ระงับ / ยกเลิกระงับบัญชี | ✅ | ❌ |
-
----
-
-## ⚙️ Prerequisites
-
-- **Node.js** 24.11.0 หรือสูงกว่า
-- **PostgreSQL** 14 หรือสูงกว่า (local หรือ Docker หรือ Supabase)
-- **npm** หรือ **pnpm**
-- SMTP credentials — สำหรับระบบ Forgot Password (Gmail App Password รองรับ)
-
----
-
-## 🚀 Quick Setup
-
-### 1. Clone & Install
-
-```bash
-git clone https://github.com/Surasit111/Asset-Management-System.git
-cd Asset-Management-System
-npm install
-```
-
-### 2. Configure Environment
-
-```bash
-cp .env.example .env
-```
-
-แก้ไขค่าใน `.env` ให้ตรงกับเครื่องของคุณ
-
-| Variable | ตัวอย่าง | คำอธิบาย |
-|---|---|---|
-| `DATABASE_URL` | `postgresql://.../postgres?pgbouncer=true` | PostgreSQL connection string (แนะนำให้ใช้ Pooled Connection บน Supabase) |
-| `BETTER_AUTH_SECRET` | `s3cr3t_key_min_32_chars_here!!` | Random string ≥32 ตัวอักษร สำหรับ session signing — สร้างได้ด้วย `openssl rand -base64 32` |
-| `BETTER_AUTH_URL` | `http://localhost:3000` | Base URL ที่ Better Auth ใช้สร้าง link ในอีเมล reset password |
-| `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` | Base URL ที่ Better Auth client ใช้ระบุว่า API อยู่ที่ไหน |
-| `SMTP_HOST` | `smtp.gmail.com` | SMTP server host |
-| `SMTP_PORT` | `587` | SMTP port (587 = STARTTLS, 465 = SSL) |
-| `SMTP_USER` | `your-email@gmail.com` | อีเมลผู้ส่ง |
-| `SMTP_PASS` | `xxxx xxxx xxxx xxxx` | App Password จาก Google — ต้องเปิด 2-Step Verification ก่อน |
-| `ADMIN_EMAIL` | `admin@example.com` | อีเมล Admin เริ่มต้น (ใช้ใน setup script) |
-| `ADMIN_PASSWORD` | `ChangeMe123!` | รหัสผ่าน Admin เริ่มต้น — **เปลี่ยนทันทีหลัง login** |
-| `STORAGE_PROVIDER` | `supabase` | ระบุตัวจัดการไฟล์รูปภาพ (ตัวเลือก: `local` หรือ `supabase`) |
-| `SUPABASE_URL` | `https://xxxx.supabase.co` | API URL ของ Supabase Project |
-| `SUPABASE_SERVICE_ROLE_KEY` | `eyJhbGci...` | Service Role Key สำหรับจัดการไฟล์ใน Bucket |
-
-> **Gmail App Password:** ไปที่ Google Account → Security → 2-Step Verification → App passwords → สร้าง password สำหรับ "Mail"
-
-### 3. Initialize Database
-
-```bash
-# Push schema ไปยัง database
-npx prisma db push
-
-# สร้าง Admin account (credentials จะแสดงใน console)
-npx tsx scripts/setup-system.tsx
-
-# (Optional) โหลดข้อมูลจำลอง 60 รายการ (~40 ล้านบาท) สำหรับ demo
-npx tsx scripts/seed-assets.tsx
-```
-
-> **หมายเหตุ:** Credentials ของ Admin จะแสดงใน console หลัง `setup-system.tsx` สำเร็จ — **เปลี่ยนรหัสผ่านทันทีหลัง login ครั้งแรก**
-
-### 4. Start Development Server
-
-```bash
-npm run dev
-# → http://localhost:3000
-```
 
 ---
 
