@@ -18,6 +18,7 @@ import {
     Shield,
     MoreVertical,
     Settings,
+    Menu,
 } from "lucide-react";
 
 import {
@@ -34,11 +35,15 @@ import { cn } from "@/lib/utils";
 interface SidebarContextType {
     collapsed: boolean;
     setCollapsed: (collapsed: boolean) => void;
+    mobileOpen: boolean;
+    setMobileOpen: (open: boolean) => void;
 }
 
 export const SidebarContext = createContext<SidebarContextType>({
     collapsed: true,
     setCollapsed: () => {},
+    mobileOpen: false,
+    setMobileOpen: () => {},
 });
 
 export const useSidebar = () => useContext(SidebarContext);
@@ -83,10 +88,19 @@ export default function ClientLayout({
     const router = useRouter();
     const { data: clientSession } = useSession();
     const [mounted, setMounted] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
         setMounted(true);
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768);
+        };
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
     }, []);
+
+    const displayCollapsed = isMobile ? false : collapsed;
 
     // Use initialSession from server for first render, then fallback to clientSession if updated
     const session = clientSession || initialSession;
@@ -105,7 +119,7 @@ export default function ClientLayout({
     };
 
     return (
-        <div style={{ display: "flex", minHeight: "100vh", "--sidebar-width": collapsed ? "4.5rem" : "16rem" } as any}>
+        <div style={{ display: "flex", minHeight: "100vh", "--sidebar-width": displayCollapsed ? "4.5rem" : "16rem" } as any}>
             {/* Mobile overlay */}
             {mobileOpen && (
                 <div
@@ -114,7 +128,7 @@ export default function ClientLayout({
                         position: "fixed",
                         inset: 0,
                         background: "rgba(0,0,0,0.5)",
-                        zIndex: 90,
+                        zIndex: 115,
                     }}
                 />
             )}
@@ -122,7 +136,7 @@ export default function ClientLayout({
             {/* Sidebar */}
             <aside
                 style={{
-                    width: collapsed ? "4.5rem" : "16rem",
+                    width: displayCollapsed ? "4.5rem" : "16rem",
                     background: "#fdfdfd",
                     color: "#1e293b",
                     display: "flex",
@@ -130,7 +144,7 @@ export default function ClientLayout({
                     transition: "width 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                     position: "relative",
                     flexShrink: 0,
-                    zIndex: 100,
+                    zIndex: 30,
                     boxShadow: "none",
                     borderRight: "1px solid #cbd5e1",
                     overflow: "hidden",
@@ -172,7 +186,7 @@ export default function ClientLayout({
                     </div>
                     <div style={{
                         flex: 1,
-                        opacity: collapsed ? 0 : 1,
+                        opacity: displayCollapsed ? 0 : 1,
                         transition: "opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                         overflow: "hidden",
                         whiteSpace: "nowrap",
@@ -212,18 +226,18 @@ export default function ClientLayout({
                             height: "2rem",
                             display: "flex",
                             alignItems: "center",
-                            justifyContent: collapsed ? "center" : "flex-start",
+                            justifyContent: displayCollapsed ? "center" : "flex-start",
                             fontSize: "0.8125rem",
                             fontWeight: 800,
                             color: "#1e293b",
                             textTransform: "uppercase",
-                            letterSpacing: collapsed ? "0.1em" : "0.025em",
-                            padding: collapsed ? 0 : "0 0.75rem",
+                            letterSpacing: displayCollapsed ? "0.1em" : "0.025em",
+                            padding: displayCollapsed ? 0 : "0 0.75rem",
                             overflow: "hidden",
                             transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                             opacity: 0.6
                         }}>
-                            {collapsed ? "..." : "เมนู"}
+                            {displayCollapsed ? "..." : "เมนู"}
                         </div>
 
                         {basicMenuItems.map((item) => {
@@ -237,7 +251,7 @@ export default function ClientLayout({
                                     key={item.href}
                                     href={item.href}
                                     onClick={() => setMobileOpen(false)}
-                                    title={collapsed ? item.label : undefined}
+                                    title={displayCollapsed ? item.label : undefined}
                                     style={{
                                         display: "flex",
                                         alignItems: "center",
@@ -274,7 +288,7 @@ export default function ClientLayout({
                                     </div>
                                     <div style={{
                                         flex: 1,
-                                        opacity: collapsed ? 0 : 1,
+                                        opacity: displayCollapsed ? 0 : 1,
                                         transition: "opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                                         overflow: "hidden",
                                     }}>
@@ -291,13 +305,13 @@ export default function ClientLayout({
                                     height: "2.5rem",
                                     display: "flex",
                                     alignItems: "center",
-                                    justifyContent: collapsed ? "center" : "flex-start",
+                                    justifyContent: displayCollapsed ? "center" : "flex-start",
                                     fontSize: "0.8125rem",
                                     fontWeight: 800,
                                     color: "#1e293b",
                                     textTransform: "uppercase",
-                                    letterSpacing: collapsed ? "0.1em" : "0.025em",
-                                    padding: collapsed ? 0 : "0 0.75rem",
+                                    letterSpacing: displayCollapsed ? "0.1em" : "0.025em",
+                                    padding: displayCollapsed ? 0 : "0 0.75rem",
                                     overflow: "hidden",
                                     transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                                     marginTop: "0.25rem",
@@ -306,7 +320,7 @@ export default function ClientLayout({
                                     <div style={{
                                         whiteSpace: "nowrap",
                                     }}>
-                                        {collapsed ? "..." : "ผู้ดูแลระบบ"}
+                                        {displayCollapsed ? "..." : "ผู้ดูแลระบบ"}
                                     </div>
                                 </div>
 
@@ -319,7 +333,7 @@ export default function ClientLayout({
                                             key={item.href}
                                             href={item.href}
                                             onClick={() => setMobileOpen(false)}
-                                            title={collapsed ? item.label : undefined}
+                                            title={displayCollapsed ? item.label : undefined}
                                             style={{
                                                 display: "flex",
                                                 alignItems: "center",
@@ -356,7 +370,7 @@ export default function ClientLayout({
                                             </div>
                                             <div style={{
                                                 flex: 1,
-                                                opacity: collapsed ? 0 : 1,
+                                                opacity: displayCollapsed ? 0 : 1,
                                                 transition: "opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                                                 overflow: "hidden",
                                             }}>
@@ -376,7 +390,7 @@ export default function ClientLayout({
                     {session?.user && (() => {
                         const profileButton = (
                             <button
-                                title={collapsed ? session.user.name ?? "โปรไฟล์" : undefined}
+                                title={displayCollapsed ? session.user.name ?? "โปรไฟล์" : undefined}
                                 style={{
                                     display: "flex",
                                     alignItems: "center",
@@ -429,7 +443,7 @@ export default function ClientLayout({
                                 </div>
                                 <div style={{
                                     flex: 1,
-                                    opacity: collapsed ? 0 : 1,
+                                    opacity: displayCollapsed ? 0 : 1,
                                     transition: "opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                                     overflow: "hidden",
                                     minWidth: 0,
@@ -464,8 +478,8 @@ export default function ClientLayout({
                                     </div>
                                 </div>
                                 <div style={{
-                                    width: collapsed ? 0 : "2rem",
-                                    opacity: collapsed ? 0 : 0.4,
+                                    width: displayCollapsed ? 0 : "2rem",
+                                    opacity: displayCollapsed ? 0 : 0.4,
                                     overflow: "hidden",
                                     transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                                     display: "flex",
@@ -486,18 +500,10 @@ export default function ClientLayout({
                                     {profileButton}
                                 </PopoverTrigger>
                                 <PopoverContent
-                                    side="right"
-                                    align="end"
+                                    side={isMobile ? "top" : "right"}
+                                    align={isMobile ? "center" : "end"}
                                     sideOffset={10}
-                                    style={{
-                                        width: "200px",
-                                        padding: "0.5rem",
-                                        borderRadius: "var(--radius-md)",
-                                        boxShadow: "var(--shadow-xl)",
-                                        border: "1px solid #e2e8f0",
-                                        background: "white",
-                                        zIndex: 100
-                                    }}
+                                    className="w-[200px] p-2 bg-white border border-slate-200 shadow-xl z-150"
                                 >
                                     <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
                                         <button
@@ -602,11 +608,11 @@ export default function ClientLayout({
                         }}
                     >
                         <div style={{ width: "3.25rem", display: "flex", justifyContent: "center", flexShrink: 0, marginLeft: "-0.25rem" }}>
-                            {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+                            {displayCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
                         </div>
                         <div style={{
                             flex: 1,
-                            opacity: collapsed ? 0 : 1,
+                            opacity: displayCollapsed ? 0 : 1,
                             transition: "opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                             overflow: "hidden",
                         }}>
@@ -616,7 +622,7 @@ export default function ClientLayout({
                 </div>
             </aside>
 
-            {/* Main Content */}
+             {/* Main Content */}
             <div
                 id="main-scroll"
                 style={{
@@ -628,8 +634,55 @@ export default function ClientLayout({
                     background: "#fdfdfd",
                 }}
             >
-                <main style={{ padding: "1.5rem" }}>
-                    <SidebarContext.Provider value={{ collapsed, setCollapsed }}>
+                {/* Mobile Top Navbar */}
+                <header className="mobile-navbar" style={{
+                    display: "none",
+                    height: "4.5rem",
+                    borderBottom: "1px solid #cbd5e1",
+                    background: "#ffffff",
+                    alignItems: "center",
+                    padding: "0 1.25rem",
+                    position: "relative",
+                    zIndex: 80,
+                    justifyContent: "space-between",
+                }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                        <button
+                            onClick={() => setMobileOpen(true)}
+                            style={{
+                                background: "transparent",
+                                border: "none",
+                                padding: "0.5rem",
+                                cursor: "pointer",
+                                color: "#1e293b",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                marginLeft: "-0.5rem",
+                            }}
+                            aria-label="เปิดเมนู"
+                        >
+                            <Menu size={24} />
+                        </button>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                            <div style={{
+                                width: "2rem",
+                                height: "2rem",
+                                background: "#2563eb",
+                                borderRadius: "8px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                            }}>
+                                <Package size={14} color="white" />
+                            </div>
+                            <span style={{ fontSize: "0.95rem", fontWeight: 700, color: "#1e293b" }}>ระบบครุภัณฑ์</span>
+                        </div>
+                    </div>
+                </header>
+
+                <main className="main-content-container" style={{ padding: "1.5rem" }}>
+                    <SidebarContext.Provider value={{ collapsed, setCollapsed, mobileOpen, setMobileOpen }}>
                         {children}
                     </SidebarContext.Provider>
                 </main>
@@ -644,9 +697,15 @@ export default function ClientLayout({
             left: 0;
             transform: translateX(${mobileOpen ? "0" : "-100%"});
             width: 16rem !important;
+            z-index: 120 !important;
+            box-shadow: ${mobileOpen ? "4px 0 24px rgba(0,0,0,0.15)" : "none"} !important;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
           }
-          .mobile-menu-btn {
+          .mobile-navbar {
             display: flex !important;
+          }
+          .main-content-container {
+            padding: 1rem !important;
           }
           div[style*="marginLeft"] {
             margin-left: 0 !important;

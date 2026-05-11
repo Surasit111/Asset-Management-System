@@ -14,6 +14,7 @@ import {
     Settings,
     Check,
     ChevronDown,
+    Menu,
 } from "lucide-react";
 
 const LocationManager = dynamic(
@@ -24,6 +25,8 @@ const LocationManager = dynamic(
 import { AssetMapHandle } from "@/components/map/asset-map";
 import { type ImageAdjustment } from "@/components/map/image-adjustment";
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence, useDragControls } from "framer-motion";
+import { useSidebar } from "../client-layout";
 
 const AssetMap = dynamic(() => import("@/components/map/asset-map"), {
     ssr: false,
@@ -103,7 +106,9 @@ const DEFAULT_FILTERS = {
 
 // [FIX #7] ลบ ITEMS_PER_PAGE ที่ชนกับ totalPages dead code ออก
 // ใช้ค่าตรงๆ ใน sidebarTotalPages แทน
-const SIDEBAR_ITEMS_PER_PAGE = 10;
+const SIDEBAR_ITEMS_PER_PAGE_DESKTOP = 10;
+const SIDEBAR_ITEMS_PER_PAGE_MOBILE = 10;
+const SLIDE_DURATION = 300;
 
 function PillButton({ label, isActive, onClick }: {
     label: string; isActive: boolean; onClick: () => void;
@@ -239,24 +244,50 @@ export default function MapPage() {
     const [panelOpen, setPanelOpen] = useState(false);
     const [activeTab, setActiveTab] = useState<'pins' | 'filters'>('pins');
 
+    const [isDragging, setIsDragging] = useState(false);
+    const [dragY, setDragY] = useState(0);
     const [showLocationManager, setShowLocationManager] = useState(false);
     const [editingPinId, setEditingPinId] = useState<string | null>(null);
+    const startYRef = useRef(0);
+    const currentYRef = useRef(0);
     const mapRef = useRef<AssetMapHandle>(null);
-    const [mounted, setMounted] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+    const [showMobileSidebar, setShowMobileSidebar] = useState(false);
 
     // [FIX #1] AbortController refs สำหรับทุก fetch
     const assetsAbortRef = useRef<AbortController | null>(null);
     const categoriesAbortRef = useRef<AbortController | null>(null);
     const pinsAbortRef = useRef<AbortController | null>(null);
 
+    const { setMobileOpen: setGlobalMobileOpen } = useSidebar();
+
+    const [mounted, setMounted] = useState(false);
+
     useEffect(() => { setMounted(true); }, []);
 
     useEffect(() => {
-        if (!showLocationManager && mounted) {
-            const timer = setTimeout(() => { mapRef.current?.invalidateSize(); }, 50);
+        const mql = window.matchMedia("(max-width: 1023px)");
+        setIsMobile(mql.matches);
+        const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+        mql.addEventListener("change", handler);
+        return () => mql.removeEventListener("change", handler);
+    }, []);
+
+    // [FIX] Lock body scroll on mobile to prevent dual scrollbars
+    useEffect(() => {
+        if (mounted && isMobile) {
+            const originalOverflow = document.body.style.overflow;
+            document.body.style.overflow = 'hidden';
+            return () => { document.body.style.overflow = originalOverflow; };
+        }
+    }, [mounted, isMobile]);
+
+    useEffect(() => {
+        if (mounted) {
+            const timer = setTimeout(() => { mapRef.current?.invalidateSize(); }, 150);
             return () => clearTimeout(timer);
         }
-    }, [showLocationManager, mounted]);
+    }, [showLocationManager, mounted, panelOpen, showMobileSidebar, isMobile]);
 
     const [filters, setFilters] = useState(DEFAULT_FILTERS);
     const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -466,12 +497,13 @@ export default function MapPage() {
         return filtered.filter(a => a.mapPinId === panelPinId);
     }, [filtered, panelPinId]);
 
+    const itemsPerPage = isMobile ? SIDEBAR_ITEMS_PER_PAGE_MOBILE : SIDEBAR_ITEMS_PER_PAGE_DESKTOP;
     const paginatedSidebarAssets = useMemo(() => {
-        const start = (sidebarPage - 1) * SIDEBAR_ITEMS_PER_PAGE;
-        return sidebarAssets.slice(start, start + SIDEBAR_ITEMS_PER_PAGE);
-    }, [sidebarAssets, sidebarPage]);
+        const start = (sidebarPage - 1) * itemsPerPage;
+        return sidebarAssets.slice(start, start + itemsPerPage);
+    }, [sidebarAssets, sidebarPage, itemsPerPage]);
 
-    const sidebarTotalPages = Math.max(1, Math.ceil(sidebarAssets.length / SIDEBAR_ITEMS_PER_PAGE));
+    const sidebarTotalPages = Math.max(1, Math.ceil(sidebarAssets.length / itemsPerPage));
 
     useEffect(() => { setSidebarPage(1); }, [panelPinId]);
 
@@ -479,14 +511,41 @@ export default function MapPage() {
 
     const closeSidebar = useCallback(() => {
         setPanelOpen(false);
+        setSelectedPinId(null);
+        mapRef.current?.setActivePinExternal(null);
         setTimeout(() => {
             setPanelPinId(null);
             mapRef.current?.invalidateSize();
         }, SLIDE_DURATION);
     }, []);
 
+    const onTouchStart = (e: React.TouchEvent | React.MouseEvent) => {
+        if (!isMobile) return;
+        const y = 'touches' in e ? e.touches[0].clientY : e.clientY;
+        startYRef.current = y;
+        currentYRef.current = y;
+        setIsDragging(true);
+    };
+
+    const onTouchMove = (e: React.TouchEvent | React.MouseEvent) => {
+        if (!isDragging || !isMobile) return;
+        const y = 'touches' in e ? e.touches[0].clientY : e.clientY;
+        const delta = y - startYRef.current;
+        if (delta > 0) {
+            setDragY(delta);
+        }
+    };
+
+    const onTouchEnd = () => {
+        if (!isMobile) return;
+        setIsDragging(false);
+        if (dragY > 120) {
+            closeSidebar();
+        }
+        setDragY(0);
+    };
+
     const handlePinClick = useCallback((pinId: string | null) => {
-        // [FIX #3] รับ null แทน empty string — type-safe
         if (!pinId) {
             closeSidebar();
             setSelectedPinId(null);
@@ -524,15 +583,19 @@ export default function MapPage() {
         return pages;
     };
 
+    if (!mounted) return null;
+
     return (
         <div style={{
-            position: 'relative', height: '100vh', margin: '-1.5rem',
+            position: 'relative',
+            height: isMobile ? 'calc(100dvh - 4.5rem)' : '100vh',
+            margin: isMobile ? '-1rem' : '-1.5rem',
             background: '#f1f5f9', display: 'flex', flexDirection: 'column',
             overflow: 'hidden',
             fontFamily: 'var(--font-plus-jakarta), var(--font-noto-sans-thai), sans-serif'
         }}>
             <style>{`
-                .map-sidebar-light { scrollbar-width: thin; scrollbar-color: #e5e7eb transparent; }
+                .map-sidebar-light { scrollbar-width: thin; scrollbar-color: #e5e7eb transparent; overflow-x: hidden; }
                 .map-sidebar-light::-webkit-scrollbar { width: 3px; }
                 .map-sidebar-light::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
 
@@ -575,19 +638,24 @@ export default function MapPage() {
                 .sidebar-asset-panel {
                     position: absolute; top: 0; right: 0; bottom: 0; width: 380px;
                     background: #ffffff; border-left: 1px solid #e5e7eb;
-                    display: flex; flex-direction: column; z-index: 20;
-                    opacity: 0; pointer-events: none; transform: translateY(10px);
-                    transition: opacity 0.25s ease, transform 0.25s ease;
+                    display: flex; flex-direction: column; z-index: 60;
                     overflow: hidden;
                 }
-                .sidebar-asset-panel.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+
+                @media (max-width: 1023px) {
+                    .sidebar-asset-panel {
+                        top: auto; left: 0; right: 0; width: 100%; height: 57vh;
+                        border-left: none; border-top: 1px solid #e5e7eb;
+                        border-radius: 24px 24px 0 0;
+                    }
+                }
 
                 .leaflet-marker-pane { z-index: 10000 !important; }
                 .leaflet-tooltip-pane { z-index: 10001 !important; }
 
                 .label-tag-light {
                     display: block; font-size: 9px; font-weight: 700; letter-spacing: 0.15em;
-                    color: #9ca3af; margin-bottom: 6px;
+                    color: #9ca3af; margin-bottom: 6px; margin-left: 4px;
                 }
 
                 .scan-line {
@@ -611,9 +679,9 @@ export default function MapPage() {
             `}</style>
 
             {/* ── HEADER ── */}
-            <header style={{
+            <header className="hidden lg:flex" style={{
                 height: '80px', background: '#ffffff', borderBottom: '1px solid #cbd5e1',
-                display: 'flex', alignItems: 'center', padding: '0 20px', gap: '16px',
+                alignItems: 'center', padding: '0 20px', gap: '16px',
                 flexShrink: 0, zIndex: 50,
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -648,11 +716,45 @@ export default function MapPage() {
                 </button>
             </header>
 
-            {/* ── BODY ── */}
-            <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+            {/* Mobile Header */}
+            <header className="flex lg:hidden h-16 items-center px-4 gap-3 bg-white shadow-sm shrink-0 z-50 border-b border-slate-200">
+                <button
+                    onClick={() => setShowMobileSidebar(!showMobileSidebar)}
+                    className="w-11 h-11 flex items-center justify-center rounded-xl bg-slate-50 text-slate-600 border border-slate-200"
+                >
+                    <Settings size={20} />
+                </button>
+                <div className="flex-1">
+                    <div className="text-[15px] font-extrabold text-[#0f172a] leading-tight">แผนที่ครุภัณฑ์</div>
+                    <div className="flex gap-2.5 text-[12px] font-semibold text-slate-500 mt-0.5">
+                        <span>สถานที่ <span className="text-blue-600">{masterPins.length}</span></span>
+                        <span>ครุภัณฑ์ <span className="text-blue-600">{assets.length}</span></span>
+                    </div>
+                </div>
+                <button onClick={() => { setEditingPinId(null); setShowLocationManager(true); }}
+                    className="w-11 h-11 flex items-center justify-center rounded-xl bg-blue-600 text-white shadow-md active:scale-95 transition-transform">
+                    <Plus size={22} />
+                </button>
+            </header>
 
-                {/* LEFT PANEL */}
-                <aside style={{ width: '264px', background: '#ffffff', borderRight: '1px solid #e5e7eb', display: 'flex', flexDirection: 'column', flexShrink: 0, zIndex: 20 }}>
+            {/* ── BODY ── */}
+            <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+
+                {/* MOBILE SIDEBAR BACKDROP */}
+                <AnimatePresence>
+                    {showMobileSidebar && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setShowMobileSidebar(false)}
+                            className="lg:hidden absolute inset-0 bg-slate-900/40 backdrop-blur-sm z-40"
+                        />
+                    )}
+                </AnimatePresence>
+
+                {/* LEFT PANEL (Desktop) */}
+                <aside className="hidden lg:flex" style={{ width: '264px', background: '#ffffff', borderRight: '1px solid #e5e7eb', flexDirection: 'column', flexShrink: 0, zIndex: 20 }}>
                     <div style={{ padding: '12px 14px', borderBottom: '1px solid #f3f4f6', display: 'flex', justifyContent: 'center' }}>
                         <div style={{ display: 'flex', gap: '2px', background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '4px', borderRadius: '12px' }}>
                             <PillButton label="สถานที่ปักหมุด" isActive={activeTab === 'pins'} onClick={() => setActiveTab('pins')} />
@@ -660,7 +762,7 @@ export default function MapPage() {
                         </div>
                     </div>
 
-                    <div className="map-sidebar-light" style={{ flex: 1, overflowY: 'auto', padding: '10px' }}>
+                    <div className="map-sidebar-light" style={{ flex: 1, overflowY: 'auto', padding: isMobile ? '16px' : '10px' }}>
                         {/* TAB: สถานที่ปักหมุด */}
                         <div style={{ display: activeTab === 'pins' ? 'flex' : 'none', flexDirection: 'column', gap: '8px' }}>
                             {masterPins.length === 0 ? (
@@ -677,12 +779,12 @@ export default function MapPage() {
                                     onClick={() => {
                                         if (selectedPinId === pin.id) {
                                             mapRef.current?.setActivePinExternal(null);
-                                            // [FIX #3] ส่ง null แทน empty string
                                             handlePinClick(null);
                                         } else {
-                                            mapRef.current?.flyTo(pin.latitude, pin.longitude, 20);
+                                            mapRef.current?.flyTo(Number(pin.latitude), Number(pin.longitude), 20);
                                             mapRef.current?.setActivePinExternal(pin.id);
                                             handlePinClick(pin.id);
+                                            if (isMobile) setShowMobileSidebar(false);
                                         }
                                     }}
                                 />
@@ -690,7 +792,7 @@ export default function MapPage() {
                         </div>
 
                         {/* TAB: ตัวกรองข้อมูล */}
-                        <div className="map-sidebar-light" style={{ display: activeTab === 'filters' ? 'flex' : 'none', flexDirection: 'column', gap: '16px', paddingBottom: '16px' }}>
+                        <div style={{ display: activeTab === 'filters' ? 'flex' : 'none', flexDirection: 'column', gap: '16px', paddingBottom: '16px' }}>
                             {renderSelect(
                                 "department", "หน่วยงาน",
                                 [{ id: "all", name: "ทุกหน่วยงาน" }, ...departments.map(d => ({ id: d, name: d }))],
@@ -748,7 +850,7 @@ export default function MapPage() {
                             {renderSelect("moneyType", "ประเภทเงิน", [{ id: "all", name: "ทุกประเภทเงิน" }, ...moneyTypes.map(m => ({ id: m, name: m }))], "ทุกประเภทเงิน", filters.moneyType, 'top')}
 
                             <div className="divider-light" />
-                            <button onClick={handleClearFilters} className="active:scale-95"
+                            <button onClick={() => { handleClearFilters(); if (isMobile) setShowMobileSidebar(false); }} className="active:scale-95"
                                 style={{
                                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
                                     padding: '8px 12px', borderRadius: '12px', width: '100%',
@@ -768,6 +870,99 @@ export default function MapPage() {
                         </div>
                     </div>
                 </aside>
+
+                {/* MOBILE SIDEBAR (Overlay for Filters/Pins on Mobile) */}
+                <div className={cn(
+                    "fixed lg:hidden top-0 bottom-0 left-0 w-[280px] bg-white z-100 border-r border-slate-200 flex flex-col transition-transform duration-300 ease-in-out shadow-2xl",
+                    showMobileSidebar ? "translate-x-0" : "-translate-x-full"
+                )}>
+                    <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+                        <div className="text-[14px] font-bold text-slate-900">ตัวเลือกแผนที่</div>
+                        <button onClick={() => setShowMobileSidebar(false)} className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400">
+                            <X size={18} />
+                        </button>
+                    </div>
+                    
+                    <div className="p-3 border-b border-slate-50 flex justify-center">
+                        <div className="flex gap-1 bg-slate-100 p-1 rounded-xl w-full">
+                            <button onClick={() => setActiveTab('pins')} className={cn("flex-1 py-2 rounded-lg text-[12px] font-bold transition-all", activeTab === 'pins' ? "bg-white text-blue-600 shadow-sm" : "text-slate-500")}>สถานที่</button>
+                            <button onClick={() => setActiveTab('filters')} className={cn("flex-1 py-2 rounded-lg text-[12px] font-bold transition-all", activeTab === 'filters' ? "bg-white text-blue-600 shadow-sm" : "text-slate-500")}>ตัวกรอง</button>
+                        </div>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+                        {/* TAB: สถานที่ปักหมุด */}
+                        <div style={{ display: activeTab === 'pins' ? 'flex' : 'none', flexDirection: 'column', gap: '10px' }}>
+                            {masterPins.length === 0 ? (
+                                <div className="py-10 text-center opacity-40">
+                                    <MapPin size={32} className="mx-auto mb-2" />
+                                    <p className="text-xs">ไม่พบข้อมูลสถานที่</p>
+                                </div>
+                            ) : masterPins.map((pin) => (
+                                <PinCard key={pin.id} pin={pin} assetCount={pinAssetCounts[pin.id] ?? 0} isActive={selectedPinId === pin.id} onClick={() => { mapRef.current?.flyTo(Number(pin.latitude), Number(pin.longitude), 20); handlePinClick(pin.id); setShowMobileSidebar(false); }} />
+                            ))}
+                        </div>
+                        {/* TAB: ตัวกรองข้อมูล */}
+                        <div style={{ display: activeTab === 'filters' ? 'flex' : 'none', flexDirection: 'column', gap: '20px' }}>
+                            {renderSelect(
+                                "department", "หน่วยงาน",
+                                [{ id: "all", name: "ทุกหน่วยงาน" }, ...departments.map(d => ({ id: d, name: d }))],
+                                "ทุกหน่วยงาน", filters.department
+                            )}
+
+                            <div>
+                                <span className="label-tag-light">ประเภทครุภัณฑ์</span>
+                                <div className="flex bg-slate-50 border border-slate-200 p-1 rounded-xl h-10 items-center gap-1 w-full">
+                                    {[
+                                        { value: 'all', label: 'ทั้งหมด' },
+                                        { value: 'general', label: 'แบบทั่วไป' },
+                                        { value: 'durable', label: 'แบบคงทน' }
+                                    ].map(opt => {
+                                        const active = filters.assetType === opt.value;
+                                        const tabColor = opt.value === "all" ? "#0f172a" : opt.value === "general" ? "#2563eb" : "#f97316";
+                                        return (
+                                            <button key={opt.value} type="button"
+                                                onClick={() => updateFilter('assetType', opt.value)}
+                                                className="relative flex-1 rounded-lg border-none cursor-pointer text-[12px] font-bold transition-all duration-200 flex items-center justify-center h-8"
+                                                style={{ background: active ? tabColor : "transparent", color: active ? "#fff" : "#94a3b8" }}
+                                            >
+                                                {opt.label}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            {renderSelect(
+                                "fiscalYear", "ปีงบประมาณ",
+                                [{ id: "all", name: "ทุกปีงบประมาณ" }, ...fiscalYears.map(y => ({ id: y, name: y }))],
+                                "ทุกปีงบประมาณ", filters.fiscalYear
+                            )}
+
+                            <div className="flex flex-col gap-1.5">
+                                <span className="label-tag-light">ช่วงเดือน</span>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {renderSelect("startMonth", "", [{ id: "all", name: "เริ่มต้น" }, ...THAI_MONTHS.map(m => ({ id: m.value, name: m.label }))], "เริ่มต้น", filters.startMonth)}
+                                    {renderSelect("endMonth", "", [{ id: "all", name: "สิ้นสุด" }, ...THAI_MONTHS.map(m => ({ id: m.value, name: m.label }))], "สิ้นสุด", filters.endMonth)}
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-2">
+                                {renderSelect("status", "สถานะ", [{ id: "all", name: "ทุกสถานะ" }, ...statuses.map(s => ({ id: s, name: s }))], "ทุกสถานะ", filters.status, 'top')}
+                                {renderSelect("acquisitionMethod", "วิธีการได้มา", [{ id: "all", name: "ทุกวิธีการ" }, ...acquisitionMethods.map(a => ({ id: a, name: a }))], "ทุกวิธีการ", filters.acquisitionMethod, 'top')}
+                            </div>
+
+                            {renderSelect("moneyType", "ประเภทเงิน", [{ id: "all", name: "ทุกประเภทเงิน" }, ...moneyTypes.map(m => ({ id: m, name: m }))], "ทุกประเภทเงิน", filters.moneyType, 'top')}
+
+                            <div className="pt-2">
+                                <button onClick={() => { handleClearFilters(); setShowMobileSidebar(false); }} 
+                                    className="w-full py-3 bg-red-50 text-red-500 rounded-xl text-[13px] font-bold border border-red-100 active:scale-95 transition-all">
+                                    ล้างตัวกรองทั้งหมด
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 {/* MAP AREA */}
                 <main style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
@@ -804,40 +999,93 @@ export default function MapPage() {
                     </div>
 
                     <div style={{
-                        position: 'absolute', right: panelOpen ? '392px' : '14px', top: '14px',
+                        position: 'absolute',
+                        right: isMobile ? '12px' : (panelOpen ? '392px' : '14px'),
+                        top: isMobile ? '12px' : '14px',
                         display: 'flex', flexDirection: 'column', gap: '4px', zIndex: 50,
-                        transition: `right ${SLIDE_DURATION}ms cubic-bezier(0.4,0,0.2,1)`,
+                        transition: isMobile ? 'none' : `right ${SLIDE_DURATION}ms cubic-bezier(0.4,0,0.2,1)`,
                     }}>
                         <button className="ctrl-btn" aria-label="ขยายแผนที่" title="ขยายแผนที่" onClick={() => mapRef.current?.zoomIn()}><Plus size={15} /></button>
                         <button className="ctrl-btn" aria-label="ย่อแผนที่" title="ย่อแผนที่" onClick={() => mapRef.current?.zoomOut()}><Minus size={15} /></button>
                     </div>
 
-                    {/* ASSET DETAIL SIDEBAR */}
-                    <div className={`sidebar-asset-panel${panelOpen ? ' open' : ''}`}>
+                    {/* ASSET DETAIL SIDEBAR & BACKDROP */}
+                    <AnimatePresence>
+                        {panelOpen && (
+                            <>
+                                {/* BACKDROP (Mobile) */}
+                                {isMobile && (
+                                    <motion.div
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        onClick={() => closeSidebar()}
+                                        style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(1px)', zIndex: 55 }}
+                                    />
+                                )}
+
+                                {/* PANEL */}
+                                <div
+                                    className={cn("sidebar-asset-panel", panelOpen && "open")}
+                                    style={{
+                                        zIndex: 60,
+                                        transform: isMobile 
+                                            ? `translateY(${dragY}px)` 
+                                            : (panelOpen ? 'translateX(0)' : 'translateX(100%)'),
+                                        transition: isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.32, 0.72, 0, 1)',
+                                        pointerEvents: 'auto'
+                                    }}
+                                >
+                        {isMobile && (
+                            <div 
+                                onMouseDown={onTouchStart}
+                                onMouseMove={onTouchMove}
+                                onMouseUp={onTouchEnd}
+                                onMouseLeave={onTouchEnd}
+                                onTouchStart={onTouchStart}
+                                onTouchMove={onTouchMove}
+                                onTouchEnd={onTouchEnd}
+                                style={{ position: 'relative', width: '100%', height: '32px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'grab' }}
+                            >
+                                <div
+                                    style={{ width: '40px', height: '4px', background: '#e2e8f0', borderRadius: '2px' }}
+                                />
+                            </div>
+                        )}
                         {panelPinId && selectedPin && (
                             <div key={panelPinId} className="animate-fade-in-content">
-                                <div style={{ padding: '18px 20px 12px', borderBottom: '1px solid #f1f5f9', background: '#f9fafb', flexShrink: 0 }}>
+                                <div 
+                                    onMouseDown={isMobile ? onTouchStart : undefined}
+                                    onMouseMove={isMobile ? onTouchMove : undefined}
+                                    onMouseUp={isMobile ? onTouchEnd : undefined}
+                                    onTouchStart={isMobile ? onTouchStart : undefined}
+                                    onTouchMove={isMobile ? onTouchMove : undefined}
+                                    onTouchEnd={isMobile ? onTouchEnd : undefined}
+                                    style={{ padding: isMobile ? '8px 20px 12px' : '18px 20px 12px', borderBottom: '1px solid #f1f5f9', background: '#f9fafb', flexShrink: 0, cursor: isMobile ? 'grab' : 'default' }}
+                                >
                                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
                                         <div style={{ flex: 1, minWidth: 0 }}>
-                                            <h2 style={{ color: '#111827', fontSize: '14px', fontWeight: '800', lineHeight: 1.4, margin: '0 0 4px', whiteSpace: 'normal', wordBreak: 'break-word' }}>
+                                            <h2 style={{ color: '#111827', fontSize: isMobile ? '16px' : '14px', fontWeight: '800', lineHeight: 1.4, margin: '0 0 4px', whiteSpace: 'normal', wordBreak: 'break-word' }}>
                                                 {selectedPin.name}
                                             </h2>
                                             <div style={{ color: '#64748b', fontSize: '11px', fontWeight: '600' }}>
                                                 พบครุภัณฑ์ {sidebarAssets.length} รายการ
                                             </div>
                                         </div>
-                                        <button
-                                            onClick={() => { closeSidebar(); setSelectedPinId(null); mapRef.current?.setActivePinExternal(null); }}
-                                            style={{ width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 'none', color: '#9ca3af', cursor: 'pointer', flexShrink: 0, transition: 'all 0.15s' }}
-                                            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#f1f5f9'; (e.currentTarget as HTMLElement).style.color = '#475569'; }}
-                                            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = '#9ca3af'; }}
-                                        >
-                                            <X size={18} />
-                                        </button>
+                                        {!isMobile && (
+                                            <button
+                                                onClick={() => { closeSidebar(); setSelectedPinId(null); mapRef.current?.setActivePinExternal(null); }}
+                                                style={{ width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 'none', color: '#9ca3af', cursor: 'pointer', flexShrink: 0, transition: 'all 0.15s' }}
+                                                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#f1f5f9'; (e.currentTarget as HTMLElement).style.color = '#475569'; }}
+                                                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = '#9ca3af'; }}
+                                            >
+                                                <X size={18} />
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
 
-                                <div className="map-sidebar-light" style={{ flex: 1, overflowY: 'auto', padding: '16px 16px 24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                <div className="map-sidebar-light" style={{ flex: 1, overflowY: 'auto', padding: isMobile ? '12px 16px 80px' : '16px 16px 24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
                                     {sidebarAssets.length === 0 ? (
                                         <div style={{ padding: '40px 16px', textAlign: 'center' }}>
                                             <Box size={28} style={{ margin: '0 auto 10px', opacity: 0.15, color: '#0f172a', display: 'block' }} />
@@ -849,15 +1097,15 @@ export default function MapPage() {
                                             <a key={asset.id || `asset-${idx}`} href={`/assets/${asset.id}`}
                                                 onClick={() => window.dispatchEvent(new Event('am_saveMapState'))}
                                                 className="asset-card-sidebar">
-                                                <div style={{ position: 'relative', width: '72px', height: '72px', borderRadius: '12px', background: '#f8fafc', border: '1px solid #f1f5f9', flexShrink: 0, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                <div style={{ position: 'relative', width: isMobile ? '80px' : '72px', height: isMobile ? '80px' : '72px', borderRadius: '12px', background: '#f8fafc', border: '1px solid #f1f5f9', flexShrink: 0, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                                     {asset.images?.[0] ? (
-                                                        <Image src={asset.images[0].url} alt={asset.name} fill sizes="72px" style={{ objectFit: 'cover' }} unoptimized />
+                                                        <Image src={asset.images[0].url} alt={asset.name} fill sizes="80px" style={{ objectFit: 'cover' }} unoptimized />
                                                     ) : (
                                                         <Box size={24} style={{ opacity: 0.2, color: '#64748b' }} />
                                                     )}
                                                 </div>
                                                 <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                                                    <div className="asset-code-text" style={{ color: '#111827', fontSize: '15px', fontWeight: '700', marginBottom: '2px', transition: 'color 0.2s' }}>{asset.assetCode}</div>
+                                                    <div className="asset-code-text" style={{ color: '#111827', fontSize: isMobile ? '16px' : '15px', fontWeight: '700', marginBottom: '2px', transition: 'color 0.2s' }}>{asset.assetCode}</div>
                                                     <div className="asset-name-text" style={{
                                                         color: '#475569', fontSize: '13px', fontWeight: '500', marginBottom: '4px', lineHeight: 1.3,
                                                         display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
@@ -882,22 +1130,26 @@ export default function MapPage() {
                                 </div>
 
                                 {sidebarAssets.length > 0 && (
-                                    <div style={{ padding: '12px 16px 16px', borderTop: '1px solid #f1f5f9', background: '#fff', flexShrink: 0 }}>
+                                    <div style={{
+                                        position: isMobile ? 'absolute' : 'relative',
+                                        bottom: 0, left: 0, right: 0,
+                                        padding: '12px 16px 16px', borderTop: '1px solid #f1f5f9', background: '#fff', flexShrink: 0, zIndex: 10
+                                    }}>
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
                                             <button disabled={sidebarPage === 1} onClick={() => setSidebarPage(p => Math.max(1, p - 1))}
-                                                style={{ height: '30px', padding: '0 12px', borderRadius: '20px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '4px', background: sidebarPage === 1 ? '#f8fafc' : '#ffffff', color: sidebarPage === 1 ? '#cbd5e1' : '#64748b', cursor: sidebarPage === 1 ? 'not-allowed' : 'pointer', fontSize: '11px', fontWeight: '700' }}>
+                                                style={{ height: '36px', padding: isMobile ? '0 8px' : '0 12px', borderRadius: '20px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '4px', background: sidebarPage === 1 ? '#f8fafc' : '#ffffff', color: sidebarPage === 1 ? '#cbd5e1' : '#64748b', cursor: sidebarPage === 1 ? 'not-allowed' : 'pointer', fontSize: '11px', fontWeight: '700' }}>
                                                 <ChevronRight size={14} style={{ transform: 'rotate(180deg)' }} />
-                                                <span>ย้อนกลับ</span>
+                                                {!isMobile && <span>ย้อนกลับ</span>}
                                             </button>
 
-                                            {/* [FIX #3] buildSidebarPages type-safe (number | "dots")[] */}
                                             <div style={{ display: 'flex', gap: '4px' }}>
                                                 {buildSidebarPages().map((p, idx) =>
                                                     p === "dots" ? (
                                                         <span key={`dots-${idx}`} style={{ color: '#94a3b8', display: 'flex', alignItems: 'center', padding: '0 4px', fontSize: '11px' }}>...</span>
                                                     ) : (
                                                         <button key={p} onClick={() => setSidebarPage(p)}
-                                                            className={cn("pagination-num-btn", p === sidebarPage && "active")}>
+                                                            className={cn("pagination-num-btn", p === sidebarPage && "active")}
+                                                            style={{ width: isMobile ? '32px' : '30px', height: isMobile ? '32px' : '30px' }}>
                                                             {p}
                                                         </button>
                                                     )
@@ -905,19 +1157,22 @@ export default function MapPage() {
                                             </div>
 
                                             <button disabled={sidebarPage === sidebarTotalPages} onClick={() => setSidebarPage(p => Math.min(sidebarTotalPages, p + 1))}
-                                                style={{ height: '30px', padding: '0 12px', borderRadius: '20px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '4px', background: sidebarPage === sidebarTotalPages ? '#f8fafc' : '#ffffff', color: sidebarPage === sidebarTotalPages ? '#cbd5e1' : '#64748b', cursor: sidebarPage === sidebarTotalPages ? 'not-allowed' : 'pointer', fontSize: '11px', fontWeight: '700' }}>
-                                                <span>ถัดไป</span>
+                                                style={{ height: '36px', padding: isMobile ? '0 8px' : '0 12px', borderRadius: '20px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '4px', background: sidebarPage === sidebarTotalPages ? '#f8fafc' : '#ffffff', color: sidebarPage === sidebarTotalPages ? '#cbd5e1' : '#64748b', cursor: sidebarPage === sidebarTotalPages ? 'not-allowed' : 'pointer', fontSize: '11px', fontWeight: '700' }}>
+                                                {!isMobile && <span>ถัดไป</span>}
                                                 <ChevronRight size={14} />
                                             </button>
                                         </div>
                                         <div style={{ textAlign: 'center', fontSize: '10px', color: '#94a3b8', fontWeight: '600' }}>
-                                            แสดง {((sidebarPage - 1) * SIDEBAR_ITEMS_PER_PAGE) + 1}–{Math.min(sidebarPage * SIDEBAR_ITEMS_PER_PAGE, sidebarAssets.length)} จากทั้งหมด {sidebarAssets.length} รายการ
+                                            {!isMobile && `แสดง ${((sidebarPage - 1) * itemsPerPage) + 1}–${Math.min(sidebarPage * itemsPerPage, sidebarAssets.length)} จาก`}ทั้งหมด {sidebarAssets.length} รายการ
                                         </div>
                                     </div>
                                 )}
-                            </div>
-                        )}
-                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </>
+                )}
+            </AnimatePresence>
                 </main>
             </div>
 

@@ -466,13 +466,16 @@ export default function ProfilePage() {
                     padding: 0.5rem 0.75rem;
                     border: 1.5px solid #cbd5e1;
                     border-radius: 0.5rem;
-                    font-size: 1.5rem;
+                    font-size: 1.25rem;
                     font-weight: 700;
                     color: #1e293b;
                     background: #fff;
                     outline: none;
                     transition: border-color 0.15s;
                     box-shadow: none;
+                }
+                @media (min-width: 640px) {
+                    .profile-input { font-size: 1.5rem; }
                 }
                 .profile-input:focus { border-color: #2563eb; box-shadow: none; }
                 @keyframes spin { to { transform: rotate(360deg); } }
@@ -551,24 +554,20 @@ export default function ProfilePage() {
                 )}
             </AnimatePresence>
 
-            <div className="animate-fade-in" style={{ maxWidth: "700px", margin: "0 auto", paddingBottom: "2rem", paddingTop: "2rem" }}>
-                <motion.div
-                    layout
-                    className="card"
-                    style={{
-                        padding: "2rem",
-                        position: "relative",
-                        overflow: "visible",
-                        border: "1px solid #e2e8f0",
-                        background: "#ffffff",
-                        borderRadius: "1.25rem",
-                        boxShadow: "0 0 40px rgba(0,0,0,0.06), 0 0 20px rgba(0,0,0,0.04), 0 2px 10px rgba(0,0,0,0.02)",
-                    }}
-                >
-                    {/* Header: Avatar + Name */}
-                    <div style={{ display: "flex", gap: "1.5rem", alignItems: "center", marginBottom: "2rem" }}>
-                        {/* Avatar */}
-                        <div style={{ position: "relative" }} className="avatar-wrapper" ref={menuRef}>
+            <div className="animate-fade-in" style={{ maxWidth: "700px", margin: "0 auto" }}>
+                <main className="px-0 sm:px-4 lg:px-0 pt-0 sm:pt-8 pb-10">
+                    <motion.div
+                        layout
+                        className="bg-white sm:rounded-2xl sm:border border-slate-200 overflow-visible sm:shadow-[0_0_40px_rgba(0,0,0,0.06)]"
+                        style={{
+                            padding: "1.5rem sm:padding-2rem", // We'll handle this with tailwind-ish thinking or manual
+                        }}
+                    >
+                        <div className="px-5 sm:px-8 py-8 sm:py-10">
+                        {/* Header: Avatar + Name */}
+                        <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-center text-center sm:text-left mb-8 sm:mb-12">
+                            {/* Avatar */}
+                            <div style={{ position: "relative" }} className="avatar-wrapper shrink-0" ref={menuRef}>
                             <motion.div
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
@@ -578,13 +577,14 @@ export default function ProfilePage() {
                                     !image && getAvatarColor(name || "U")
                                 )}
                                 style={{
-                                    width: "6rem", height: "6rem",
+                                    width: "7rem", height: "7rem", // Larger avatar for better impact
                                     position: "relative",
-                                    border: "2px solid #e2e8f0",
+                                    border: "3px solid #f1f5f9",
                                     cursor: "pointer",
                                     color: "white",
-                                    fontSize: "2rem",
-                                    fontWeight: 700
+                                    fontSize: "2.5rem",
+                                    fontWeight: 700,
+                                    boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1)"
                                 }}
                             >
                                 {image ? (
@@ -623,7 +623,7 @@ export default function ProfilePage() {
                                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
                                         style={{
                                             position: "absolute",
-                                            top: "100%", left: 0, marginTop: "0.5rem",
+                                            top: "100%", left: "50%", transform: "translateX(-50%)", marginTop: "0.75rem",
                                             background: "white", borderRadius: "1rem",
                                             boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)",
                                             border: "1px solid #e2e8f0",
@@ -673,11 +673,11 @@ export default function ProfilePage() {
                         </div>
 
                         {/* Name & Actions */}
-                        <div style={{ flex: 1 }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
-                                <div style={{ flex: 1 }}>
-                                    {isEditing ? (
-                                        <input
+                                <div className="flex-1 w-full">
+                                    <div className="flex flex-col sm:flex-row items-center sm:items-end justify-between gap-4">
+                                        <div className="w-full">
+                                            {isEditing ? (
+                                                <input
                                             type="text"
                                             value={name}
                                             onChange={(e) => setName(e.target.value)}
@@ -686,84 +686,80 @@ export default function ProfilePage() {
                                             autoFocus
                                             onKeyDown={e => { if (e.key === "Enter") handleSave(); if (e.key === "Escape") { setIsEditing(false); setName(session.user.name); } }}
                                         />
-                                    ) : (
-                                        <h1 style={{ fontSize: "1.75rem", fontWeight: 700, color: "var(--text-primary)" }}>
-                                            {name}
-                                        </h1>
-                                    )}
-                                </div>
+                                            ) : (
+                                                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 m-0 tracking-tight">
+                                                    {name}
+                                                </h1>
+                                            )}
+                                        </div>
 
-                                {!isEditing ? (
-                                    <button
-                                        onClick={() => setIsEditing(true)}
-                                        className="btn btn-outline"
-                                        style={{
-                                            display: "flex", alignItems: "center", gap: "0.5rem",
-                                            padding: "0.5rem 1rem", borderRadius: "0.75rem",
-                                            fontSize: "0.875rem", fontWeight: 600, cursor: "pointer"
-                                        }}
-                                    >
-                                        <Edit2 size={16} />
-                                        แก้ไขชื่อ
-                                    </button>
-                                ) : (
-                                    <div style={{ display: "flex", gap: "0.5rem" }}>
-                                        <button
-                                            onClick={() => { setIsEditing(false); setName(session.user.name); }}
-                                            disabled={saving}
-                                            className="btn btn-ghost"
-                                            style={{ padding: "0.5rem", borderRadius: "0.5rem", cursor: "pointer" }}
-                                        >
-                                            <X size={16} />
-                                        </button>
-                                        <button
-                                            onClick={handleSave}
-                                            disabled={saving}
-                                            className="btn btn-primary"
-                                            style={{
-                                                display: "flex", alignItems: "center", gap: "0.5rem",
-                                                padding: "0.5rem 1rem", borderRadius: "0.5rem",
-                                                fontWeight: 600, cursor: "pointer", fontSize: "0.875rem"
-                                            }}
-                                        >
-                                            {saving ? <Loader2 size={14} style={{ animation: "spin 1s linear infinite" }} /> : <Save size={14} />}
-                                            บันทึก
-                                        </button>
+                                        {!isEditing ? (
+                                            <button
+                                                onClick={() => setIsEditing(true)}
+                                                className="btn btn-outline shrink-0"
+                                                style={{
+                                                    display: "flex", alignItems: "center", gap: "0.5rem",
+                                                    padding: "0.625rem 1.25rem", borderRadius: "0.75rem",
+                                                    fontSize: "0.875rem", fontWeight: 700, cursor: "pointer",
+                                                    border: "1.5px solid #e2e8f0"
+                                                }}
+                                            >
+                                                <Edit2 size={16} />
+                                                แก้ไขชื่อ
+                                            </button>
+                                        ) : (
+                                            <div style={{ display: "flex", gap: "0.5rem" }} className="shrink-0">
+                                                <button
+                                                    onClick={() => { setIsEditing(false); setName(session.user.name); }}
+                                                    disabled={saving}
+                                                    className="btn btn-ghost"
+                                                    style={{ width: "2.75rem", height: "2.75rem", borderRadius: "0.75rem", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                                                >
+                                                    <X size={20} />
+                                                </button>
+                                                <button
+                                                    onClick={handleSave}
+                                                    disabled={saving}
+                                                    className="btn btn-primary"
+                                                    style={{
+                                                        display: "flex", alignItems: "center", gap: "0.5rem",
+                                                        padding: "0.625rem 1.5rem", borderRadius: "0.75rem",
+                                                        fontWeight: 700, cursor: "pointer", fontSize: "0.875rem"
+                                                    }}
+                                                >
+                                                    {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                                                    บันทึก
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
-                                )}
+                                </div>
+                            </div>
+
+                            {/* Info Rows */}
+                            <div className="flex flex-col gap-1 mt-4 sm:mt-0">
+                                {[
+                                    { icon: <Mail size={19} />, label: "อีเมล", value: session.user.email },
+                                    { icon: <Shield size={19} />, label: "บทบาท", value: (session.user as any).role || "User" },
+                                    {
+                                        icon: <Calendar size={19} />, label: "วันที่สมัคร",
+                                        value: session.user.createdAt ? formatDate(session.user.createdAt.toString()) : "-"
+                                    },
+                                ].map((row, i) => (
+                                    <div key={i} className="flex items-center gap-4 py-4 sm:py-5 border-t border-slate-100 last:border-b last:sm:border-b-0">
+                                        <div className="w-11 h-11 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 shrink-0 border border-slate-50">
+                                            {row.icon}
+                                        </div>
+                                        <div className="min-w-0">
+                                            <p className="text-[12px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">{row.label}</p>
+                                            <p className="text-[15px] sm:text-[16px] font-bold text-slate-700 truncate">{row.value}</p>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
-                    </div>
-
-                    {/* Info Rows */}
-                    <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-                        {[
-                            { icon: <Mail size={18} />, label: "อีเมล", value: session.user.email },
-                            { icon: <Shield size={18} />, label: "บทบาท", value: (session.user as any).role || "User" },
-                            {
-                                icon: <Calendar size={18} />, label: "วันที่สมัคร",
-                                value: session.user.createdAt ? formatDate(session.user.createdAt.toString()) : "-"
-                            },
-                        ].map((row, i) => (
-                            <div key={i} style={{
-                                display: "flex", alignItems: "center",
-                                padding: "1rem 0", borderTop: "1px solid var(--border-color)", gap: "1rem"
-                            }}>
-                                <div style={{
-                                    width: "2rem", height: "2rem", display: "flex",
-                                    alignItems: "center", justifyContent: "center",
-                                    color: "var(--text-muted)", flexShrink: 0
-                                }}>
-                                    {row.icon}
-                                </div>
-                                <div style={{ flex: 1 }}>
-                                    <p style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", marginBottom: "0.125rem" }}>{row.label}</p>
-                                    <p style={{ color: "var(--text-primary)", fontWeight: 500 }}>{row.value}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </motion.div>
+                    </motion.div>
+                </main>
             </div>
 
             {viewImageModal && (

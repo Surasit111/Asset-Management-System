@@ -469,67 +469,68 @@ export default function NewAssetPageV2() {
         <div className="min-h-screen bg-slate-100 -m-6">
 
             <header className="sticky top-0 z-110 bg-[#ffffff] border-b border-[#cbd5e1] flex items-center transition-[left] duration-300 shrink-0" style={{ minHeight: "80px" }}>
-                <div className="w-full px-10 flex items-center gap-4">
+                <div className="w-full px-4 lg:px-10 py-3 lg:py-0 flex flex-row items-center gap-1.5 sm:gap-3 lg:gap-4 lg:h-20 justify-between">
 
-                    <Link
-                        href="/assets"
-                        aria-label="ย้อนกลับไปหน้ารายการครุภัณฑ์"
-                        title="ย้อนกลับ"
-                        className="w-10 h-10 flex items-center justify-center rounded-xl border border-slate-200 bg-white hover:bg-blue-50 hover:border-blue-500 transition-all duration-300 shrink-0 shadow-sm cursor-pointer"
-                    >
-                        <ArrowLeft size={20} className="text-gray-600 hover:text-blue-600" />
-                    </Link>
+                    <div className="flex items-center gap-1.5 sm:gap-3 md:gap-4 min-w-0 flex-1 w-full md:w-auto">
+                        <Link
+                            href="/assets"
+                            aria-label="ย้อนกลับไปหน้ารายการครุภัณฑ์"
+                            title="ย้อนกลับ"
+                            className="w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-xl border border-slate-200 bg-white hover:bg-blue-50 hover:border-blue-500 transition-all duration-300 shrink-0 shadow-sm cursor-pointer"
+                        >
+                            <ArrowLeft size={16} className="text-gray-600 hover:text-blue-600" />
+                        </Link>
 
-                    <div className="shrink-0">
-                        <h1 className="text-[26px] font-extrabold text-[#0f172a] tracking-tight m-0">เพิ่มครุภัณฑ์ใหม่</h1>
-                    </div>
+                        <div className="shrink-0 min-w-0">
+                            <h1 className="text-[14px] sm:text-[18px] lg:text-[22px] font-extrabold text-[#0f172a] tracking-tight m-0 leading-tight truncate">เพิ่มครุภัณฑ์ใหม่</h1>
+                        </div>
 
-                    <div className="w-px h-8 bg-slate-200 shrink-0 mx-4" />
+                        <div className="w-px h-8 bg-slate-200 shrink-0 mx-2 hidden lg:block" />
 
-                    <div className="flex-1 flex justify-center items-center px-4">
-                        <div className="flex items-center gap-1.5 p-1.5">
-                            {[
-                                { id: "section-start", label: "ข้อมูลเริ่มต้น", icon: <Settings size={13} /> },
-                                { id: "section-basic", label: "ข้อมูลพื้นฐาน", icon: <Package size={13} /> },
-                                { id: "section-location", label: "ตำแหน่งที่ตั้ง", icon: <MapPin size={13} /> },
-                                { id: "section-images", label: "รูปภาพประกอบ", icon: <ImageIcon size={13} /> },
-                            ].map((item) => (
-                                <button
-                                    key={item.id}
-                                    type="button"
-                                    onClick={() => scrollToSection(item.id)}
-                                    className={cn(
-                                        "group flex items-center gap-2 px-4 py-2 rounded-xl text-[12px] font-bold transition-all duration-300 border cursor-pointer active:scale-95",
-                                        activeShortcut === item.id
-                                            ? "bg-white text-blue-600 border-blue-600 shadow-sm"
-                                            : "bg-white text-slate-500 border-slate-200 hover:border-blue-600 hover:text-blue-600"
-                                    )}
-                                >
-                                    <span className={cn(
-                                        "transition-transform duration-300 group-hover:scale-110",
-                                        activeShortcut === item.id ? "opacity-100" : "opacity-70"
-                                    )}>
-                                        {item.icon}
-                                    </span>
-                                    <span className="transition-all duration-300">
-                                        {item.label}
-                                    </span>
-                                </button>
-                            ))}
+                        {/* Shortcuts only on desktop */}
+                        <div className="hidden lg:flex flex-1 justify-center items-center px-4">
+                            <div className="flex items-center gap-1.5 p-1.5">
+                                {[
+                                    { id: "section-start", label: "ข้อมูลเริ่มต้น", icon: <Settings size={13} /> },
+                                    { id: "section-basic", label: "ข้อมูลพื้นฐาน", icon: <Package size={13} /> },
+                                    { id: "section-location", label: "ตำแหน่งที่ตั้ง", icon: <MapPin size={13} /> },
+                                    { id: "section-images", label: "รูปภาพประกอบ", icon: <ImageIcon size={13} /> },
+                                ].map((item) => (
+                                    <button
+                                        key={item.id}
+                                        type="button"
+                                        onClick={() => scrollToSection(item.id)}
+                                        className={cn(
+                                            "group flex items-center gap-2 px-4 py-2 rounded-xl text-[12px] font-bold transition-all duration-300 border cursor-pointer active:scale-95",
+                                            activeShortcut === item.id
+                                                ? "bg-white text-blue-600 border-blue-600 shadow-sm"
+                                                : "bg-white text-slate-500 border-slate-200 hover:border-blue-600 hover:text-blue-600"
+                                        )}
+                                    >
+                                        <span className={cn(
+                                            "transition-transform duration-300 group-hover:scale-110",
+                                            activeShortcut === item.id ? "opacity-100" : "opacity-70"
+                                        )}>
+                                            {item.icon}
+                                        </span>
+                                        <span className="transition-all duration-300">
+                                            {item.label}
+                                        </span>
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     </div>
 
-                    <div className="w-px h-8 bg-slate-200 shrink-0 mx-2" />
-
                     {/* ── Action Buttons ── */}
-                    <div className="flex items-center gap-2.5 shrink-0">
+                    <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
 
                         {/* ยกเลิก */}
                         <Link
                             href="/assets"
-                            className="group relative flex items-center gap-2 h-10 px-5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-[13px] font-semibold text-slate-500 hover:text-slate-700 transition-all duration-200 shadow-sm active:scale-[0.97]"
+                            className="group relative flex items-center gap-1 h-8 sm:h-9 lg:h-10 px-2 sm:px-3.5 lg:px-5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-[11px] sm:text-[12px] lg:text-[13px] font-semibold text-slate-500 hover:text-slate-700 transition-all duration-200 shadow-sm active:scale-[0.97]"
                         >
-                            <X size={15} className="opacity-60 group-hover:opacity-100 group-hover:rotate-90 transition-all duration-200" />
+                            <X size={12} className="opacity-60 group-hover:opacity-100 group-hover:rotate-90 transition-all duration-200" />
                             ยกเลิก
                         </Link>
 
@@ -538,17 +539,18 @@ export default function NewAssetPageV2() {
                             form="asset-form"
                             type="submit"
                             disabled={loading}
-                            className="group relative flex items-center gap-2.5 h-10 px-6 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:bg-slate-300 text-white text-[13px] font-bold transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.97] overflow-hidden cursor-pointer"
+                            className="group relative flex items-center gap-1 h-8 sm:h-9 lg:h-10 px-2 sm:px-3 lg:px-6 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:bg-slate-300 text-white text-[11px] sm:text-[12px] lg:text-[13px] font-bold transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.97] overflow-hidden cursor-pointer"
                         >
                             {loading ? (
                                 <>
-                                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                    <span>กำลังบันทึก...</span>
+                                    <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                    <span>บันทึก...</span>
                                 </>
                             ) : (
                                 <>
-                                    <Save size={16} className="shrink-0" />
-                                    <span>บันทึกครุภัณฑ์</span>
+                                    <Save size={12} className="shrink-0" />
+                                    <span className="hidden sm:inline">บันทึกครุภัณฑ์</span>
+                                    <span className="sm:hidden">บันทึก</span>
                                 </>
                             )}
                         </button>
@@ -557,10 +559,10 @@ export default function NewAssetPageV2() {
             </header>
 
             {/* ══ Content ══════════════════════════════════════════════════════ */}
-            <div className="w-full pl-10 pr-10 pt-6 pb-16">
+            <div className="w-full px-4 lg:px-10 pt-6 pb-16">
 
                 {/* ── Top bar: type + dept + year ── */}
-                <div id="section-start" className="bg-white rounded-xl border border-slate-200 px-5 py-4 mb-4 flex flex-wrap items-end gap-6 scroll-mt-28">
+                <div id="section-start" className="bg-white rounded-xl border border-slate-200 px-5 py-4 mb-4 flex flex-col sm:flex-row sm:items-end gap-4 scroll-mt-28">
                     <div>
                         <FieldLabel>ประเภทครุภัณฑ์</FieldLabel>
                         <div className="inline-flex bg-gray-100 rounded-lg p-1 gap-1">
@@ -582,16 +584,16 @@ export default function NewAssetPageV2() {
                         </div>
                     </div>
 
-                    <div className="flex gap-4 flex-1">
-                        <div className="flex-1 min-w-[160px]">
+                    <div className="flex flex-wrap sm:flex-nowrap gap-4 flex-1 w-full">
+                        <div className="flex-1 min-w-[180px] w-full">
                             {renderSelect("department", "หน่วยงาน", departments)}
                         </div>
-                        <div>
+                        <div className="w-full sm:w-auto">
                             <FieldLabel>ปีงบประมาณ</FieldLabel>
                             <input
                                 type="text" value={form.fiscalYear} placeholder="2568"
                                 onChange={(e) => updateForm("fiscalYear", e.target.value)}
-                                className={cn(inputCls, "w-24")}
+                                className={cn(inputCls, "w-full sm:w-24")}
                             />
                         </div>
                     </div>
@@ -617,22 +619,22 @@ export default function NewAssetPageV2() {
                         />
 
                         <div className="grid grid-cols-12 gap-3">
-                            <div className="col-span-2">{renderInput("receivedDate", "วันที่รับ", "date")}</div>
-                            <div className="col-span-7">{renderInput("name", "ชื่อครุภัณฑ์", "text", true, "เช่น คอมพิวเตอร์เดสก์ท็อป")}</div>
-                            <div className="col-span-3">{renderInput("assetCode", "รหัสครุภัณฑ์", "text", true, "AMS-001")}</div>
+                            <div className="col-span-12 sm:col-span-6 lg:col-span-2">{renderInput("receivedDate", "วันที่รับ", "date")}</div>
+                            <div className="col-span-12 sm:col-span-6 lg:col-span-7">{renderInput("name", "ชื่อครุภัณฑ์", "text", true, "เช่น คอมพิวเตอร์เดสก์ท็อป")}</div>
+                            <div className="col-span-12 lg:col-span-3">{renderInput("assetCode", "รหัสครุภัณฑ์", "text", true, "AMS-001")}</div>
 
-                            <div className="col-span-2">{renderInput("quantity", "จำนวน", "number", false, "1", "0")}</div>
-                            <div className="col-span-2">{renderSelect("unit", "หน่วย", units)}</div>
-                            <div className="col-span-4">{renderInput("unitPrice", "ราคาต่อหน่วย (บาท)", "number", false, "0.00", "0")}</div>
-                            <div className="col-span-4">
+                            <div className="col-span-6 lg:col-span-2">{renderInput("quantity", "จำนวน", "number", false, "1", "0")}</div>
+                            <div className="col-span-6 lg:col-span-2">{renderSelect("unit", "หน่วย", units)}</div>
+                            <div className="col-span-12 sm:col-span-6 lg:col-span-4">{renderInput("unitPrice", "ราคาต่อหน่วย (บาท)", "number", false, "0.00", "0")}</div>
+                            <div className="col-span-12 sm:col-span-6 lg:col-span-4">
                                 <FieldLabel>มูลค่ารวม (บาท)</FieldLabel>
-                                <div className="h-9 px-3 rounded-lg border border-slate-200 bg-gray-50 flex items-center text-sm font-medium text-gray-700">
+                                <div className="h-10 px-3 rounded-xl border border-slate-200 bg-gray-50 flex items-center text-sm font-medium text-gray-700">
                                     {totalValue.toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                 </div>
                             </div>
 
                             {/* ประเภทเงิน */}
-                            <div className="col-span-3">
+                            <div className="col-span-12 sm:col-span-6 lg:col-span-3">
                                 <FieldLabel>ประเภทเงิน</FieldLabel>
                                 <div className="flex gap-1.5">
                                     <div ref={moneyTypeDropdownRef} className="relative flex-1">
@@ -644,7 +646,7 @@ export default function NewAssetPageV2() {
                                         />
                                         {showMoneyTypeDropdown && (filteredMoneyTypes.length > 0 || moneyTypeSearch) && (
                                             <div className={cn(dropdownListCls, "p-1.5")}>
-                                                <div className="flex flex-col gap-1">
+                                                <div className="flex flex-col gap-1 max-h-52 overflow-y-auto custom-scrollbar">
                                                     {filteredMoneyTypes.map((m) => (
                                                         <button key={m.id} type="button" className={cn(dropdownItemCls, form.moneyType === m.name && "bg-blue-50 text-blue-600 font-bold")}
                                                             onClick={() => { updateForm("moneyType", m.name); setShowMoneyTypeDropdown(false); }}>
@@ -668,15 +670,15 @@ export default function NewAssetPageV2() {
                                 </div>
                             </div>
 
-                            <div className="col-span-3">{renderSelect("acquisitionMethod", "วิธีการได้มา", acquisitionMethods)}</div>
-                            <div className="col-span-3">{renderSelect("location", "ใช้ประจำที่ไหน", locations)}</div>
+                            <div className="col-span-12 sm:col-span-6 lg:col-span-3">{renderSelect("acquisitionMethod", "วิธีการได้มา", acquisitionMethods)}</div>
+                            <div className="col-span-12 sm:col-span-6 lg:col-span-3">{renderSelect("location", "ใช้ประจำที่ไหน", locations)}</div>
 
-                            <div className="col-span-3">
+                            <div className="col-span-12 sm:col-span-6 lg:col-span-3">
                                 {renderSelect("status", "สถานะ", statuses, true)}
                             </div>
 
                             {/* ผู้รับของ */}
-                            <div className="col-span-6">
+                            <div className="col-span-12 sm:col-span-6 lg:col-span-6">
                                 <FieldLabel>ผู้รับของ</FieldLabel>
                                 <div className="flex gap-1.5">
                                     <div ref={receiverDropdownRef} className="relative flex-1">
@@ -689,7 +691,7 @@ export default function NewAssetPageV2() {
                                         />
                                         {showReceiverDropdown && (filteredReceivers.length > 0 || receiverSearch) && (
                                             <div className={cn(dropdownListCls, "p-1.5")}>
-                                                <div className="flex flex-col gap-1">
+                                                <div className="flex flex-col gap-1 max-h-52 overflow-y-auto custom-scrollbar">
                                                     {filteredReceivers.map((r) => (
                                                         <button key={r.id} type="button" className={cn(dropdownItemCls, form.receivedBy === r.name && "bg-blue-50 text-blue-600 font-bold")}
                                                             onClick={() => { updateForm("receivedBy", r.name); setShowReceiverDropdown(false); }}>
@@ -714,7 +716,7 @@ export default function NewAssetPageV2() {
                             </div>
 
                             {/* ผู้บันทึก */}
-                            <div className="col-span-6">
+                            <div className="col-span-12 sm:col-span-6 lg:col-span-6">
                                 <FieldLabel>ผู้บันทึก</FieldLabel>
                                 <div className="flex gap-1.5">
                                     <div ref={recorderDropdownRef} className="relative flex-1">
@@ -727,7 +729,7 @@ export default function NewAssetPageV2() {
                                         />
                                         {showRecorderDropdown && (filteredRecorders.length > 0 || recorderSearch) && (
                                             <div className={cn(dropdownListCls, "p-1.5")}>
-                                                <div className="flex flex-col gap-1">
+                                                <div className="flex flex-col gap-1 max-h-52 overflow-y-auto custom-scrollbar">
                                                     {filteredRecorders.map((r) => (
                                                         <button key={r.id} type="button" className={cn(dropdownItemCls, form.createdBy === r.name && "bg-blue-50 text-blue-600 font-bold")}
                                                             onClick={() => { updateForm("createdBy", r.name); setShowRecorderDropdown(false); }}>
@@ -775,17 +777,17 @@ export default function NewAssetPageV2() {
                         />
 
                         <div className="grid grid-cols-12 gap-3 mb-4">
-                            <div className="col-span-3">
+                            <div className="col-span-12 sm:col-span-6 lg:col-span-3">
                                 <FieldLabel>ใช้ประจำที่ไหน</FieldLabel>
                                 <FakeReadonly value={form.location} placeholder="— เลือกจากข้อมูลพื้นฐาน —" />
                             </div>
-                            <div className="col-span-5">
+                            <div className="col-span-12 sm:col-span-6 lg:col-span-5">
                                 {renderInput("locationDetail", "รายละเอียดตำแหน่ง", "text", false, "เช่น ชั้น 2 ห้อง 204")}
                             </div>
-                            <div className="col-span-2">
+                            <div className="col-span-6 lg:col-span-2">
                                 {renderInput("latitude", "ละติจูด", "number", false, "17.5371", undefined, true)}
                             </div>
-                            <div className="col-span-2">
+                            <div className="col-span-6 lg:col-span-2">
                                 {renderInput("longitude", "ลองจิจูด", "number", false, "101.7178", undefined, true)}
                             </div>
                         </div>
@@ -799,10 +801,6 @@ export default function NewAssetPageV2() {
                                 <MapPin size={16} />
                                 {showMap ? "ซ่อนแผนที่" : "ปักหมุดบนแผนที่"}
                             </button>
-                            <p className="text-[13px] text-slate-500 flex items-center gap-1.5 animate-in fade-in slide-in-from-left-2 duration-300">
-                                <span className="text-amber-500">💡</span>
-                                คลิกบนแผนที่เพื่อปักหมุด หรือคลิกที่ <span className="font-bold text-slate-700">สถานที่หลัก</span> เพื่อเลือกพิกัด
-                            </p>
                         </div>
 
                         {showMap && (
@@ -830,7 +828,7 @@ export default function NewAssetPageV2() {
                             accent="bg-violet-50"
                         />
 
-                        <div className="flex gap-2 items-end mb-1">
+                        <div className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-end mb-1">
                             <div className="flex-1 max-w-md">
                                 {renderInput("imageUrl", "ลิงก์รูปภาพ (URL)", "url", false, "https://example.com/image.jpg")}
                             </div>
@@ -838,7 +836,7 @@ export default function NewAssetPageV2() {
                                 type="button" onClick={handleAddImageUrl}
                                 disabled={!form.imageUrl?.trim()}
                                 className={cn(
-                                    "h-10 px-4 flex items-center gap-1.5 rounded-xl border border-slate-200 bg-gray-50 text-[12px] font-bold text-gray-500 transition-all whitespace-nowrap shadow-sm",
+                                    "h-10 px-4 flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-gray-50 text-[12px] font-bold text-gray-500 transition-all whitespace-nowrap shadow-sm sm:w-auto w-full",
                                     !form.imageUrl?.trim()
                                         ? "opacity-30 cursor-not-allowed"
                                         : "cursor-pointer active:scale-95 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600"

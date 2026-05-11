@@ -209,25 +209,26 @@ function StepBar({ step }: { step: number }) {
         { n: 5, label: "นำเข้าสำเร็จ" },
     ];
     return (
-        <div className="flex items-center gap-0">
+        <div className="flex items-center gap-0 overflow-x-auto no-scrollbar max-w-full py-1">
             {steps.map((s, i) => (
-                <div key={s.n} className="flex items-center">
+                <div key={s.n} className="flex items-center shrink-0">
                     <div className={cn(
-                        "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-bold transition-all duration-300",
+                        "flex items-center gap-1 md:gap-1.5 px-2 md:px-3 py-1 md:py-1.5 rounded-lg text-[10px] md:text-[12px] font-bold transition-all duration-300",
                         step === s.n ? "bg-[#0f172a] text-white shadow-md" :
                             step > s.n ? "text-emerald-600 bg-emerald-50 border border-emerald-200" :
                                 "text-slate-500 bg-slate-50 border border-slate-200"
                     )}>
                         <div className={cn(
-                            "w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-extrabold shrink-0",
+                            "w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center text-[8px] md:text-[10px] font-extrabold shrink-0",
                             step === s.n ? "bg-white/20" : step > s.n ? "bg-emerald-100" : "bg-slate-200"
                         )}>
-                            {step > s.n ? <Check size={10} strokeWidth={3} /> : s.n}
+                            {step > s.n ? <Check className="w-[8px] h-[8px] md:w-[10px] md:h-[10px]" strokeWidth={3} /> : s.n}
                         </div>
-                        <span className="whitespace-nowrap">{s.label}</span>
+                        <span className={cn("whitespace-nowrap", step !== s.n && "hidden sm:inline")}>{s.label}</span>
+                        {step === s.n && <span className="whitespace-nowrap">{s.label}</span>}
                     </div>
                     {i < steps.length - 1 && (
-                        <div className={cn("w-5 h-px mx-0.5", step > s.n ? "bg-emerald-300" : "bg-slate-200")} />
+                        <div className={cn("w-2 md:w-5 h-px mx-0.5", step > s.n ? "bg-emerald-300" : "bg-slate-200")} />
                     )}
                 </div>
             ))}
@@ -1553,22 +1554,21 @@ export default function ImportPage() {
 
     // ─── RENDER ──────────────────────────────────────────────────────────────
     return (
-        <div className="min-h-screen bg-slate-100 -m-6 page-import">
+        <div className="min-h-full bg-slate-100 -m-6 page-import">
 
             {/* ══ Navbar ═══════════════════════════════════════════════════════ */}
-            <header className="sticky top-0 z-90 bg-[#ffffff] border-b border-[#cbd5e1] flex items-center shrink-0" style={{ minHeight: "80px" }}>
-                <div className="w-full px-10 flex items-center gap-4 relative">
+            <header className="lg:sticky lg:top-0 z-90 bg-white border-b border-slate-200 flex items-center shrink-0" style={{ minHeight: "72px" }}>
+                <div className="w-full px-4 md:px-10 flex items-center justify-between gap-4 relative">
                     <div className="flex items-center gap-3 shrink-0">
                         <div className="flex flex-col">
-                            <h1 className="text-[20px] font-extrabold text-[#0f172a] tracking-tight m-0 leading-tight">นำเข้าข้อมูลครุภัณฑ์</h1>
+                            <h1 className="text-[16px] md:text-[20px] font-extrabold text-[#0f172a] tracking-tight m-0 leading-tight">นำเข้าข้อมูล</h1>
                         </div>
                     </div>
-                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+                    <div className="hidden lg:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
                         <div className="pointer-events-auto">
                             <StepBar step={step} />
                         </div>
                     </div>
-                    <div className="flex-1" />
                     <div className="flex items-center gap-2.5 shrink-0">
 
                         <button onClick={() => { setShowHistory(v => !v); if (!showHistory) fetchHistory(); }}
@@ -1615,7 +1615,7 @@ export default function ImportPage() {
                 </div>
             </header>
 
-            <div className="w-full pl-10 pr-10 pt-2 pb-16">
+            <div className={cn("w-full px-4 md:px-10 pt-2 transition-all duration-300", step === 4 ? "pb-28" : (step === 1 ? "pb-0" : "pb-8"))}>
 
                 {/* History Panel */}
                 <AnimatePresence>
@@ -1695,7 +1695,7 @@ export default function ImportPage() {
 
                 {/* ════ STEP 1: Upload ════════════════════════════════════════ */}
                 {step === 1 && (
-                    <div className="max-w-2xl mx-auto mt-8 space-y-4">
+                    <div className="max-w-2xl mx-auto mt-4 md:mt-8 space-y-4">
                         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden" style={{ boxShadow: "0 0 40px rgba(0,0,0,0.06), 0 0 20px rgba(0,0,0,0.04), 0 2px 10px rgba(0,0,0,0.02)" }}>
                             <div className="px-6 py-5 border-b border-slate-200 flex items-center gap-3">
                                 <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
@@ -1711,7 +1711,7 @@ export default function ImportPage() {
                                     onDragLeave={() => setDragging(false)}
                                     onDrop={e => { e.preventDefault(); setDragging(false); const f = e.dataTransfer.files[0]; if (f) handleFile(f); }}
                                     onClick={() => fileInputRef.current?.click()}
-                                    className={cn("flex flex-col items-center justify-center gap-4 py-16 rounded-xl border-2 border-dashed cursor-pointer transition-all duration-200",
+                                    className={cn("flex flex-col items-center justify-center gap-4 py-10 md:py-16 rounded-xl border-2 border-dashed cursor-pointer transition-all duration-200",
                                         dragging ? "border-blue-400 bg-blue-50/50 scale-[1.01]" : "border-slate-200 hover:border-blue-300 hover:bg-slate-50/50")}>
                                     <div className={cn("w-16 h-16 rounded-2xl flex items-center justify-center transition-all", dragging ? "bg-blue-100" : "bg-slate-100")}>
                                         <Upload size={28} className={dragging ? "text-blue-500" : "text-slate-500"} />
@@ -1744,7 +1744,7 @@ export default function ImportPage() {
                                     <p className="text-xs text-gray-500 mt-0.5">ใช้กับแถวที่ช่องว่าง — สามารถแก้รายการได้อีกครั้งในขั้นถัดไป</p>
                                 </div>
                             </div>
-                            <div className="p-5 grid grid-cols-2 gap-4">
+                            <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">ประเภทครุภัณฑ์ <span className="text-red-400">*</span></label>
                                     <div className="flex gap-2">
@@ -1831,21 +1831,24 @@ export default function ImportPage() {
                                             const isMatrixStatus = ["ใช้งานได้", "ชำรุด", "เสื่อมสภาพ", "สูญหาย", "ไม่จำเป็นต้องใช้ในราชการ"].includes(h);
                                             return !isMatrixUnit && !isMatrixStatus;
                                         }).map(h => (
-                                            <div key={h} className="flex items-center gap-3">
-                                                <div className="w-52 shrink-0 px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 text-[13px] font-semibold text-slate-700 truncate">{h}</div>
-                                                <ChevronRight size={16} className="text-slate-300 shrink-0" />
-                                                <CustomSelect
-                                                    className="flex-1"
-                                                    size="sm"
-                                                    value={colMapping[h] || ""}
-                                                    onChange={val => setColMapping(prev => ({ ...prev, [h]: val as SystemColKey | "" }))}
-                                                    options={[
-                                                        { value: "", label: "— ไม่ใช้ —" },
-                                                        ...SYSTEM_COLS.map(sc => ({ value: sc.key, label: sc.label.split(" | ")[0] }))
-                                                    ]}
-                                                    placeholder="— ไม่ใช้ —"
-                                                />
-                                                {colMapping[h] ? <Check size={16} className="text-emerald-500 shrink-0" /> : <div className="w-4 shrink-0" />}
+                                            <div key={h} className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3 p-3 md:p-0 bg-slate-50/50 md:bg-transparent rounded-xl border border-slate-100 md:border-0">
+                                                <div className="w-full md:w-52 shrink-0 px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 text-[13px] font-semibold text-slate-700 truncate">{h}</div>
+                                                <div className="hidden md:block"><ChevronRight size={16} className="text-slate-300 shrink-0" /></div>
+                                                <div className="md:hidden flex justify-center"><ChevronDown size={14} className="text-slate-300" /></div>
+                                                <div className="flex items-center gap-2 flex-1">
+                                                    <CustomSelect
+                                                        className="flex-1"
+                                                        size="sm"
+                                                        value={colMapping[h] || ""}
+                                                        onChange={val => setColMapping(prev => ({ ...prev, [h]: val as SystemColKey | "" }))}
+                                                        options={[
+                                                            { value: "", label: "— ไม่ใช้ —" },
+                                                            ...SYSTEM_COLS.map(sc => ({ value: sc.key, label: sc.label.split(" | ")[0] }))
+                                                        ]}
+                                                        placeholder="— ไม่ใช้ —"
+                                                    />
+                                                    {colMapping[h] ? <Check size={16} className="text-emerald-500 shrink-0" /> : <div className="w-4 shrink-0" />}
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
@@ -1856,7 +1859,7 @@ export default function ImportPage() {
                                     <p className="text-[12px] font-bold text-slate-500 mb-4 uppercase tracking-wide flex items-center gap-2">
                                         <CheckCircle2 size={14} className="text-slate-300" /> ตรวจสอบความครบถ้วนของคอลัมน์ระบบ
                                     </p>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
                                         {SYSTEM_COLS.map(sc => {
                                             const mappedKeys = Object.values(colMapping);
                                             let isMapped = mappedKeys.includes(sc.key as any);
@@ -1967,18 +1970,18 @@ export default function ImportPage() {
                 {step === 4 && (
                     <div className="space-y-6">
                         {/* File Info Card */}
-                        <div className="bg-white rounded-xl border border-slate-200 px-6 py-2 shadow-sm flex items-center justify-between">
-                            <div className="flex items-center gap-3">
+                        <div className="bg-white rounded-xl border border-slate-200 px-4 md:px-6 py-3 shadow-sm flex flex-col md:flex-row items-center justify-between gap-3">
+                            <div className="flex items-center gap-3 w-full md:w-auto">
                                 <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
                                     <FileSpreadsheet size={16} />
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-[14px] font-black text-[#0f172a] tracking-tight truncate max-w-[500px]">{fileName || "ไม่พบชื่อไฟล์"}</span>
-                                    <div className="w-px h-3 bg-slate-200 mx-1" />
-                                    <span className="text-[13px] font-bold text-blue-600">{rows.length} รายการ</span>
+                                <div className="flex items-center gap-2 min-w-0">
+                                    <span className="text-[14px] font-black text-[#0f172a] tracking-tight truncate max-w-[200px] md:max-w-[500px]">{fileName || "ไม่พบชื่อไฟล์"}</span>
+                                    <div className="w-px h-3 bg-slate-200 mx-1 shrink-0" />
+                                    <span className="text-[13px] font-bold text-blue-600 shrink-0">{rows.length} รายการ</span>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-2 text-slate-500">
+                            <div className="flex items-center gap-2 text-slate-500 w-full md:w-auto justify-end">
                                 <span className="text-[10px] font-bold uppercase tracking-wider">File Information</span>
                                 <Info size={14} className="opacity-50" />
                             </div>
@@ -1989,21 +1992,21 @@ export default function ImportPage() {
                             step5Selection.size > 0 ? "ring-2 ring-blue-500/20 translate-y-0" : "opacity-80 scale-[0.99]")}>
 
                             {/* Header Row 2: Bulk Actions */}
-                            <div className="px-6 py-2 border-b border-slate-100 flex items-center justify-between bg-slate-50/10 rounded-t-xl">
-                                <div className="flex items-center gap-2.5">
+                            <div className="px-4 md:px-6 py-3 border-b border-slate-100 flex flex-col md:flex-row items-center justify-between bg-slate-50/10 rounded-t-xl gap-4">
+                                <div className="flex items-center gap-2.5 w-full md:w-auto">
                                     <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
                                         <Package size={15} />
                                     </div>
-                                    <span className="text-[13px] font-bold text-[#0f172a]">จัดการข้อมูลแบบกลุ่ม ({step5Selection.size} รายการที่เลือก)</span>
+                                    <span className="text-[13px] font-bold text-[#0f172a]">จัดการแบบกลุ่ม ({step5Selection.size} รายการ)</span>
                                 </div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 w-full md:w-auto">
                                     <button onClick={applyBulkStep5} disabled={step5Selection.size === 0}
-                                        className={cn("h-8 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[12px] font-bold transition-all disabled:opacity-50 flex items-center gap-2 shadow-sm active:scale-95",
+                                        className={cn("flex-1 md:flex-none h-8 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[12px] font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm active:scale-95",
                                             step5Selection.size === 0 ? "cursor-not-allowed" : "cursor-pointer")}>
-                                        <CheckCircle2 size={13} /> บันทึกการแก้ไข
+                                        <CheckCircle2 size={13} /> <span className="md:hidden lg:inline">บันทึกการแก้ไข</span><span className="hidden md:inline lg:hidden">บันทึก</span>
                                     </button>
                                     <button onClick={deleteStep5Selected} disabled={step5Selection.size === 0}
-                                        className={cn("h-8 px-4 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 text-[12px] font-bold transition-all disabled:opacity-50 active:scale-95",
+                                        className={cn("flex-1 md:flex-none h-8 px-4 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 text-[12px] font-bold transition-all disabled:opacity-50 active:scale-95",
                                             step5Selection.size === 0 ? "cursor-not-allowed" : "cursor-pointer")}>
                                         ลบที่เลือก
                                     </button>
@@ -2029,7 +2032,7 @@ export default function ImportPage() {
                                         ล้างตัวกรองข้อมูล
                                     </button>
                                 </div>
-                                <div className="grid grid-cols-1 lg:grid-cols-7 gap-2 items-end">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3 sm:gap-2 items-end">
                                     <div className="space-y-1">
                                         <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight px-1">ผู้บันทึก</label>
                                         <LuxuryCombobox
@@ -2131,8 +2134,8 @@ export default function ImportPage() {
 
                         {/* Filters and Table */}
                         <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col" style={{ boxShadow: "0 0 40px rgba(0,0,0,0.06), 0 0 20px rgba(0,0,0,0.04), 0 2px 10px rgba(0,0,0,0.02)" }}>
-                            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
-                                <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-xl">
+                            <div className="px-4 md:px-6 py-4 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between bg-slate-50/30 gap-4">
+                                <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-xl overflow-x-auto no-scrollbar max-w-full shrink-0">
                                     {[
                                         { id: "all_rows", label: "แสดงทั้งหมด", count: rows.length },
                                         { id: "all_problems", label: "เฉพาะที่มีปัญหา", count: rows.filter(r => r.isDuplicate || r.isIncomplete).length },
@@ -2195,7 +2198,7 @@ export default function ImportPage() {
                                         <div className="w-1 h-4 bg-amber-500 rounded-full" />
                                         <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">ตัวกรองตามคอลัมน์ (แสดงเฉพาะแถวที่มีข้อมูลว่าง)</span>
                                     </div>
-                                    <div className="grid grid-cols-7 gap-2">
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
                                         {[
                                             { id: "all", label: "ทั้งหมด", count: rows.filter(r => r.isIncomplete).length },
                                             { id: "date", label: "วันที่รับ", count: rows.filter(r => r.isIncomplete && !r.receivedDate).length },
@@ -2464,23 +2467,22 @@ export default function ImportPage() {
                                 </table>
                             </div>
 
-                            {/* Footer Actions for Step 5 - Now Integrated into the same card */}
-                            <div className="px-8 py-6 border-t border-slate-200 bg-slate-50/30 flex justify-between items-center shrink-0">
-                                <div className="flex items-center gap-6">
+                            {/* Footer Actions for Step 4 - Responsive Footer */}
+                            <div className="px-6 md:px-8 py-6 border-t border-slate-200 bg-slate-50/30 flex flex-col md:flex-row justify-between items-center gap-4 shrink-0">
+                                <div className="flex items-center gap-6 w-full md:w-auto">
                                     <button onClick={() => setStep(3)} disabled={importing}
-                                        className="flex items-center gap-2 h-11 px-6 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-[14px] font-bold text-slate-500 transition-all shadow-md hover:shadow-lg active:scale-[0.98] cursor-pointer">
-                                        <ChevronLeft size={18} /> ย้อนกลับไปจับคู่คอลัมน์
+                                        className="flex-1 md:flex-none flex items-center justify-center gap-2 h-11 px-6 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-[14px] font-bold text-slate-500 transition-all shadow-md hover:shadow-lg active:scale-[0.98] cursor-pointer">
+                                        <ChevronLeft size={18} /> ย้อนกลับ<span className="hidden sm:inline">ไปจับคู่คอลัมน์</span>
                                     </button>
                                 </div>
-                                <div className="flex items-center gap-3">
-
+                                <div className="flex items-center gap-3 w-full md:w-auto">
                                     <button onClick={handleImport} disabled={importing}
-                                        className="flex items-center gap-3 h-12 px-12 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[15px] font-black transition-all shadow-lg shadow-emerald-600/20 disabled:opacity-50 disabled:shadow-none active:scale-[0.98] cursor-pointer"
+                                        className="flex-1 md:flex-none flex items-center justify-center gap-3 h-12 px-6 md:px-12 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[15px] font-black transition-all shadow-lg shadow-emerald-600/20 disabled:opacity-50 disabled:shadow-none active:scale-[0.98] cursor-pointer"
                                     >
                                         {importing ? (
                                             <>
                                                 <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                                                <span>กำลังนำเข้าข้อมูล</span>
+                                                <span>กำลังนำเข้า</span>
                                             </>
                                         ) : (
                                             <>
@@ -2495,7 +2497,6 @@ export default function ImportPage() {
                     </div>
                 )}
 
-                {/* ════ STEP 5: Result ══════════════════════════════════════════ */}
                 {step === 5 && (
                     <div className="max-w-md mx-auto mt-6">
                         <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl shadow-slate-200/50 overflow-hidden" style={{ boxShadow: "0 0 50px rgba(0,0,0,0.08), 0 10px 30px rgba(0,0,0,0.04)" }}>

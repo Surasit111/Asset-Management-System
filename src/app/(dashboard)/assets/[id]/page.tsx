@@ -75,7 +75,7 @@ function AssetDetailSkeleton() {
         <div className="min-h-screen bg-slate-100 -m-6">
             {/* Header skeleton */}
             <header className="sticky top-0 z-110 bg-white border-b border-slate-200 shrink-0" style={{ minHeight: "80px" }}>
-                <div className="w-full px-10 flex items-center gap-4 h-full" style={{ minHeight: "80px" }}>
+                <div className="w-full px-4 lg:px-10 flex items-center gap-4 h-full" style={{ minHeight: "80px" }}>
                     <SkeletonBlock className="w-12 h-12 rounded-xl" />
                     <div className="flex-1 space-y-2">
                         <SkeletonBlock className="h-5 w-56" />
@@ -89,7 +89,7 @@ function AssetDetailSkeleton() {
                 </div>
             </header>
 
-            <div className="w-full px-10 pt-6 pb-16 space-y-4">
+            <div className="w-full px-4 lg:px-10 pt-6 pb-16 space-y-4">
                 {/* Status bar skeleton */}
                 <div className="bg-white rounded-xl border border-slate-200 px-5 py-4 shadow-sm">
                     <div className="flex items-center gap-6">
@@ -588,23 +588,22 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
         <div className="min-h-screen bg-slate-100 -m-6">
 
             {/* ══ Fixed Navbar ══════════════════════════════════════════════════ */}
-            <header className="sticky top-0 z-110 bg-[#ffffff] border-b border-[#cbd5e1] flex items-center transition-[left] duration-300 shrink-0" style={{ minHeight: "80px" }}>
-                <div className="w-full px-10 flex items-center gap-4">
+            <header className="sticky top-0 z-110 bg-[#ffffff] border-[#cbd5e1] flex items-center transition-[left] duration-300 shrink-0" style={{ borderBottomWidth: "1px", minHeight: "80px" }}>
+                <div className="w-full px-4 lg:px-10 flex items-center justify-between gap-1.5 sm:gap-4 h-full" style={{ minHeight: "80px" }}>
 
-                    {/* ย้อนกลับ */}
                     <button type="button" onClick={() => router.back()}
                         aria-label="ย้อนกลับ"
                         title="ย้อนกลับ"
-                        className="w-12 h-12 flex items-center justify-center rounded-xl border border-slate-200 bg-white hover:bg-gray-50 transition-colors shrink-0 shadow-sm cursor-pointer">
-                        <ArrowLeft size={20} className="text-gray-600" />
+                        className="w-9 h-9 sm:w-12 sm:h-12 flex items-center justify-center rounded-xl border border-slate-200 bg-white hover:bg-gray-50 transition-colors shrink-0 shadow-sm cursor-pointer">
+                        <ArrowLeft size={16} className="text-gray-600 sm:w-5 sm:h-5" />
                     </button>
 
                     {/* Title + badge */}
                     <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2.5">
-                            <h1 className="text-[22px] font-extrabold text-[#0f172a] tracking-tight m-0 leading-tight truncate">{asset.name}</h1>
+                        <div className="flex items-center gap-1.5 sm:gap-2.5 flex-wrap">
+                            <h1 className="text-[14px] sm:text-[18px] lg:text-[22px] font-extrabold text-[#0f172a] tracking-tight m-0 leading-tight truncate">{asset.name}</h1>
                             <span className={cn(
-                                "px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider border shrink-0",
+                                "px-1.5 py-0.5 rounded-full text-[8px] lg:text-[10px] font-extrabold uppercase tracking-wider border shrink-0",
                                 asset.assetType === "durable"
                                     ? "bg-orange-50 text-orange-600 border-orange-200"
                                     : "bg-blue-50 text-blue-600 border-blue-200"
@@ -612,26 +611,30 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
                                 {asset.assetType === "durable" ? "คงทน" : "ทั่วไป"}
                             </span>
                         </div>
-                        <p className="text-[22px] text-[#64748b] font-extrabold m-0 tracking-tight truncate leading-tight">{asset.assetCode}</p>
+                        <p className="text-[11px] sm:text-[14px] lg:text-[22px] text-[#64748b] font-extrabold m-0 tracking-tight truncate leading-tight mt-0.5 sm:mt-1">{asset.assetCode}</p>
                     </div>
 
                     {/* ── Action Buttons ── */}
-                    <div className="flex items-center gap-3 md:gap-2.5 shrink-0">
+                    <div className="flex items-center gap-1 sm:gap-2.5 shrink-0">
                         {editing ? (
                             <>
                                 {/* ยกเลิกแก้ไข */}
                                 <button type="button" onClick={() => { setEditing(false); fetchAsset(); }}
-                                    className="group relative flex items-center gap-2 h-12 md:h-10 px-5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-[13px] font-semibold text-slate-500 hover:text-slate-700 transition-all duration-200 shadow-sm active:scale-[0.97] cursor-pointer">
-                                    <X size={15} className="opacity-60 group-hover:opacity-100 group-hover:rotate-90 transition-all duration-200" />
+                                    className="group relative flex items-center gap-1 h-8 sm:h-10 px-2 sm:px-3.5 lg:px-5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-[11px] sm:text-[12px] lg:text-[13px] font-semibold text-slate-500 hover:text-slate-700 transition-all duration-200 shadow-sm active:scale-[0.97] cursor-pointer">
+                                    <X size={12} className="opacity-60 group-hover:opacity-100 group-hover:rotate-90 transition-all duration-200" />
                                     ยกเลิก
                                 </button>
                                 {/* บันทึก */}
                                 <button type="button" onClick={handleSave} disabled={saving}
-                                    className="group relative flex items-center gap-2 h-12 md:h-10 px-6 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:bg-slate-300 text-white text-[13px] font-bold transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.97] overflow-hidden cursor-pointer">
+                                    className="group relative flex items-center gap-1 h-8 sm:h-10 px-2 sm:px-4 lg:px-6 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:bg-slate-300 text-white text-[11px] sm:text-[12px] lg:text-[13px] font-bold transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.97] overflow-hidden cursor-pointer">
                                     {saving ? (
-                                        <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /><span>กำลังบันทึก...</span></>
+                                        <><div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /><span>บันทึก...</span></>
                                     ) : (
-                                        <><Save size={15} /><span>บันทึกข้อมูล</span></>
+                                        <>
+                                            <Save size={12} className="shrink-0" />
+                                            <span className="hidden sm:inline">บันทึกข้อมูล</span>
+                                            <span className="sm:hidden">บันทึก</span>
+                                        </>
                                     )}
                                 </button>
                             </>
@@ -639,21 +642,21 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
                             <>
                                 {/* QR Code */}
                                 <button type="button" onClick={() => setShowQrModal(true)}
-                                    className="group flex items-center gap-2 h-12 md:h-10 px-4 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-[13px] font-semibold text-slate-500 hover:text-slate-700 transition-all duration-200 shadow-sm active:scale-[0.97] cursor-pointer">
-                                    <QrCode size={15} className="opacity-60 group-hover:opacity-100 transition-opacity" />
-                                    QR Code
+                                    className="group flex items-center justify-center h-8 sm:h-10 w-8 sm:w-auto px-0 sm:px-3 lg:px-4 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-[11px] sm:text-[12px] lg:text-[13px] font-semibold text-slate-500 hover:text-slate-700 transition-all duration-200 shadow-sm active:scale-[0.97] cursor-pointer">
+                                    <QrCode size={13} className="opacity-60 group-hover:opacity-100 transition-opacity" />
+                                    <span className="hidden sm:inline ml-1">QR Code</span>
                                 </button>
                                 {/* แก้ไข */}
                                 <button type="button" onClick={() => setEditing(true)}
-                                    className="group flex items-center gap-2 h-12 md:h-10 px-5 rounded-lg border border-blue-200 bg-blue-50 hover:bg-blue-100 hover:border-blue-300 text-[13px] font-semibold text-blue-600 hover:text-blue-700 transition-all duration-200 shadow-sm active:scale-[0.97] cursor-pointer">
-                                    <Pencil size={14} className="opacity-80 group-hover:opacity-100 transition-opacity" />
-                                    แก้ไข
+                                    className="group flex items-center justify-center h-8 sm:h-10 w-8 sm:w-auto px-0 sm:px-5 rounded-lg border border-blue-200 bg-blue-50 hover:bg-blue-100 hover:border-blue-300 text-[11px] sm:text-[13px] font-semibold text-blue-600 hover:text-blue-700 transition-all duration-200 shadow-sm active:scale-[0.97] cursor-pointer">
+                                    <Pencil size={12} className="opacity-80 group-hover:opacity-100 transition-opacity" />
+                                    <span className="hidden sm:inline ml-1">แก้ไข</span>
                                 </button>
                                 {/* ลบ */}
                                 <button type="button" onClick={() => setShowConfirmDelete(true)}
-                                    className="group flex items-center gap-2 h-12 md:h-10 px-5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 hover:border-red-300 text-[13px] font-semibold text-red-700 hover:text-red-800 transition-all duration-200 shadow-sm active:scale-[0.97] cursor-pointer">
-                                    <Trash2 size={14} className="opacity-80 group-hover:opacity-100 transition-opacity" />
-                                    ลบ
+                                    className="group flex items-center justify-center h-8 sm:h-10 w-8 sm:w-auto px-0 sm:px-5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 hover:border-red-300 text-[11px] sm:text-[13px] font-semibold text-red-700 hover:text-red-800 transition-all duration-200 shadow-sm active:scale-[0.97] cursor-pointer">
+                                    <Trash2 size={12} className="opacity-80 group-hover:opacity-100 transition-opacity" />
+                                    <span className="hidden sm:inline ml-1">ลบ</span>
                                 </button>
                             </>
                         )}
@@ -662,7 +665,7 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
             </header>
 
             {/* ══ Content ══════════════════════════════════════════════════════ */}
-            <div className="w-full pl-10 pr-10 pt-6 pb-16">
+            <div className="w-full px-4 lg:px-10 pt-6 pb-16">
 
                 {/* ── Error ── */}
                 {error && (
@@ -700,7 +703,7 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
 
                 {/* ── Edit Top Bar (edit mode) ── */}
                 {editing && (
-                    <div className="bg-white rounded-xl border border-slate-200 px-5 py-4 mb-4 flex flex-wrap items-end gap-6 shadow-sm scroll-mt-28">
+                    <div className="bg-white rounded-xl border border-slate-200 px-5 py-4 mb-4 flex flex-col sm:flex-row sm:items-end gap-4 shadow-sm scroll-mt-28">
                         <div>
                             <div className="flex items-center gap-1.5">
                                 <FieldLabel>ประเภทครุภัณฑ์</FieldLabel>
@@ -726,13 +729,13 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
                                 ))}
                             </div>
                         </div>
-                        <div className="flex gap-4 flex-1">
-                            <div className="flex-1 min-w-[160px]">
+                        <div className="flex flex-wrap sm:flex-nowrap gap-4 flex-1 w-full">
+                            <div className="flex-1 min-w-[180px] w-full">
                                 {renderSelect("department", "หน่วยงาน", departments)}
                             </div>
-                            <div>
+                            <div className="w-full sm:w-auto">
                                 <FieldLabel>ปีงบประมาณ</FieldLabel>
-                                <input type="text" value={form.fiscalYear} placeholder="2568" onChange={e => updateForm("fiscalYear", e.target.value)} className={cn(inputCls, "w-24")} />
+                                <input type="text" value={form.fiscalYear} placeholder="2568" onChange={e => updateForm("fiscalYear", e.target.value)} className={cn(inputCls, "w-full sm:w-24")} />
                             </div>
                         </div>
                     </div>
@@ -751,15 +754,15 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
 
                         <div className="grid grid-cols-12 gap-3">
                             {/* row 1 */}
-                            <div className="col-span-2">{renderField("receivedDate", "วันที่รับ", "date")}</div>
-                            <div className="col-span-7">{renderField("name", "ชื่อครุภัณฑ์", "text", true, "ชื่อครุภัณฑ์")}</div>
-                            <div className="col-span-3">{renderField("assetCode", "รหัสครุภัณฑ์", "text", true, "AMS-001")}</div>
+                            <div className="col-span-12 sm:col-span-6 lg:col-span-2">{renderField("receivedDate", "วันที่รับ", "date")}</div>
+                            <div className="col-span-12 sm:col-span-6 lg:col-span-7">{renderField("name", "ชื่อครุภัณฑ์", "text", true, "ชื่อครุภัณฑ์")}</div>
+                            <div className="col-span-12 lg:col-span-3">{renderField("assetCode", "รหัสครุภัณฑ์", "text", true, "AMS-001")}</div>
 
                             {/* row 2 */}
-                            <div className="col-span-2">{renderField("quantity", "จำนวน", "number", false, "1", "0")}</div>
-                            <div className="col-span-2">{renderSelect("unit", "หน่วย", units)}</div>
-                            <div className="col-span-4">{renderField("unitPrice", "ราคาต่อหน่วย (บาท)", "number", false, "0.00", "0")}</div>
-                            <div className="col-span-4">
+                            <div className="col-span-6 lg:col-span-2">{renderField("quantity", "จำนวน", "number", false, "1", "0")}</div>
+                            <div className="col-span-6 lg:col-span-2">{renderSelect("unit", "หน่วย", units)}</div>
+                            <div className="col-span-12 sm:col-span-6 lg:col-span-4">{renderField("unitPrice", "ราคาต่อหน่วย (บาท)", "number", false, "0.00", "0")}</div>
+                            <div className="col-span-12 sm:col-span-6 lg:col-span-4">
                                 <FieldLabel>มูลค่ารวม (บาท)</FieldLabel>
                                 <div className="h-10 px-3 rounded-xl border border-slate-200 bg-gray-50 flex items-center text-sm font-medium text-gray-700">
                                     {editing
@@ -770,7 +773,7 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
 
                             {/* row 3 */}
                             {/* ประเภทเงิน */}
-                            <div className="col-span-3">
+                            <div className="col-span-12 sm:col-span-6 lg:col-span-3">
                                 <FieldLabel>ประเภทเงิน</FieldLabel>
                                 {editing ? (
                                     <div className="flex gap-1.5">
@@ -795,12 +798,12 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
                                 ) : <ReadonlyField label="" value={asset.moneyType || ""} />}
                             </div>
 
-                            <div className="col-span-3">{renderSelect("acquisitionMethod", "วิธีการได้มา", acquisitionMethods)}</div>
-                            <div className="col-span-3">{renderSelect("location", "ใช้ประจำที่ไหน", locations)}</div>
-                            <div className="col-span-3">{renderSelect("status", "สถานะ", statuses, true)}</div>
+                            <div className="col-span-12 sm:col-span-6 lg:col-span-3">{renderSelect("acquisitionMethod", "วิธีการได้มา", acquisitionMethods)}</div>
+                            <div className="col-span-12 sm:col-span-6 lg:col-span-3">{renderSelect("location", "ใช้ประจำที่ไหน", locations)}</div>
+                            <div className="col-span-12 sm:col-span-6 lg:col-span-3">{renderSelect("status", "สถานะ", statuses, true)}</div>
 
                             {/* ผู้รับของ */}
-                            <div className="col-span-6">
+                            <div className="col-span-12 sm:col-span-6 lg:col-span-6">
                                 <FieldLabel>ผู้รับของ</FieldLabel>
                                 {editing ? (
                                     <div className="flex gap-1.5">
@@ -826,7 +829,7 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
                             </div>
 
                             {/* ผู้บันทึก */}
-                            <div className="col-span-6">
+                            <div className="col-span-12 sm:col-span-6 lg:col-span-6">
                                 <FieldLabel>ผู้บันทึก</FieldLabel>
                                 {editing ? (
                                     <div className="flex gap-1.5">
@@ -877,15 +880,15 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
                         />
 
                         <div className="grid grid-cols-12 gap-3 mb-4">
-                            <div className="col-span-3">
+                            <div className="col-span-12 sm:col-span-6 lg:col-span-3">
                                 <FieldLabel>ใช้ประจำที่ไหน</FieldLabel>
                                 <div className="h-10 px-3 rounded-xl border border-slate-200 bg-slate-100 flex items-center text-sm text-slate-700 font-semibold cursor-not-allowed">
                                     {asset.location || "—"}
                                 </div>
                             </div>
-                            <div className="col-span-5">{renderField("locationDetail", "รายละเอียดตำแหน่ง", "text", false, "เช่น ชั้น 2 ห้อง 204")}</div>
-                            <div className="col-span-2">{renderField("latitude", "ละติจูด", "number", false, "17.5371", undefined, true)}</div>
-                            <div className="col-span-2">{renderField("longitude", "ลองจิจูด", "number", false, "101.7178", undefined, true)}</div>
+                            <div className="col-span-12 sm:col-span-6 lg:col-span-5">{renderField("locationDetail", "รายละเอียดตำแหน่ง", "text", false, "เช่น ชั้น 2 ห้อง 204")}</div>
+                            <div className="col-span-6 lg:col-span-2">{renderField("latitude", "ละติจูด", "number", false, "17.5371", undefined, true)}</div>
+                            <div className="col-span-6 lg:col-span-2">{renderField("longitude", "ลองจิจูด", "number", false, "101.7178", undefined, true)}</div>
                         </div>
 
                         {editing && (
@@ -898,10 +901,6 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
                                     <MapPin size={16} />
                                     {showMap ? "ซ่อนแผนที่" : "ปักหมุดบนแผนที่"}
                                 </button>
-                                <p className="text-[13px] text-slate-500 flex items-center gap-1.5 animate-in fade-in slide-in-from-left-2 duration-300">
-                                    <span className="text-amber-500">💡</span>
-                                    คลิกบนแผนที่เพื่อปักหมุด หรือคลิกที่ <span className="font-bold text-slate-700">สถานที่หลัก</span> เพื่อเลือกพิกัด
-                                </p>
                             </div>
                         )}
 

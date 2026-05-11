@@ -4,7 +4,7 @@ import React, { useEffect, useState, useCallback, useRef } from "react";
 import {
     Search, Plus, Edit3, Trash2, ChevronLeft, ChevronRight,
     X, User as UserIcon, Eye, EyeOff, ArrowUpDown, ArrowUp, ArrowDown, AlertTriangle, Loader2,
-    ChevronDown, Check
+    ChevronDown, Check, Calendar
 } from "lucide-react";
 
 import { useSession } from "@/lib/auth-client";
@@ -128,38 +128,64 @@ const UserRow = React.memo(({
     canEdit: (user: User) => boolean; canDelete: (user: User) => boolean;
 }) => {
     return (
-        <tr
+        <div
             onMouseEnter={() => setHoveredRow(user.id)}
             onMouseLeave={() => setHoveredRow(null)}
-            className="h-[64px] transition-colors duration-150 hover:bg-slate-100/80 group"
+            className="flex flex-col sm:grid sm:grid-cols-[6%_30%_15%_14%_12%_14%_9%] items-start sm:items-center gap-3 sm:gap-0 px-4 sm:px-0 py-4 sm:h-[64px] transition-colors duration-150 hover:bg-slate-100/80 group border-b border-slate-100 sm:border-none relative"
         >
-            <td className="px-4 text-center">
+            {/* Desktop Index */}
+            <div className="hidden sm:block text-center px-4">
                 <RowIndex page={page} index={index} total={total} sortConfig={sortConfig} />
-            </td>
-            <td className="px-4">
-                <div className="flex items-center gap-3">
+            </div>
+
+            {/* Main Info (Avatar + Name) */}
+            <div className="w-full sm:w-auto px-0 sm:px-4 flex items-center justify-between sm:justify-start gap-3">
+                <div className="flex items-center gap-3 min-w-0">
                     <div
-                        className="w-10 h-10 rounded-full overflow-hidden shrink-0 border-2 border-white shadow-sm ring-1 ring-slate-100 cursor-pointer"
+                        className="w-11 h-11 sm:w-10 sm:h-10 rounded-full overflow-hidden shrink-0 border-2 border-white shadow-sm ring-1 ring-slate-100 cursor-pointer"
                         onClick={() => (user.fullImage || user.image) && onViewImage(user.fullImage || user.image || "")}
                     >
                         {user.image
                             ? <img src={user.image} alt={user.name}
                                 className={`w-full h-full object-cover transition-transform duration-500 ${hoveredRow === user.id ? "scale-110" : "scale-100"}`} />
-                            : <div className={`w-full h-full flex items-center justify-center text-[12.5px] font-bold text-white ${getAvatarColor(user.name)}`}>
+                            : <div className={`w-full h-full flex items-center justify-center text-[13px] font-bold text-white ${getAvatarColor(user.name)}`}>
                                 {user.name.charAt(0).toUpperCase()}
                             </div>
                         }
                     </div>
                     <div className="min-w-0">
-                        <p className="text-[13.5px] font-bold text-slate-900 m-0 truncate group-hover:text-blue-600 transition-colors">{user.name}</p>
-                        <p className="text-[11.5px] text-slate-400 mt-0.5 truncate">{user.email}</p>
+                        <p className="text-[14.5px] sm:text-[13.5px] font-bold text-slate-900 m-0 truncate group-hover:text-blue-600 transition-colors">{user.name}</p>
+                        <p className="text-[12px] sm:text-[11.5px] text-slate-400 mt-0.5 truncate">{user.email}</p>
                     </div>
                 </div>
-            </td>
-            <td className="px-4">
+
+                {/* Mobile Actions */}
+                <div className="flex sm:hidden items-center gap-1 shrink-0">
+                    {canEdit(user) && (
+                        <button onClick={() => onEdit(user)}
+                            className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100 transition-all border-none bg-transparent">
+                            <Edit3 size={17} />
+                        </button>
+                    )}
+                    {canDelete(user) && (
+                        <button onClick={() => onDelete(user.id, user.name)}
+                            className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-500 hover:bg-red-50 hover:text-red-600 transition-all border-none bg-transparent">
+                            <Trash2 size={17} />
+                        </button>
+                    )}
+                </div>
+            </div>
+
+            {/* Phone (Hidden on Mobile) */}
+            <div className="hidden sm:block px-4">
                 <span className="text-[13px] text-slate-500 font-medium">{user.phoneNumber || "—"}</span>
-            </td>
-            <td className="px-4 text-center">
+            </div>
+
+            {/* Role & Status (Side by side on mobile) */}
+            <div className="w-full sm:w-auto px-0 sm:px-4 flex items-center justify-between sm:justify-center gap-3">
+                <div className="flex sm:hidden items-center gap-2">
+                    <span className="text-[12px] text-slate-400 font-medium">บทบาท:</span>
+                </div>
                 <span className={`inline-block px-2.5 py-1 rounded-lg text-[12px] font-bold border ${user.role === "admin"
                     ? (user.id === firstAdminId ? "bg-amber-50 text-amber-600 border-amber-200" : "bg-rose-50/50 text-rose-600 border-rose-200")
                     : "bg-blue-50/50 text-blue-600 border-blue-200"
@@ -168,32 +194,51 @@ const UserRow = React.memo(({
                         ? (user.id === firstAdminId ? "ผู้ดูแลระบบสูงสุด" : "ผู้ดูแลระบบ")
                         : "ผู้ใช้งาน"}
                 </span>
-            </td>
-            <td className="px-4">
-                <StatusBadge status={user.status} />
-            </td>
-            <td className="px-4">
-                <span className="text-[12.5px] text-slate-500 font-medium">{formatDate(user.createdAt)}</span>
-            </td>
-            <td className="px-4 text-right">
-                <div className="flex justify-end gap-1">
-                    {canEdit(user) && (
-                        <button onClick={() => onEdit(user)}
-                            className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-200 hover:text-slate-900 transition-all cursor-pointer border-none bg-transparent"
-                            title="แก้ไข">
-                            <Edit3 size={15} />
-                        </button>
-                    )}
-                    {canDelete(user) && (
-                        <button onClick={() => onDelete(user.id, user.name)}
-                            className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-red-100 hover:text-red-600 transition-all cursor-pointer border-none bg-transparent"
-                            title="ลบ">
-                            <Trash2 size={15} />
-                        </button>
-                    )}
+                
+                <div className="sm:hidden ml-auto">
+                    <StatusBadge status={user.status} />
                 </div>
-            </td>
-        </tr>
+            </div>
+
+            {/* Status (Desktop only) */}
+            <div className="hidden sm:block px-4">
+                <StatusBadge status={user.status} />
+            </div>
+
+            {/* Created At (Hidden on Mobile) */}
+            <div className="hidden sm:block px-4">
+                <span className="text-[12.5px] text-slate-500 font-medium">{formatDate(user.createdAt)}</span>
+            </div>
+
+            {/* Desktop Actions */}
+            <div className="hidden sm:flex px-4 justify-end gap-1">
+                {canEdit(user) && (
+                    <button onClick={() => onEdit(user)}
+                        className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-200 hover:text-slate-900 transition-all cursor-pointer border-none bg-transparent"
+                        title="แก้ไข">
+                        <Edit3 size={15} />
+                    </button>
+                )}
+                {canDelete(user) && (
+                    <button onClick={() => onDelete(user.id, user.name)}
+                        className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-red-100 hover:text-red-600 transition-all cursor-pointer border-none bg-transparent"
+                        title="ลบ">
+                        <Trash2 size={15} />
+                    </button>
+                )}
+            </div>
+
+            {/* Phone & Date Footer (Mobile) */}
+            <div className="flex sm:hidden items-center justify-between w-full mt-1 pt-3 border-t border-slate-50">
+                <div className="flex items-center gap-1.5 text-slate-400">
+                    <Calendar size={13} />
+                    <span className="text-[12px] font-medium">{formatDate(user.createdAt)}</span>
+                </div>
+                {user.phoneNumber && (
+                    <span className="text-[12px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">{user.phoneNumber}</span>
+                )}
+            </div>
+        </div>
     );
 }, (prev, next) => {
     return (
@@ -534,34 +579,34 @@ export default function UserManagementPage() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-100 -m-6">
+        <div className="min-h-screen bg-white sm:bg-slate-100 lg:-m-6">
 
-            <main className="flex-1 w-full px-10 pt-8 pb-5 flex flex-col">
-                <div className="flex flex-col bg-white rounded-xl border border-slate-200 overflow-hidden" style={{ boxShadow: "0 0 40px rgba(0,0,0,0.06), 0 0 20px rgba(0,0,0,0.04), 0 2px 10px rgba(0,0,0,0.02)" }}>
+            <main className="px-0 pt-0 pb-0 sm:pt-8 sm:pb-5 sm:px-6 lg:px-10 h-screen sm:h-[calc(100vh-52px)] w-full flex flex-col">
+                <div className="flex flex-col bg-white sm:rounded-xl sm:border border-slate-200 overflow-hidden h-full sm:shadow-[0_0_40px_rgba(0,0,0,0.06)]">
                     {/* ── Card Header ── */}
-                    <div className="px-6 py-5 border-b border-slate-200">
-                        <h1 className="text-[22px] font-extrabold text-[#0f172a] tracking-tight m-0 leading-tight">จัดการผู้ใช้</h1>
+                    <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-slate-200 shrink-0 bg-slate-50/30">
+                        <h1 className="text-xl sm:text-[22px] font-extrabold text-[#0f172a] tracking-tight m-0 leading-tight">จัดการผู้ใช้</h1>
                     </div>
 
                     {/* ── Controls ── */}
-                    <div className="flex items-center justify-between flex-wrap gap-4 px-6 py-5 border-b border-slate-200">
-                        <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 px-4 sm:px-6 py-4 sm:py-5 border-b border-slate-200 shrink-0 bg-white">
+                        <div className="flex items-center gap-1.5 overflow-x-auto custom-scrollbar pb-1 sm:pb-0 scrollbar-hide">
                             {tabs.map(tab => {
                                 const isActive = activeTab === tab.id;
                                 return (
                                     <button key={tab.id}
                                         onClick={() => { setActiveTab(tab.id); setPage(1); }}
                                         className={cn(
-                                            "px-3.5 py-1.5 rounded-lg text-[12.5px] font-bold cursor-pointer whitespace-nowrap transition-all duration-200 flex items-center gap-1.5 border group",
+                                            "px-3 sm:px-3.5 py-1.5 rounded-full sm:rounded-lg text-[12px] sm:text-[12.5px] font-bold cursor-pointer whitespace-nowrap transition-all duration-200 flex items-center gap-1.5 border group shrink-0",
                                             isActive
-                                                ? "bg-blue-50 border-blue-600 text-blue-600"
-                                                : "bg-white border-slate-400 text-slate-500 hover:bg-white hover:border-blue-600 hover:text-blue-600"
+                                                ? "bg-blue-600 sm:bg-blue-50 border-blue-600 text-white sm:text-blue-600 shadow-sm"
+                                                : "bg-white border-slate-200 sm:border-slate-400 text-slate-500 hover:bg-slate-50 hover:border-blue-600 hover:text-blue-600"
                                         )}
                                     >
                                         {tab.label}
                                         <span className={cn(
-                                            "text-[11px] font-bold min-w-5 text-center inline-block transition-colors",
-                                            isActive ? "text-blue-600/70" : "text-slate-400 group-hover:text-blue-600/70"
+                                            "text-[10px] sm:text-[11px] font-bold min-w-5 text-center inline-block transition-colors",
+                                            isActive ? "text-white/80 sm:text-blue-600/70" : "text-slate-400 group-hover:text-blue-600/70"
                                         )}>
                                             {tab.count}
                                         </span>
@@ -570,219 +615,184 @@ export default function UserManagementPage() {
                             })}
                         </div>
 
-                        <div className="flex items-center gap-3">
-                            <div className="relative">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                            <div className="relative flex-1 sm:flex-initial">
                                 <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                                 <input
-                                    className="pl-8 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-[13px] outline-none w-48 hover:border-blue-600 focus:border-blue-600 transition-all text-slate-900"
+                                    className="pl-8 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-[13px] outline-none w-full sm:w-48 hover:border-blue-600 focus:border-blue-600 transition-all text-slate-900"
                                     type="text"
-                                    placeholder="ค้นหาชื่อ, อีเมล..."
+                                    placeholder="ค้นหา..."
                                     value={search}
                                     onChange={e => { setSearch(e.target.value); setPage(1); }}
                                 />
                             </div>
                             <button
-                                className="group flex items-center gap-1.5 px-6 py-2 rounded-lg text-[13px] font-bold transition-all duration-200 bg-blue-600 hover:bg-blue-500 text-white shadow-md active:scale-[0.98] cursor-pointer"
+                                className="group flex items-center gap-1.5 px-4 sm:px-6 py-2 rounded-lg text-[13px] font-bold transition-all duration-200 bg-blue-600 hover:bg-blue-500 text-white shadow-md active:scale-[0.98] cursor-pointer shrink-0 border-none"
                                 onClick={() => {
                                     setFormData({ name: "", email: "", password: "", role: "user", phoneNumber: "", status: "active" });
                                     setShowAddModal(true);
                                 }}
                             >
-                                <Plus size={15} className="group-hover:scale-110 transition-transform duration-200 text-white" />เพิ่มผู้ใช้
+                                <Plus size={15} className="group-hover:scale-110 transition-transform duration-200 text-white" />
+                                <span className="hidden xs:inline">เพิ่มผู้ใช้</span>
+                                <span className="inline xs:hidden">เพิ่ม</span>
                             </button>
                         </div>
                     </div>
 
-                    <div className="overflow-x-auto custom-scrollbar">
-                        <table className="w-full table-fixed border-collapse">
-                            <thead className="sticky top-0 z-10 bg-[#fafafa] border-b border-slate-200">
-                                <tr>
-                                    <th className="px-4 py-3.5 text-sm font-bold text-[#334155] text-center w-[6%]">
-                                        ลำดับ
-                                    </th>
-                                    <th onClick={() => handleSort("name")} className={`${thClass("name")} w-[30%] text-left`}>
-                                        <div className="flex items-center gap-1.5">
-                                            ชื่อผู้ใช้งาน <SortIcon field="name" sortConfig={sortConfig} />
-                                        </div>
-                                    </th>
-                                    <th onClick={() => handleSort("phoneNumber")} className={`${thClass("phoneNumber")} w-[15%] text-left`}>
-                                        <div className="flex items-center gap-1.5">
-                                            เบอร์โทร <SortIcon field="phoneNumber" sortConfig={sortConfig} />
-                                        </div>
-                                    </th>
-                                    <th onClick={() => handleSort("role")} className={`${thClass("role")} w-[14%] text-center`}>
-                                        <div className="flex items-center justify-center gap-1.5">
-                                            บทบาท <SortIcon field="role" sortConfig={sortConfig} />
-                                        </div>
-                                    </th>
-                                    <th onClick={() => handleSort("status")} className={`${thClass("status")} w-[12%] text-left`}>
-                                        <div className="flex items-center gap-1.5">
-                                            สถานะ <SortIcon field="status" sortConfig={sortConfig} />
-                                        </div>
-                                    </th>
-                                    <th onClick={() => handleSort("createdAt")} className={`${thClass("createdAt")} w-[14%] text-left`}>
-                                        <div className="flex items-center gap-1.5">
-                                            วันที่เพิ่ม <SortIcon field="createdAt" sortConfig={sortConfig} />
-                                        </div>
-                                    </th>
-                                    <th className="px-4 py-3.5 text-sm font-bold text-[#334155] text-right w-[9%]">จัดการ</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-200 bg-white">
-                                {loading ? (
-                                    [...Array(PAGE_SIZE)].map((_, i) => (
-                                        <tr key={i} className="animate-pulse h-[64px]">
-                                            {/* ลำดับ */}
-                                            <td className="px-4 text-center">
-                                                <div className="h-4 w-6 bg-slate-100 rounded mx-auto" />
-                                            </td>
-                                            {/* ชื่อผู้ใช้ */}
-                                            <td className="px-4">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 rounded-full shrink-0 bg-slate-100 border-2 border-white" />
-                                                    <div className="min-w-0">
-                                                        <div className="h-4 w-28 bg-slate-100 rounded" />
-                                                        <div className="h-3 w-36 bg-slate-100 rounded mt-1.5" />
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            {/* เบอร์โทร */}
-                                            <td className="px-4">
-                                                <div className="h-4 w-24 bg-slate-100 rounded" />
-                                            </td>
-                                            {/* บทบาท */}
-                                            <td className="px-4 text-center">
-                                                <div className="h-6 w-20 bg-slate-100 rounded-full mx-auto" />
-                                            </td>
-                                            {/* สถานะ */}
-                                            <td className="px-4">
-                                                <div className="h-6 w-16 bg-slate-100 rounded-full" />
-                                            </td>
-                                            {/* วันที่เพิ่ม */}
-                                            <td className="px-4">
-                                                <div className="h-4 w-20 bg-slate-100 rounded" />
-                                            </td>
-                                            {/* จัดการ */}
-                                            <td className="px-4">
-                                                <div className="flex justify-end gap-1">
-                                                    <div className="w-8 h-8 bg-slate-50 rounded-lg" />
-                                                    <div className="w-8 h-8 bg-slate-50 rounded-lg" />
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))
-                                ) : error ? (
-                                    <tr>
-                                        <td colSpan={7} className="px-6 py-24 text-center">
-                                            <div className="flex flex-col items-center gap-4">
-                                                <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center ring-8 ring-red-50/50">
-                                                    <AlertTriangle size={28} className="text-red-400" />
-                                                </div>
-                                                <div>
-                                                    <p className="text-base font-bold text-slate-800 m-0">โหลดข้อมูลไม่สำเร็จ</p>
-                                                    <p className="text-[13px] text-slate-400 mt-1.5">เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์</p>
-                                                </div>
-                                                <button
-                                                    onClick={() => fetchUsers({ p: page, s: search, tab: activeTab, sort: sortConfig })}
-                                                    className="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-[13px] font-bold transition-all shadow-sm active:scale-95 cursor-pointer border-none"
-                                                >
-                                                    ลองอีกครั้ง
-                                                </button>
+                    <div className="flex-1 overflow-y-auto custom-scrollbar bg-slate-50/20">
+                        {/* Desktop Header */}
+                        <div className="hidden sm:grid sm:grid-cols-[6%_30%_15%_14%_12%_14%_9%] items-center bg-[#fafafa] border-b border-slate-200 text-[13.5px] font-bold text-[#475569] h-[52px] shrink-0 sticky top-0 z-10">
+                            <div className="text-center px-4">ลำดับ</div>
+                            <div onClick={() => handleSort("name")} className="px-4 flex items-center gap-1.5 cursor-pointer hover:text-blue-600 transition-colors group">
+                                ชื่อผู้ใช้งาน <SortIcon field="name" sortConfig={sortConfig} />
+                            </div>
+                            <div onClick={() => handleSort("phoneNumber")} className="px-4 flex items-center gap-1.5 cursor-pointer hover:text-blue-600 transition-colors group">
+                                เบอร์โทร <SortIcon field="phoneNumber" sortConfig={sortConfig} />
+                            </div>
+                            <div onClick={() => handleSort("role")} className="px-4 flex items-center justify-center gap-1.5 cursor-pointer hover:text-blue-600 transition-colors group">
+                                บทบาท <SortIcon field="role" sortConfig={sortConfig} />
+                            </div>
+                            <div onClick={() => handleSort("status")} className="px-4 flex items-center gap-1.5 cursor-pointer hover:text-blue-600 transition-colors group">
+                                สถานะ <SortIcon field="status" sortConfig={sortConfig} />
+                            </div>
+                            <div onClick={() => handleSort("createdAt")} className="px-4 flex items-center gap-1.5 cursor-pointer hover:text-blue-600 transition-colors group">
+                                วันที่เพิ่ม <SortIcon field="createdAt" sortConfig={sortConfig} />
+                            </div>
+                            <div className="text-right px-4">จัดการ</div>
+                        </div>
+
+                        <div className="divide-y divide-slate-100 bg-white">
+                            {loading ? (
+                                [...Array(PAGE_SIZE)].map((_, i) => (
+                                    <div key={i} className="animate-pulse h-[84px] sm:h-[64px] flex flex-col sm:grid sm:grid-cols-[6%_30%_15%_14%_12%_14%_9%] items-start sm:items-center px-4 sm:px-0 py-4 sm:py-0 border-b border-slate-50 sm:border-none">
+                                        <div className="hidden sm:block h-4 w-6 bg-slate-100 rounded mx-auto" />
+                                        <div className="flex items-center gap-3 w-full sm:w-auto">
+                                            <div className="w-11 h-11 sm:w-10 sm:h-10 rounded-full shrink-0 bg-slate-100" />
+                                            <div className="min-w-0 flex-1">
+                                                <div className="h-4 w-32 bg-slate-100 rounded" />
+                                                <div className="h-3 w-40 bg-slate-100 rounded mt-2" />
                                             </div>
-                                        </td>
-                                    </tr>
-                                ) : users.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={7} className="px-6 py-24 text-center">
-                                            <div className="flex flex-col items-center gap-4">
-                                                <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center ring-8 ring-slate-50/50">
-                                                    <UserIcon size={28} className="text-slate-300" />
-                                                </div>
-                                                <div>
-                                                    <p className="text-base font-bold text-slate-800 m-0">ไม่พบข้อมูลผู้ใช้</p>
-                                                    <p className="text-[13px] text-slate-400 mt-1.5">ลองปรับเงื่อนไขการค้นหาหรือเลือกแท็บอื่น</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ) : (
-                                    <>
-                                        {users.map((user, index) => (
-                                            <UserRow
-                                                key={user.id}
-                                                user={user}
-                                                index={index}
-                                                page={page}
-                                                total={total}
-                                                sortConfig={sortConfig}
-                                                firstAdminId={firstAdminId}
-                                                hoveredRow={hoveredRow}
-                                                setHoveredRow={setHoveredRow}
-                                                onViewImage={setViewImage}
-                                                onEdit={openEdit}
-                                                onDelete={requestDelete}
-                                                canEdit={canEdit}
-                                                canDelete={canDelete}
-                                            />
-                                        ))}
-                                        {/* Empty rows to lock height */}
-                                        {users.length < PAGE_SIZE && [...Array(PAGE_SIZE - users.length)].map((_, i) => (
-                                            <tr key={`empty-${i}`} className="h-[64px] border-none pointer-events-none select-none">
-                                                <td colSpan={7} className="border-none" />
-                                            </tr>
-                                        ))}
-                                    </>
-                                )}
-                            </tbody>
-                        </table>
+                                        </div>
+                                        <div className="hidden sm:block h-4 w-24 bg-slate-100 rounded mx-4" />
+                                        <div className="h-6 w-20 bg-slate-100 rounded-full sm:mx-4 mt-2 sm:mt-0" />
+                                        <div className="hidden sm:block h-6 w-16 bg-slate-100 rounded-full mx-4" />
+                                        <div className="hidden sm:block h-4 w-20 bg-slate-100 rounded mx-4" />
+                                        <div className="hidden sm:flex justify-end gap-1 px-4">
+                                            <div className="w-8 h-8 bg-slate-50 rounded-lg" />
+                                            <div className="w-8 h-8 bg-slate-50 rounded-lg" />
+                                        </div>
+                                    </div>
+                                ))
+                            ) : error ? (
+                                <div className="py-24 text-center">
+                                    <div className="flex flex-col items-center gap-4">
+                                        <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center ring-8 ring-red-50/50">
+                                            <AlertTriangle size={28} className="text-red-400" />
+                                        </div>
+                                        <div>
+                                            <p className="text-base font-bold text-slate-800 m-0">โหลดข้อมูลไม่สำเร็จ</p>
+                                            <p className="text-[13px] text-slate-400 mt-1.5">เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์</p>
+                                        </div>
+                                        <button
+                                            onClick={() => fetchUsers({ p: page, s: search, tab: activeTab, sort: sortConfig })}
+                                            className="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-[13px] font-bold transition-all shadow-sm active:scale-95 cursor-pointer border-none"
+                                        >
+                                            ลองอีกครั้ง
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : users.length === 0 ? (
+                                <div className="py-24 text-center">
+                                    <div className="flex flex-col items-center gap-4">
+                                        <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center ring-8 ring-slate-50/50">
+                                            <UserIcon size={28} className="text-slate-300" />
+                                        </div>
+                                        <div>
+                                            <p className="text-base font-bold text-slate-800 m-0">ไม่พบข้อมูลผู้ใช้</p>
+                                            <p className="text-[13px] text-slate-400 mt-1.5">ลองปรับเงื่อนไขการค้นหาหรือเลือกแท็บอื่น</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <>
+                                    {users.map((user, index) => (
+                                        <UserRow
+                                            key={user.id}
+                                            user={user}
+                                            index={index}
+                                            page={page}
+                                            total={total}
+                                            sortConfig={sortConfig}
+                                            firstAdminId={firstAdminId}
+                                            hoveredRow={hoveredRow}
+                                            setHoveredRow={setHoveredRow}
+                                            onViewImage={setViewImage}
+                                            onEdit={openEdit}
+                                            onDelete={requestDelete}
+                                            canEdit={canEdit}
+                                            canDelete={canDelete}
+                                        />
+                                    ))}
+                                    {/* Spacer for desktop only */}
+                                    {users.length < PAGE_SIZE && [...Array(PAGE_SIZE - users.length)].map((_, i) => (
+                                        <div key={`empty-${i}`} className="hidden sm:block h-[64px] border-none pointer-events-none select-none" />
+                                    ))}
+                                </>
+                            )}
+                        </div>
                     </div>
 
                     {/* ── Pagination ── */}
-                    <div className="shrink-0 px-8 py-4 flex flex-col sm:flex-row items-center justify-between bg-white border-t border-slate-200 gap-4">
-                        <span className="text-xs text-slate-400 font-medium">
+                    <div className="shrink-0 px-4 sm:px-8 py-3 sm:py-4 flex flex-col sm:flex-row items-center justify-between bg-white border-t border-slate-200 gap-3 sm:gap-4">
+                        <span className="text-[11px] sm:text-xs text-slate-400 font-medium order-2 sm:order-1">
                             แสดง{" "}
-                            <span className="text-[13.5px] font-medium text-slate-500 mx-0.5">
+                            <span className="text-[12px] sm:text-[13.5px] font-medium text-slate-500 mx-0.5">
                                 {total === 0 ? 0 : (page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, total)}
                             </span>{" "}
                             จากทั้งหมด{" "}
-                            <span className="text-[13.5px] font-medium text-slate-500 mx-0.5">{total}</span>{" "}
+                            <span className="text-[12px] sm:text-[13.5px] font-medium text-slate-500 mx-0.5">{total}</span>{" "}
                             รายการ
                         </span>
 
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5 sm:gap-2 order-1 sm:order-2">
                             <button
                                 onClick={() => setPage(p => Math.max(1, p - 1))}
                                 disabled={page <= 1}
-                                className={`h-8 px-3 rounded-full border border-slate-200 flex items-center gap-1 text-[12px] font-bold transition-colors ${page <= 1 ? "bg-[#f8fafc] text-slate-400 cursor-not-allowed" : "bg-white text-slate-600 hover:bg-slate-50 cursor-pointer"
+                                className={`h-8 px-2 sm:px-3 rounded-full border border-slate-200 flex items-center gap-1 text-[11px] sm:text-[12px] font-bold transition-colors ${page <= 1 ? "bg-[#f8fafc] text-slate-300 border-slate-100 cursor-not-allowed" : "bg-white text-slate-600 hover:bg-slate-50 cursor-pointer"
                                     }`}
                             >
-                                <ChevronLeft className="w-3.5 h-3.5" />ย้อนกลับ
+                                <ChevronLeft className="w-3.5 h-3.5" />
+                                <span className="hidden xs:inline">ย้อนกลับ</span>
                             </button>
 
-                            {buildPageNumbers().map((p, i) =>
-                                p === "dots" ? (
-                                    <span key={`dots-${i}`} className="text-slate-400 text-[12px] px-1 flex items-center">...</span>
-                                ) : (
-                                    <button key={p} onClick={() => setPage(p)}
-                                        className={cn(
-                                            "w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-bold transition-all cursor-pointer border",
-                                            p === page
-                                                ? "bg-blue-600 text-white shadow-md"
-                                                : "bg-transparent border-transparent text-slate-500 hover:bg-white hover:border-blue-600 hover:text-blue-600"
-                                        )}
-                                    >
-                                        {p}
-                                    </button>
-                                )
-                            )}
+                            <div className="flex items-center gap-1">
+                                {buildPageNumbers().map((p, i) =>
+                                    p === "dots" ? (
+                                        <span key={`dots-${i}`} className="text-slate-300 text-[12px] px-1 flex items-center">...</span>
+                                    ) : (
+                                        <button key={p} onClick={() => setPage(p)}
+                                            className={cn(
+                                                "w-8 h-8 rounded-full flex items-center justify-center text-[12px] sm:text-[13px] font-bold transition-all cursor-pointer border",
+                                                p === page
+                                                    ? "bg-blue-600 text-white border-blue-600 shadow-md scale-105"
+                                                    : "bg-transparent border-transparent text-slate-500 hover:bg-slate-50 hover:border-slate-200"
+                                            )}
+                                        >
+                                            {p}
+                                        </button>
+                                    )
+                                )}
+                            </div>
 
                             <button
                                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                                 disabled={page >= totalPages || totalPages === 0}
-                                className={`h-8 px-3 rounded-full border border-slate-200 flex items-center gap-1 text-[12px] font-bold transition-colors ${(page >= totalPages || totalPages === 0) ? "bg-[#f8fafc] text-slate-400 cursor-not-allowed" : "bg-white text-slate-600 hover:bg-slate-50 cursor-pointer"
+                                className={`h-8 px-2 sm:px-3 rounded-full border border-slate-200 flex items-center gap-1 text-[11px] sm:text-[12px] font-bold transition-colors ${(page >= totalPages || totalPages === 0) ? "bg-[#f8fafc] text-slate-300 border-slate-100 cursor-not-allowed" : "bg-white text-slate-600 hover:bg-slate-50 cursor-pointer"
                                     }`}
                             >
-                                ถัดไป<ChevronRight className="w-3.5 h-3.5" />
+                                <span className="hidden xs:inline">ถัดไป</span>
+                                <ChevronRight className="w-3.5 h-3.5" />
                             </button>
                         </div>
                     </div>

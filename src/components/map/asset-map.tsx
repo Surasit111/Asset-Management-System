@@ -370,6 +370,7 @@ export interface AssetMapHandle {
     setActivePinExternal: (pinId: string | null) => void;
     invalidateSize: () => void;
     getMapState: () => { lat: number; lng: number; zoom: number } | null;
+    fitBounds: (padding?: number) => void;
 }
 
 type BoundsRect = {
@@ -416,8 +417,8 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
                     // It's a dense area. Assign alternating sides to everyone in this cluster
                     const cluster = [p, ...neighbors].sort((a, b) => a.longitude - b.longitude);
                     cluster.forEach((cp, idx) => {
-                        // Alternate: 0=left, 1=right, 2=left...
-                        sides[cp.id] = (idx % 2 === 0) ? 'left' : 'right';
+                        // Alternate: 0=right, 1=left, 2=right... (Base is Right)
+                        sides[cp.id] = (idx % 2 === 0) ? 'right' : 'left';
                     });
                 } else {
                     // Isolated pin: default to right
@@ -427,9 +428,13 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
             return sides;
         }, [masterPins]);
 
-        // Reset decided sides whenever pin layout changes
+        // Reset decided sides whenever pin layout changes (but keep them if only counts change)
+        const lastMasterPinsCount = useRef(masterPins.length);
         useEffect(() => {
-            decidedSidesRef.current = {};
+            if (masterPins.length !== lastMasterPinsCount.current) {
+                decidedSidesRef.current = {};
+                lastMasterPinsCount.current = masterPins.length;
+            }
         }, [masterPins]);
 
         const refreshLabels = () => {
@@ -496,9 +501,10 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
                     r.side = alt;
                     r.visible = true;
                 } else {
-                    // Both sides blocked → hide, keep current decided side
-                    r.side = current;
+                    // Both sides blocked → hide, force to left side permanently for stability
+                    r.side = 'left';
                     r.visible = false;
+                    decidedSidesRef.current[pinId] = 'left';
                 }
             }
             rects.forEach(({ entry, visible, side }) => {
@@ -547,16 +553,31 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
 
         useImperativeHandle(ref, () => ({
             flyTo: (lat, lng, zoom = 12) => {
-                mapRef.current?.flyTo([lat, lng + 0.0003], zoom, { duration: 1.5, easeLinearity: 0.25 });
+                const nLat = Number(lat);
+                const nLng = Number(lng);
+                const nZoom = Number(zoom);
+                if (!isFinite(nLat) || !isFinite(nLng) || !isFinite(nZoom)) return;
+                mapRef.current?.flyTo([nLat, nLng], nZoom, { duration: 1.5, easeLinearity: 0.25 });
             },
             jumpTo: (lat, lng, zoom = 18) => {
-                mapRef.current?.setView([lat, lng + 0.0008], zoom, { animate: false });
+                const nLat = Number(lat);
+                const nLng = Number(lng);
+                const nZoom = Number(zoom);
+                if (!isFinite(nLat) || !isFinite(nLng) || !isFinite(nZoom)) return;
+                mapRef.current?.setView([nLat, nLng], nZoom, { animate: false });
             },
             zoomTo: (lat, lng, zoom = 18) => {
-                mapRef.current?.setZoomAround([lat, lng + 0.0008], zoom, { animate: true });
+                const nLat = Number(lat);
+                const nLng = Number(lng);
+                const nZoom = Number(zoom);
+                if (!isFinite(nLat) || !isFinite(nLng) || !isFinite(nZoom)) return;
+                mapRef.current?.setZoomAround([nLat, nLng], nZoom, { animate: true });
             },
             zoomIn: () => { mapRef.current?.zoomIn(); },
             zoomOut: () => { mapRef.current?.zoomOut(); },
+            getPinSide: (id: string) => {
+                return decidedSidesRef.current[id] || preferredSides[id] || 'right';
+            },
             setActivePinExternal: (pinId) => { setActivePin(pinId); },
             invalidateSize: () => { mapRef.current?.invalidateSize({ animate: false, pan: false }); },
             getMapState: () => {
@@ -564,6 +585,11 @@ const AssetMap = forwardRef<AssetMapHandle, AssetMapProps>(
                 if (!map) return null;
                 const center = map.getCenter();
                 return { lat: center.lat, lng: center.lng, zoom: map.getZoom() };
+            },
+            fitBounds: (padding = 50) => {
+                if (!mapRef.current || pinEntriesRef.current.length === 0) return;
+                const group = L.featureGroup(pinEntriesRef.current.map(e => e.marker));
+                mapRef.current.fitBounds(group.getBounds(), { padding: [padding, padding] });
             }
         }));
 

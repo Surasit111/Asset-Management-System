@@ -539,11 +539,11 @@ export default function AssetManagementPage() {
         <div className="min-h-screen bg-slate-100 font-['Plus_Jakarta_Sans','Noto_Sans_Thai',sans-serif] -m-6">
 
             {/* ══ Header ════════════════════════════════════════════════════════ */}
-            <header className="sticky top-0 z-50 bg-[#ffffff] border-b border-[#cbd5e1] flex items-center transition-none shrink-0" style={{ minHeight: "80px" }}>
-                <div className="w-full px-10 flex items-center justify-between flex-nowrap gap-4">
-                    <div className="flex items-center gap-4 flex-1">
+            <header className="lg:sticky lg:top-0 z-50 bg-[#ffffff] border-b border-[#cbd5e1] flex items-center transition-none shrink-0" style={{ minHeight: "80px" }}>
+                <div className="w-full px-4 md:px-10 py-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4 relative">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 w-full lg:w-auto">
                         <h1 className="text-[26px] font-extrabold text-[#0f172a] tracking-tight m-0 whitespace-nowrap">รายการครุภัณฑ์</h1>
-                        <div className="w-px h-8 bg-slate-200 shrink-0" />
+                        <div className="w-px h-8 bg-slate-200 shrink-0 hidden sm:block" />
                         <div className="flex items-center gap-2 shrink-0">
                             <span className="text-[14px] text-slate-500 font-medium">{countLabel}</span>
                             {loading ? (
@@ -557,15 +557,15 @@ export default function AssetManagementPage() {
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto justify-start lg:justify-end">
                         {/* Dept */}
-                        <div ref={deptRef} className="relative">
+                        <div ref={deptRef} className="relative w-full sm:w-auto">
                             <button data-menu-trigger onClick={() => setActiveDropdown(prev => prev === "dept" ? null : "dept")}
-                                className={cn("group flex items-center gap-2 px-4 py-2 rounded-lg border text-[13px] font-bold cursor-pointer transition-all bg-white shadow-sm h-10",
+                                className={cn("group flex items-center justify-between gap-2 px-4 py-2 rounded-lg border text-[13px] font-bold cursor-pointer transition-all bg-white shadow-sm h-10 w-full sm:w-auto",
                                     (activeDropdown === "dept" || departmentFilter) ? "border-blue-600 text-blue-600" : "border-slate-300 text-slate-500 hover:border-blue-600 hover:text-blue-600"
-                                )} style={{ fontFamily: "inherit", whiteSpace: "nowrap", maxWidth: deptMaxWidth, transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)" }}>
+                                )} style={{ fontFamily: "inherit", whiteSpace: "nowrap", transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)" }}>
                                 <Building2 size={14} className={cn("transition-transform duration-200 shrink-0", (activeDropdown === "dept" || departmentFilter) ? "text-blue-600 scale-125" : "text-slate-400 group-hover:text-blue-600 group-hover:scale-125")} />
-                                <div className={cn("flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden transition-colors", departmentFilter ? "text-blue-700" : "text-slate-400 group-hover:text-blue-600")}>
+                                <div className={cn("flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden transition-colors justify-start", departmentFilter ? "text-blue-700" : "text-slate-400 group-hover:text-blue-600")}>
                                     <span className="shrink-0">หน่วยงาน :</span>
                                     <span className="truncate font-bold">{departmentFilter || "(ทั้งหมด)"}</span>
                                 </div>
@@ -579,18 +579,18 @@ export default function AssetManagementPage() {
                                         exit={{ opacity: 0, y: 8, scale: 0.95 }}
                                         transition={{ duration: 0.15, ease: "easeOut" }}
                                         data-dropdown-content
-                                        className="absolute top-[calc(100%+6px)] right-0 min-w-56 bg-white border border-gray-100 rounded-lg shadow-xl p-1.5 z-50"
+                                        className="absolute top-[calc(100%+6px)] left-0 right-0 lg:left-auto lg:right-0 lg:w-96 bg-white border border-gray-100 rounded-lg shadow-xl p-1.5 z-50"
                                     >
                                         <div className="max-h-80 overflow-y-auto flex flex-col gap-1">
                                             {["", ...departments].map(d => (
                                                 <button key={d || "__all"} onClick={() => { setDepartmentFilter(d); setActiveDropdown(null); }}
-                                                    className={cn("flex items-center gap-2 w-full text-left px-3 py-1.5 rounded-lg text-[13px] cursor-pointer transition-all",
+                                                    className={cn("flex items-center gap-2 w-full text-left px-3 py-1.5 rounded-lg text-[13px] cursor-pointer transition-all min-w-0",
                                                         departmentFilter === d ? "bg-blue-50 text-blue-600 font-bold" : "text-[#0f172a] font-medium hover:bg-indigo-50 hover:text-blue-600"
-                                                    )} style={{ fontFamily: "inherit" }}>
+                                                    )} style={{ fontFamily: "inherit" }} title={d || "ทั้งหมด"}>
                                                     <div className="w-4 h-4 flex items-center justify-center shrink-0">
                                                         {departmentFilter === d && <Check size={14} className="text-blue-600" strokeWidth={3} />}
                                                     </div>
-                                                    <span className="truncate">{d || "ทั้งหมด"}</span>
+                                                    <span className="truncate min-w-0 flex-1">{d || "ทั้งหมด"}</span>
                                                 </button>
                                             ))}
                                         </div>
@@ -599,18 +599,18 @@ export default function AssetManagementPage() {
                             </AnimatePresence>
                         </div>
 
-                        <div className="w-px h-8 bg-slate-200 shrink-0" />
+                        <div className="w-px h-8 bg-slate-200 shrink-0 hidden md:block" />
 
                         {/* Search */}
-                        <div className="relative">
+                        <div className="relative w-full sm:w-auto">
                             <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
                             <input type="text" aria-label="ค้นหารหัส หรือชื่อครุภัณฑ์" placeholder="ค้นหารหัส, ชื่อ..." value={search} onChange={e => setSearch(e.target.value)}
-                                className="pl-9 pr-4 py-2 rounded-lg border border-slate-300 bg-slate-50/50 text-[13px] outline-none hover:border-blue-400 focus:border-blue-500 focus:bg-white transition-all duration-300"
-                                style={{ width: "14rem", fontFamily: "inherit" }} />
+                                className="pl-9 pr-4 py-2 w-full sm:w-56 rounded-lg border border-slate-300 bg-slate-50/50 text-[13px] outline-none hover:border-blue-400 focus:border-blue-500 focus:bg-white transition-all duration-300"
+                                style={{ fontFamily: "inherit" }} />
                         </div>
 
                         {/* Add */}
-                        <Link href="/assets/new" className="group flex items-center gap-2.5 h-10 px-6 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[13px] font-bold shadow-md transition-all whitespace-nowrap">
+                        <Link href="/assets/new" className="group flex items-center justify-center gap-2.5 h-10 px-6 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[13px] font-bold shadow-md transition-all whitespace-nowrap w-full sm:w-auto no-underline">
                             <Plus size={15} className="group-hover:scale-125 transition-transform duration-200" />เพิ่มรายการครุภัณฑ์
                         </Link>
                     </div>
@@ -618,21 +618,21 @@ export default function AssetManagementPage() {
             </header>
 
             {/* ── Selection Bar ─────────────────────────────────────────────── */}
-            <div className="fixed top-[100px] left-0 right-0 pointer-events-none z-40 flex justify-center pl-(--sidebar-width,0px) transition-all duration-300 ease-in-out">
+            <div className="fixed bottom-4 md:bottom-auto md:top-[100px] left-4 right-4 md:left-0 md:right-0 pointer-events-none z-40 flex justify-center lg:pl-(--sidebar-width,0px) transition-all duration-300 ease-in-out">
                 <AnimatePresence>
                     {selectedIds.size > 0 && (
                         <motion.div
-                            initial={{ opacity: 0, y: -20, scale: 0.96 }}
+                            initial={{ opacity: 0, y: 20, scale: 0.96 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: -20, scale: 0.96 }}
+                            exit={{ opacity: 0, y: 20, scale: 0.96 }}
                             transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                            className="pointer-events-auto flex items-center gap-3 p-[0.6rem_1rem] bg-white/90 backdrop-blur-md rounded-full border border-slate-200 shadow-[0_0_40px_0_rgba(0,0,0,0.35)]"
+                            className="pointer-events-auto flex flex-col sm:flex-row items-center gap-2 sm:gap-3 p-3 sm:p-[0.6rem_1rem] bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-full border border-slate-200 shadow-[0_8px_32px_rgba(0,0,0,0.25)] max-w-full"
                         >
-                            <div className="flex items-center gap-2 px-2 border-r border-slate-200 mr-1">
+                            <div className="flex items-center gap-2 px-2 border-b sm:border-b-0 sm:border-r border-slate-200 pb-2 sm:pb-0 sm:mr-1 w-full sm:w-auto justify-center">
                                 <span className="text-[15px] font-black text-black">{selectedIds.size}</span>
                                 <span className="text-[13px] font-medium text-black whitespace-nowrap opacity-80">รายการที่เลือก</span>
                             </div>
-                            <div className="flex items-center gap-2.5 border-r border-slate-200 pr-5 mr-1">
+                            <div className="flex items-center gap-2.5 border-b sm:border-b-0 sm:border-r border-slate-200 pb-2 sm:pb-0 pr-0 sm:pr-5 mr-0 sm:mr-1 w-full sm:w-auto justify-center flex-wrap sm:flex-nowrap">
                                 <button onClick={() => setBulkQrOpen(true)}
                                     className="h-8 px-4 bg-blue-500/5 hover:bg-blue-500/10 text-blue-600 border border-blue-500/30 rounded-full font-bold text-[12px] flex items-center gap-2 transition-all cursor-pointer">
                                     <QrCode size={15} /> พิมพ์ QR ทั้งหมด
@@ -643,7 +643,7 @@ export default function AssetManagementPage() {
                                 </button>
                             </div>
                             <button onClick={() => setSelectedIds(new Set())}
-                                className="h-8 px-4 bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 rounded-full font-bold text-[12px] flex items-center gap-2 cursor-pointer">
+                                className="h-8 px-4 bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 rounded-full font-bold text-[12px] flex items-center gap-2 cursor-pointer w-full sm:w-auto justify-center">
                                 <X size={15} /> ยกเลิก
                             </button>
                         </motion.div>
@@ -651,7 +651,7 @@ export default function AssetManagementPage() {
                 </AnimatePresence>
             </div>
 
-            <main className="flex-1 w-full pl-10 pr-[34.7px] pt-5 pb-10">
+            <main className="flex-1 w-full px-4 md:pl-10 md:pr-[34.7px] pt-5 pb-10">
                 <div className="animate-in fade-in duration-300">
 
                         {/* ══ Toolbar Card ══════════════════════════════════════════ */}
@@ -661,13 +661,13 @@ export default function AssetManagementPage() {
                         )} style={{ overflow: "visible" }}>
 
                             {/* Row 1: Tabs + Quality badges */}
-                            <div className="flex items-center gap-3 px-6 py-5 flex-wrap">
-                                <div className="flex bg-slate-50 border border-slate-200 p-1 rounded-xl h-10 items-center gap-1">
+                            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 px-4 sm:px-6 py-5">
+                                <div className="flex bg-slate-50 border border-slate-200 p-1 rounded-xl h-10 items-center gap-1 w-full sm:w-fit justify-between sm:justify-start shrink-0">
                                     {tabs.map(tab => {
                                         const active = filterType === tab.id;
                                         return (
                                             <button key={tab.id} type="button" onClick={() => setFilterType(tab.id)}
-                                                className="relative px-5 py-1.5 rounded-lg border-none cursor-pointer text-[13px] font-bold transition-all duration-200 flex items-center h-8"
+                                                className="relative flex-1 sm:flex-none justify-center px-4 sm:px-5 py-1.5 rounded-lg border-none cursor-pointer text-[13px] font-bold transition-all duration-200 flex items-center h-8"
                                                 style={{ background: active ? TAB_COLORS[tab.id] : "transparent", color: active ? "#fff" : "#94a3b8", fontFamily: "inherit" }}
                                                 onMouseEnter={e => { if (!active) e.currentTarget.style.color = TAB_COLORS[tab.id]; }}
                                                 onMouseLeave={e => { if (!active) e.currentTarget.style.color = "#94a3b8"; }}>
@@ -677,21 +677,21 @@ export default function AssetManagementPage() {
                                     })}
                                 </div>
 
-                                <div className="flex-1" />
+                                <div className="hidden lg:block flex-1" />
 
-                                <div className="flex items-center gap-2">
-                                    <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mr-1">คุณภาพข้อมูล</span>
+                                <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap w-full lg:w-auto justify-start lg:justify-end overflow-x-auto py-1 custom-scrollbar">
+                                    <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mr-1 shrink-0">คุณภาพข้อมูล</span>
                                     {qualityBadges.map(badge => (
                                         <button key={badge.key} type="button"
                                             onClick={() => setQualityFilter(qualityFilter === badge.key ? null : badge.key)}
                                             className={cn(
-                                                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[12px] font-bold transition-all cursor-pointer",
+                                                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[12px] font-bold transition-all cursor-pointer shrink-0 whitespace-nowrap",
                                                 qualityFilter === badge.key ? badge.activeClass : badge.inactiveClass
                                             )}>
                                             {badge.icon}
                                             <span>{badge.label}</span>
                                             <span className={cn(
-                                                "min-w-[18px] h-[18px] rounded-full flex items-center justify-center text-[10px] font-extrabold px-1",
+                                                "min-w-[18px] h-[18px] rounded-full flex items-center justify-center text-[10px] font-extrabold px-1 shrink-0",
                                                 qualityFilter === badge.key ? "bg-white/25 text-white" : cn(badge.dot, "text-white")
                                             )}>
                                                 {loading ? <div className="w-3 h-2.5 bg-white/40 rounded-sm animate-pulse" /> : badge.count}
@@ -704,25 +704,27 @@ export default function AssetManagementPage() {
                             <div className="border-t border-slate-200" />
 
                             {/* Row 2: Filter toggle + bulk actions */}
-                            <div className="px-6 py-3.5 bg-slate-50/50 rounded-b-xl flex items-center justify-between gap-3">
-                                <div className="flex items-center gap-3">
+                            <div className="px-4 sm:px-6 py-3.5 bg-slate-50/50 rounded-b-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div className="flex items-center gap-3 w-full sm:w-auto">
                                     <button onClick={() => setShowFilters(v => !v)}
-                                        className={cn("group flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border text-[13px] font-bold cursor-pointer transition-all",
-                                            showFilters ? "bg-white border-blue-600 text-blue-600 shadow-sm" : "bg-transparent border-slate-200 text-slate-500 hover:border-blue-600 hover:text-blue-600 hover:bg-white"
+                                        className={cn("group flex items-center justify-between sm:justify-start gap-1.5 px-3.5 py-1.5 rounded-lg border text-[13px] font-bold cursor-pointer transition-all w-full sm:w-auto bg-white shadow-sm",
+                                            showFilters ? "border-blue-600 text-blue-600" : "border-slate-200 text-slate-500 hover:border-blue-600 hover:text-blue-600"
                                         )} style={{ fontFamily: "inherit" }}>
-                                        <SlidersHorizontal size={13} className={cn(showFilters ? "text-blue-600 scale-125" : "text-slate-400 group-hover:text-blue-600")} />
-                                        <span>ตัวกรองข้อมูล</span>
+                                        <div className="flex items-center gap-1.5">
+                                            <SlidersHorizontal size={13} className={cn(showFilters ? "text-blue-600 scale-125" : "text-slate-400 group-hover:text-blue-600")} />
+                                            <span>ตัวกรองข้อมูล</span>
+                                        </div>
                                         <ChevronDown size={13} className={cn("transition-transform", showFilters ? "rotate-180 text-blue-600" : "text-slate-400")} />
                                     </button>
                                 </div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 w-full sm:w-auto justify-start sm:justify-end flex-wrap sm:flex-nowrap">
                                     <button onClick={() => setBulkImageOpen(true)}
-                                        className="group flex items-center gap-2 px-4 py-1.5 bg-violet-600 hover:bg-violet-700 text-white rounded-lg text-[12px] font-bold shadow-sm transition-all cursor-pointer active:scale-95">
+                                        className="group flex items-center justify-center gap-2 px-4 py-1.5 bg-violet-600 hover:bg-violet-700 text-white rounded-lg text-[12px] font-bold shadow-sm transition-all cursor-pointer active:scale-95 w-full sm:w-auto">
                                         <Images size={14} className="group-hover:rotate-12 transition-transform" />
                                         จัดการรูปภาพกลุ่ม
                                     </button>
                                     <button onClick={() => setIsBulkMapOpen(true)}
-                                        className="group flex items-center gap-2 px-4 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-[12px] font-bold shadow-sm transition-all cursor-pointer active:scale-95">
+                                        className="group flex items-center justify-center gap-2 px-4 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-[12px] font-bold shadow-sm transition-all cursor-pointer active:scale-95 w-full sm:w-auto">
                                         <MapPin size={14} className="group-hover:animate-bounce transition-transform" />
                                         ปักหมุดแผนที่กลุ่ม
                                     </button>
@@ -732,8 +734,8 @@ export default function AssetManagementPage() {
                             {/* Filter Panel */}
                             <div className="bg-white rounded-b-xl" style={{ display: "grid", gridTemplateRows: showFilters ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease", overflow: (showFilters && activeDropdown) ? "visible" : "clip" }}>
                                 <div style={{ overflow: (showFilters && activeDropdown) ? "visible" : "clip", minHeight: 0 }}>
-                                    <div className="grid gap-x-3 gap-y-1.5 px-6 pb-2.5 pt-4 border-t border-slate-200"
-                                        style={{ gridTemplateColumns: "repeat(auto-fill, minmax(10rem, 1fr))" }}>
+                                    <div className="grid gap-x-3 gap-y-1.5 px-4 sm:px-6 pb-2.5 pt-4 border-t border-slate-200"
+                                        style={{ gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))" }}>
                                         {[
                                             { label: "ปีงบประมาณ", value: fiscalYear, setter: setFiscalYear, options: fiscalYears.map(y => ({ value: y, label: y })) },
                                             { label: "เดือนเริ่มต้น", value: startMonth, setter: setStartMonth, type: "month" as const },
@@ -833,9 +835,9 @@ export default function AssetManagementPage() {
                                     `}</style>
                                 </div>
                             )}
-                            <div className="overflow-x-auto custom-scrollbar rounded-t-xl pb-20 -mb-20">
+                            <div className="overflow-x-auto custom-scrollbar rounded-t-xl">
                                 <table className="w-full text-left border-collapse min-w-[1100px]">
-                                    <thead className="sticky top-0 z-10 bg-[#fafafa] border-b border-slate-200">
+                                    <thead className="lg:sticky lg:top-0 z-10 bg-[#fafafa] border-b border-slate-200">
                                         <tr>
                                             <th className="w-[50px] px-4 py-3.5 text-center">
                                                 <input type="checkbox" aria-label="เลือกข้อมูลทั้งหมดบนหน้านี้" className="w-4 h-4 rounded border-gray-400 accent-blue-600 cursor-pointer"

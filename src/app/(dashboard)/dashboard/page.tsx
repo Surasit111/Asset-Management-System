@@ -417,25 +417,19 @@ export default function DashboardPage() {
 
             {/* ══ Navbar ══════════════════════════════════════════════════════ */}
             <header className="sticky top-0 z-110 bg-[#ffffff] border-b border-[#cbd5e1] flex items-center transition-none shrink-0" style={{ minHeight: "80px" }}>
-                <div className="w-full px-10 py-4 flex items-center gap-4 relative">
+                <div className="w-full px-4 md:px-10 py-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4 relative">
 
-                    {/* Title */}
-                    <div className="flex items-center gap-3 shrink-0">
-                        <div>
-                            <div className="flex items-center gap-2.5">
-                                <h1 className="text-[22px] font-extrabold text-[#0f172a] tracking-tight m-0 leading-tight">แดชบอร์ด</h1>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Center Tabs */}
-                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-                        <div className="flex bg-slate-50 border border-slate-200 p-1 rounded-xl h-10 items-center gap-1 pointer-events-auto">
+                    {/* Left title & Center Tabs */}
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 w-full lg:w-auto">
+                        <h1 className="text-[22px] font-extrabold text-[#0f172a] tracking-tight m-0 leading-tight">แดชบอร์ด</h1>
+                        
+                        {/* Center Tabs */}
+                        <div className="flex bg-slate-50 border border-slate-200 p-1 rounded-xl h-10 items-center gap-1 w-fit">
                             {tabs.map(tab => {
                                 const active = filterType === tab.id;
                                 return (
                                     <button key={tab.id} type="button" onClick={() => setFilterType(tab.id)}
-                                        className="relative px-5 py-1.5 rounded-lg border-none cursor-pointer text-[13px] font-bold transition-all duration-200"
+                                        className="relative px-3 sm:px-5 py-1.5 rounded-lg border-none cursor-pointer text-[13px] font-bold transition-all duration-200"
                                         style={{
                                             background: active ? TAB_COLORS[tab.id] : "transparent",
                                             color: active ? "#fff" : "#94a3b8",
@@ -451,10 +445,8 @@ export default function DashboardPage() {
                         </div>
                     </div>
 
-                    <div className="flex-1" />
-
                     {/* Right controls */}
-                    <div className="flex items-center gap-2.5 shrink-0">
+                    <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto justify-start lg:justify-end">
 
                         {/* Filter toggle */}
                         <button onClick={() => setShowFilters(v => !v)}
@@ -480,7 +472,7 @@ export default function DashboardPage() {
                         </button>
 
                         {/* Department dropdown */}
-                        <div className="relative">
+                        <div className="static lg:relative">
                             <button data-menu-trigger
                                 onClick={() => setActiveDropdown(prev => prev === "dept" ? null : "dept")}
                                 className={cn(
@@ -516,23 +508,24 @@ export default function DashboardPage() {
 
                             {activeDropdown === "dept" && (
                                 <div data-dropdown-content
-                                    className="absolute top-[calc(100%+0.35rem)] right-0 min-w-56 bg-white border border-slate-100 rounded-lg shadow-md p-1.5 z-50 animate-in fade-in zoom-in-95 duration-200">
+                                    className="absolute top-[calc(100%+0.35rem)] left-4 right-4 lg:left-auto lg:right-0 lg:w-96 bg-white border border-slate-100 rounded-lg shadow-md p-1.5 z-50 animate-in fade-in zoom-in-95 duration-200">
                                     <div className="max-h-80 overflow-y-auto custom-scrollbar flex flex-col gap-1">
                                         {["", ...departments].map(d => (
                                             <button key={d || "__all"}
                                                 onClick={() => { setDepartmentFilter(d); setActiveDropdown(null); }}
                                                 className={cn(
-                                                    "flex items-center gap-2 w-full text-left px-3 py-1.5 rounded-lg border-none text-[13px] cursor-pointer transition-all",
+                                                    "flex items-center gap-2 w-full text-left px-3 py-1.5 rounded-lg border-none text-[13px] cursor-pointer transition-all min-w-0",
                                                     departmentFilter === d
                                                         ? "bg-blue-50 text-blue-600 font-bold"
                                                         : "text-[#0f172a] font-medium hover:bg-indigo-100/50 hover:text-blue-600"
                                                 )}
                                                 style={{ fontFamily: "inherit" }}
+                                                title={d || "ทั้งหมด"}
                                             >
                                                 <div className="w-4 h-4 flex items-center justify-center shrink-0">
                                                     {departmentFilter === d && <Check size={14} className="text-blue-600" strokeWidth={3} />}
                                                 </div>
-                                                <span className="truncate">{d || "ทั้งหมด"}</span>
+                                                <span className="truncate min-w-0 flex-1">{d || "ทั้งหมด"}</span>
                                             </button>
                                         ))}
                                     </div>
@@ -544,7 +537,7 @@ export default function DashboardPage() {
             </header>
 
             {/* ══ Filter Panel ════════════════════════════════════════════════ */}
-            <div className="sticky top-[80px] z-100 transition-none">
+            <div className="sticky lg:top-[80px] z-100 transition-none">
                 <AnimatePresence>
                     {showFilters && (
                         <motion.div
@@ -555,7 +548,7 @@ export default function DashboardPage() {
                             style={{ overflow: activeDropdown ? "visible" : "hidden" }}
                             className="bg-white/95 backdrop-blur-lg border-b border-slate-200 shadow-sm"
                         >
-                            <div className="px-10 py-4">
+                            <div className="px-4 md:px-10 py-4">
                                 <div className="grid gap-x-3 gap-y-2"
                                     style={{ gridTemplateColumns: "repeat(auto-fill, minmax(10rem, 1fr))" }}>
                                     {[
@@ -680,12 +673,12 @@ export default function DashboardPage() {
             </div>
 
             {/* ══ Content ═════════════════════════════════════════════════════ */}
-            <div className="w-full pl-10 pr-10 pb-16 pt-5" style={{ transition: "none" }}>
+            <div className="w-full px-4 md:px-10 pb-16 pt-5" style={{ transition: "none" }}>
                 <div className="space-y-4 animate-in fade-in duration-300">
                     <SkeletonStyle />
 
                     {/* ── 1. Stat Cards ── */}
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {[
                             {
                                 label: countLabel,
@@ -731,7 +724,7 @@ export default function DashboardPage() {
                     </div>
 
                     {/* ── 2. Charts Row ── */}
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                         {[
                             {
                                 title: "สถิติตามสถานะ",
@@ -1013,7 +1006,7 @@ export default function DashboardPage() {
                                                 animate={{ x: 0, opacity: 1 }}
                                                 exit={{ x: "100%", opacity: 0 }}
                                                 transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-                                                className="absolute top-0 right-0 h-full w-72 bg-white border-l border-slate-200 z-50 flex flex-col shadow-2xl overflow-hidden"
+                                                className="absolute top-0 right-0 h-full w-full sm:w-72 bg-white border-l border-slate-200 z-50 flex flex-col shadow-2xl overflow-hidden"
                                             >
                                                 <motion.div
                                                     key={selectedPinId}

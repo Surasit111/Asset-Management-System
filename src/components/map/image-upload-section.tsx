@@ -3,9 +3,6 @@ import React, { useState, useRef, useCallback, useEffect } from "react";
 import { X, Upload, ZoomIn, ZoomOut, RotateCcw, CheckCircle2, RefreshCw } from "lucide-react";
 import { PIN_CROP_SIZE, CARD_CROP_W, CARD_CROP_H } from "./map-crop-modal";
 
-// ─── constants ───────────────────────────────────────────────
-const CONT_W = 392;
-
 // ─── InlineCropEditor ────────────────────────────────────────
 interface EditorProps {
     src: string;
@@ -15,15 +12,33 @@ interface EditorProps {
 }
 
 function InlineCropEditor({ src, mode, confirmedBlob, onBlob }: EditorProps) {
-    const contW = 380;
-    const contH = 380;
+    const [contW, setContW] = useState(380);
+    const [contH, setContH] = useState(380);
+
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const updateSize = () => {
+            if (containerRef.current) {
+                const w = containerRef.current.parentElement?.clientWidth || 380;
+                const safeW = Math.min(380, w);
+                setContW(safeW);
+                setContH(safeW);
+            }
+        };
+        updateSize();
+        window.addEventListener("resize", updateSize);
+        const timer = setTimeout(updateSize, 100);
+        return () => {
+            window.removeEventListener("resize", updateSize);
+            clearTimeout(timer);
+        };
+    }, []);
 
     const cardMaskW = contW * 0.85;
     const cardMaskH = Math.round(cardMaskW * CARD_CROP_H / CARD_CROP_W);
     const cardMaskX = (contW - cardMaskW) / 2;
     const cardMaskY = (contH - cardMaskH) / 2;
-
-    const containerRef = useRef<HTMLDivElement>(null);
     const cropR = (contW / 2) * 0.64;
 
     // ── display frame size (พื้นที่ crop จริงที่ user เห็น) ────
@@ -241,7 +256,8 @@ function InlineCropEditor({ src, mode, confirmedBlob, onBlob }: EditorProps) {
             <div style={{
                 position: "relative", borderRadius: mode === "pin" ? "50%" : 10, overflow: "hidden",
                 width: mode === "pin" ? 140 : "100%",
-                height: mode === "pin" ? 140 : Math.round(CONT_W * CARD_CROP_H / CARD_CROP_W),
+                height: mode === "pin" ? 140 : "auto",
+                aspectRatio: mode === "pin" ? "1 / 1" : `${CARD_CROP_W} / ${CARD_CROP_H}`,
                 background: "#f8fafc", border: "2px solid #e2e8f0", boxShadow: "0 4px 12px rgba(0,0,0,0.08)"
             }}>
                 <img src={confirmedBlob || src} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />

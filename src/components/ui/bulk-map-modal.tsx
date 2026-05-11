@@ -176,7 +176,7 @@ export function BulkMapModal({ isOpen, onClose, onSaved }: BulkMapModalProps) {
     return (
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-130 flex items-center justify-center p-0 lg:p-4">
                     {/* Overlay */}
                     <motion.div
                         initial={{ opacity: 0 }}
@@ -192,12 +192,12 @@ export function BulkMapModal({ isOpen, onClose, onSaved }: BulkMapModalProps) {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
                         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                        className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full flex flex-col overflow-hidden relative z-10 font-['Plus_Jakarta_Sans','Noto_Sans_Thai',sans-serif]"
-                        style={{ maxWidth: "1200px", height: "88vh" }}
+                        className="bg-white rounded-none lg:rounded-3xl border-0 lg:border border-slate-200 shadow-2xl w-full h-full lg:h-[88vh] flex flex-col overflow-hidden relative z-10 font-['Plus_Jakarta_Sans','Noto_Sans_Thai',sans-serif]"
+                        style={{ maxWidth: "1200px" }}
                         onClick={e => e.stopPropagation()}>
 
                         {/* ── Header ── */}
-                        <div className="px-8 py-5 border-b border-slate-200 flex items-center gap-3 shrink-0">
+                        <div className="px-4 lg:px-8 py-4 lg:py-5 border-b border-slate-200 flex items-center gap-3 shrink-0">
                             <div className="w-9 h-9 rounded-xl bg-yellow-50 border border-yellow-200 flex items-center justify-center shrink-0">
                                 <MapPin size={17} className="text-yellow-500" />
                             </div>
@@ -214,10 +214,10 @@ export function BulkMapModal({ isOpen, onClose, onSaved }: BulkMapModalProps) {
                         </div>
 
                         {/* ── Body ── */}
-                        <div className="flex flex-1 overflow-hidden">
+                        <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
 
                             {/* ══ ซ้าย: รายการ ═════════════════════════════════════ */}
-                            <div className="w-[500px] shrink-0 border-r border-slate-200 flex flex-col bg-slate-50/20">
+                            <div className="w-full lg:w-[400px] xl:w-[480px] shrink-0 border-b lg:border-b-0 lg:border-r border-slate-200 flex flex-col bg-slate-50/20 h-[45%] lg:h-full">
 
                                 {/* Search + Filter */}
                                 <div className="px-3 pt-4 pb-3 space-y-3 shrink-0 border-b border-slate-100 bg-white">
@@ -361,7 +361,7 @@ export function BulkMapModal({ isOpen, onClose, onSaved }: BulkMapModalProps) {
                             </div>
 
                             {/* ══ ขวา: แผนที่ ══════════════════════════════════════ */}
-                            <div className="flex-1 flex flex-col overflow-hidden">
+                            <div className="flex-1 flex flex-col overflow-hidden h-[55%] lg:h-full">
                                 <div className="flex-1 relative overflow-hidden" style={{ borderRadius: 0 }}>
                                     {/* [FIX #14] ย้าย leaflet style ออกจาก dangerouslySetInnerHTML */}
                                     <style>{`.leaflet-container { border-radius: 0 !important; }`}</style>
@@ -434,7 +434,7 @@ export function BulkMapModal({ isOpen, onClose, onSaved }: BulkMapModalProps) {
                         </div>
 
                         {/* ── Footer ── */}
-                        <div className="px-8 py-5 border-t border-slate-200 bg-slate-50/50 flex items-center justify-between shrink-0">
+                        <div className="px-4 lg:px-8 py-4 lg:py-5 border-t border-slate-200 bg-slate-50/50 flex items-center justify-between shrink-0">
                             <div className="flex-1" />
                             <div className="flex items-center gap-2.5">
                                 <button onClick={onClose}

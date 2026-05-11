@@ -13,6 +13,16 @@ interface ThaiDateInputProps {
 
 export function ThaiDateInput({ value, onChange, placeholder = "DD/MM/YYYY", required }: ThaiDateInputProps) {
     const [displayValue, setDisplayValue] = useState("");
+    const [align, setAlign] = useState<"start" | "end">("start");
+
+    useEffect(() => {
+        const handleResize = () => {
+            setAlign(window.innerWidth < 1024 ? "end" : "start");
+        };
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     // Safely parse the value into a Date (handles ISO strings too)
     const safeDate = (): Date | undefined => {
@@ -100,7 +110,7 @@ export function ThaiDateInput({ value, onChange, placeholder = "DD/MM/YYYY", req
                         <CalendarIcon size={16} />
                     </button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className="w-auto p-0 overflow-hidden z-200" align={align} side="bottom" sideOffset={6} avoidCollisions={false}>
                     <Calendar
                         key={value || "empty"}
                         mode="single"

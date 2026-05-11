@@ -227,7 +227,7 @@ export function BulkImageModal({ isOpen, onClose, assets, onSaved }: BulkImageMo
         <>
             <AnimatePresence>
                 {isOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="fixed inset-0 z-130 flex items-center justify-center p-0 lg:p-4">
                         {/* Overlay */}
                         <motion.div
                             initial={{ opacity: 0 }}
@@ -243,12 +243,12 @@ export function BulkImageModal({ isOpen, onClose, assets, onSaved }: BulkImageMo
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
                             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                            className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full flex flex-col overflow-hidden font-['Plus_Jakarta_Sans','Noto_Sans_Thai',sans-serif] relative z-10"
-                            style={{ maxWidth: "1200px", height: "88vh" }}
+                            className="bg-white rounded-none lg:rounded-3xl border-0 lg:border border-slate-200 shadow-2xl w-full h-full lg:h-[88vh] flex flex-col overflow-hidden font-['Plus_Jakarta_Sans','Noto_Sans_Thai',sans-serif] relative z-10"
+                            style={{ maxWidth: "1200px" }}
                             onClick={e => e.stopPropagation()}>
 
                             {/* ── Header ── */}
-                            <div className="px-6 py-4 border-b border-slate-200 flex items-center gap-3 shrink-0">
+                            <div className="px-4 lg:px-6 py-4 border-b border-slate-200 flex items-center gap-3 shrink-0">
                                 <div className="w-9 h-9 rounded-xl bg-violet-50 border border-violet-200 flex items-center justify-center shrink-0">
                                     <Images size={17} className="text-violet-500" />
                                 </div>
@@ -262,10 +262,10 @@ export function BulkImageModal({ isOpen, onClose, assets, onSaved }: BulkImageMo
                             </div>
 
                             {/* ── Body ── */}
-                            <div className="flex flex-1 overflow-hidden">
+                            <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
 
                                 {/* ══ ส่วนที่ 1: รายการ ════════════════════════════════ */}
-                                <div className="w-[500px] shrink-0 border-r border-slate-200 overflow-y-auto custom-scrollbar bg-slate-50/50">
+                                <div className="w-full lg:w-[400px] xl:w-[480px] shrink-0 border-b lg:border-b-0 lg:border-r border-slate-200 overflow-y-auto custom-scrollbar bg-slate-50/50 h-[45%] lg:h-full">
                                     <div className="px-3 py-2 border-b border-slate-200 sticky top-0 bg-white z-10">
                                         <p className="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">รายการที่เลือก</p>
                                     </div>
@@ -334,7 +334,7 @@ export function BulkImageModal({ isOpen, onClose, assets, onSaved }: BulkImageMo
                                 </div>
 
                                 {/* ══ ส่วนที่ 2: Preview ══════════════════════════════ */}
-                                <div className="flex-1 flex flex-col overflow-hidden">
+                                <div className="flex-1 flex flex-col overflow-hidden h-[55%] lg:h-full">
                                     <div className="flex-1 overflow-y-auto custom-scrollbar">
                                         {activeAsset ? (
                                             <div className="pt-2 px-5 pb-0">
@@ -488,7 +488,7 @@ export function BulkImageModal({ isOpen, onClose, assets, onSaved }: BulkImageMo
                             </div>
 
                             {/* ── Footer ── */}
-                            <div className="px-8 py-5 border-t border-slate-200 flex items-center justify-between bg-slate-50/50 shrink-0">
+                            <div className="px-4 lg:px-8 py-4 lg:py-5 border-t border-slate-200 flex items-center justify-between bg-slate-50/50 shrink-0">
                                 <div className="flex items-center gap-3">
                                     <div className="flex items-center gap-2 text-[12px] text-slate-500">
                                         <span>เหลือ</span>
