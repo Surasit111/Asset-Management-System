@@ -1554,7 +1554,7 @@ export default function ImportPage() {
 
     // ─── RENDER ──────────────────────────────────────────────────────────────
     return (
-        <div className="min-h-full bg-slate-100 -m-6 page-import">
+        <div className="min-h-screen bg-slate-100 -m-6 page-import">
 
             {/* ══ Navbar ═══════════════════════════════════════════════════════ */}
             <header className="lg:sticky lg:top-0 z-90 bg-white border-b border-slate-200 flex items-center shrink-0" style={{ minHeight: "72px" }}>
