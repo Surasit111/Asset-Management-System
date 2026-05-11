@@ -36,20 +36,20 @@
 ### Interactive Map
 ระบุตำแหน่งครุภัณฑ์บนแผนที่ แยกตามอาคาร/สถานที่ พร้อมแสดงรายการครุภัณฑ์ในหมุดนั้นๆ
 ![Map View](docs/screenshots/Map.png)
-https://github.com/user-attachments/assets/744e63fa-6d0b-495f-972a-3ab346952a33
+<video src="https://github.com/user-attachments/assets/744e63fa-6d0b-495f-972a-3ab346952a33" width="100%" muted autoplay loop playsinline></video>
 
 ### Smart Excel Import
 กระบวนการนำเข้าข้อมูลจาก Excel ที่ชาญฉลาด แมปคอลัมน์อัตโนมัติ และตรวจสอบความถูกต้องก่อนบันทึก
-https://github.com/user-attachments/assets/654eba85-ba06-4d95-8aa7-0d9de9b1b861
+<video src="https://github.com/user-attachments/assets/654eba85-ba06-4d95-8aa7-0d9de9b1b861" width="100%" muted autoplay loop playsinline></video>
 
 ### Bulk Operations (Map & Images)
 จัดการตำแหน่งแผนที่และรูปภาพสำหรับหลายรายการพร้อมกันในคลิกเดียว
 
 **Bulk Map Pinning**
-https://github.com/user-attachments/assets/4537898c-9e4e-49bf-9a4b-dfc2c2dbc637
+<video src="https://github.com/user-attachments/assets/4537898c-9e4e-49bf-9a4b-dfc2c2dbc637" width="100%" muted autoplay loop playsinline></video>
 
 **Bulk Image Management**
-https://github.com/user-attachments/assets/0d048895-41b1-49e8-b4f2-fbc5403c17ef
+<video src="https://github.com/user-attachments/assets/0d048895-41b1-49e8-b4f2-fbc5403c17ef" width="100%" muted autoplay loop playsinline></video>
 
 ### QR Code System
 สร้างและพิมพ์ QR Code สำหรับติดบนตัวครุภัณฑ์ เพื่อการตรวจสอบที่รวดเร็ว
