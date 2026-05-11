@@ -9,13 +9,13 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind-4.1.18-06B6D4?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
--------------------------------------------------------------------
+## -------------------------------------------------------------------
 
 🔗 **[Live Demo](https://asset-management-system-bice.vercel.app)**
 
--------------------------------------------------------------------
+## -------------------------------------------------------------------
 
-### 🔐 Demo Credentials
+### Demo Credentials
 
 | Role | Email | Password |
 |---|---|---|
@@ -27,31 +27,31 @@
 
 ---
 
-## 🖼️ Screenshots & Demos
+## Screenshots & Demos
 
-### 📊 Dashboard & Overview
+### Dashboard & Overview
 ภาพรวมสถิติคลังครุภัณฑ์ทั้งหมด พร้อมกราฟแยกตามประเภทและสถานะแบบ Real-time
 ![Dashboard](docs/screenshots/Dashboard.png)
 
-### 🗺️ Interactive Map
+### Interactive Map
 ระบุตำแหน่งครุภัณฑ์บนแผนที่ แยกตามอาคาร/สถานที่ พร้อมแสดงรายการครุภัณฑ์ในหมุดนั้นๆ
 ![Map View](docs/screenshots/Map.png)
-<video src="docs/screenshots/map-video.mp4" width="100%" muted autoplay loop playsinline></video>
+https://github.com/user-attachments/assets/744e63fa-6d0b-495f-972a-3ab346952a33
 
-### 📥 Smart Excel Import
+### Smart Excel Import
 กระบวนการนำเข้าข้อมูลจาก Excel ที่ชาญฉลาด แมปคอลัมน์อัตโนมัติ และตรวจสอบความถูกต้องก่อนบันทึก
-<video src="docs/screenshots/import-video.mp4" width="100%" muted autoplay loop playsinline></video>
+https://github.com/user-attachments/assets/654eba85-ba06-4d95-8aa7-0d9de9b1b861
 
-### 📍 Bulk Operations (Map & Images)
+### Bulk Operations (Map & Images)
 จัดการตำแหน่งแผนที่และรูปภาพสำหรับหลายรายการพร้อมกันในคลิกเดียว
 
 **Bulk Map Pinning**
-<video src="docs/screenshots/map-pin-video.mp4" width="100%" muted autoplay loop playsinline></video>
+https://github.com/user-attachments/assets/4537898c-9e4e-49bf-9a4b-dfc2c2dbc637
 
 **Bulk Image Management**
-<video src="docs/screenshots/upload-image-video.mp4" width="100%" muted autoplay loop playsinline></video>
+https://github.com/user-attachments/assets/0d048895-41b1-49e8-b4f2-fbc5403c17ef
 
-### 🏷️ QR Code System
+### QR Code System
 สร้างและพิมพ์ QR Code สำหรับติดบนตัวครุภัณฑ์ เพื่อการตรวจสอบที่รวดเร็ว
 ![QR Code](docs/screenshots/QR-Code.png)
 
@@ -60,7 +60,7 @@
 
 ---
 
-## ✨ Key Features
+## Key Features
 
 | Feature | รายละเอียด |
 |---|---|
@@ -80,7 +80,7 @@
 
 ---
 
-## 🛠️ Tech Stack & Rationale
+## Tech Stack & Rationale
 
 | Technology | Version | เหตุผลที่เลือก |
 |---|---|---|
@@ -98,7 +98,7 @@
 
 ---
 
-## 👤 User Roles & Permissions
+## User Roles & Permissions
 
 | สิทธิ์ | Admin | User |
 |---|:---:|:---:|
@@ -115,16 +115,16 @@
 
 ---
 
-## 👨‍💻 About the Developer
+## About the Developer
 
 **คุณสุรสิทธิ์ พิมพ์สีดา (Surasit Phimseeda)**
 
-- 📧 [surasit.phimseeda111@gmail.com](mailto:surasit.phimseeda111@gmail.com)
-- 🐙 [github.com/Surasit111](https://github.com/Surasit111)
+- [surasit.phimseeda111@gmail.com](mailto:surasit.phimseeda111@gmail.com)
+- [github.com/Surasit111](https://github.com/Surasit111)
 
 ---
 
-## 📄 License
+## License
 
 This project is proprietary software. All rights reserved.
 
