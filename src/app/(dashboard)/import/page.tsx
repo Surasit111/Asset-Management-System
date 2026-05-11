@@ -1204,7 +1204,9 @@ export default function ImportPage() {
             });
 
             // Consolidate findings
-            obj.status = statusTickedCount === 1 ? foundStatus : "";
+            if (statusTickedCount >= 1) {
+                obj.status = statusTickedCount === 1 ? foundStatus : "";
+            }
             if (!obj.assetType) obj.assetType = defaults.assetType;
             if (!obj.department) obj.department = defaults.department;
             obj.fiscalYear = defaults.fiscalYear;
