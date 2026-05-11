@@ -36,20 +36,20 @@
 ### 🗺️ Interactive Map
 ระบุตำแหน่งครุภัณฑ์บนแผนที่ แยกตามอาคาร/สถานที่ พร้อมแสดงรายการครุภัณฑ์ในหมุดนั้นๆ
 ![Map View](docs/screenshots/Map.png)
-<video src="https://github.com/Surasit111/Asset-Management-System/raw/main/docs/screenshots/map-video.mp4" muted autoplay loop playsinline width="100%"></video>
+<video src="docs/screenshots/map-video.mp4" width="100%" muted autoplay loop playsinline></video>
 
 ### 📥 Smart Excel Import
 กระบวนการนำเข้าข้อมูลจาก Excel ที่ชาญฉลาด แมปคอลัมน์อัตโนมัติ และตรวจสอบความถูกต้องก่อนบันทึก
-<video src="https://github.com/Surasit111/Asset-Management-System/raw/main/docs/screenshots/import-video.mp4" muted autoplay loop playsinline width="100%"></video>
+<video src="docs/screenshots/import-video.mp4" width="100%" muted autoplay loop playsinline></video>
 
 ### 📍 Bulk Operations (Map & Images)
 จัดการตำแหน่งแผนที่และรูปภาพสำหรับหลายรายการพร้อมกันในคลิกเดียว
 
 **Bulk Map Pinning**
-<video src="https://github.com/Surasit111/Asset-Management-System/raw/main/docs/screenshots/map-pin-video.mp4" muted autoplay loop playsinline width="100%"></video>
+<video src="docs/screenshots/map-pin-video.mp4" width="100%" muted autoplay loop playsinline></video>
 
 **Bulk Image Management**
-<video src="https://github.com/Surasit111/Asset-Management-System/raw/main/docs/screenshots/upload-image-video.mp4" muted autoplay loop playsinline width="100%"></video>
+<video src="docs/screenshots/upload-image-video.mp4" width="100%" muted autoplay loop playsinline></video>
 
 ### 🏷️ QR Code System
 สร้างและพิมพ์ QR Code สำหรับติดบนตัวครุภัณฑ์ เพื่อการตรวจสอบที่รวดเร็ว
