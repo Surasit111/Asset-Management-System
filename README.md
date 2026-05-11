@@ -11,6 +11,17 @@
 
 🔗 **[Live Demo](https://asset-management-system-bice.vercel.app)**
 
+### 🔐 Demo Credentials
+หากต้องการทดลองใช้งานผ่านระบบ Demo สามารถเข้าสู่ระบบด้วยบัญชีดังนี้:
+
+| Role | Email | Password |
+|---|---|---|
+| **Administrator** | `admin@gmail.com` | `123456789` |
+| **General User** | `user@gmail.com` | `123456789` |
+
+> [!NOTE]
+> บัญชี Admin สามารถจัดการหมวดหมู่และผู้ใช้งานได้ ส่วนบัญชี User สามารถจัดการข้อมูลครุภัณฑ์และนำเข้า Excel ได้ตามปกติ
+
 ---
 
 ## ✨ Key Features
