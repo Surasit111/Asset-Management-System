@@ -9,7 +9,11 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind-4.1.18-06B6D4?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
+-------------------------------------------------------------------
+
 🔗 **[Live Demo](https://asset-management-system-bice.vercel.app)**
+
+-------------------------------------------------------------------
 
 ### 🔐 Demo Credentials
 
@@ -27,22 +31,29 @@
 
 ### 📊 Dashboard & Overview
 ภาพรวมสถิติคลังครุภัณฑ์ทั้งหมด พร้อมกราฟแยกตามประเภทและสถานะแบบ Real-time
-![Dashboard](./docs/screenshots/Dashboard.png)
+![Dashboard](docs/screenshots/Dashboard.png)
 
 ### 🗺️ Interactive Map
 ระบุตำแหน่งครุภัณฑ์บนแผนที่ แยกตามอาคาร/สถานที่ พร้อมแสดงรายการครุภัณฑ์ในหมุดนั้นๆ
-![Map View](./docs/screenshots/Map.png)
-<video src="./docs/screenshots/map-video.mp4" muted autoplay loop playsinline width="100%"></video>
+![Map View](docs/screenshots/Map.png)
+<video src="https://github.com/Surasit111/Asset-Management-System/raw/main/docs/screenshots/map-video.mp4" muted autoplay loop playsinline width="100%"></video>
 
 ### 📥 Smart Excel Import
 กระบวนการนำเข้าข้อมูลจาก Excel ที่ชาญฉลาด แมปคอลัมน์อัตโนมัติ และตรวจสอบความถูกต้องก่อนบันทึก
-<video src="./docs/screenshots/import-video.mp4" muted autoplay loop playsinline width="100%"></video>
+<video src="https://github.com/Surasit111/Asset-Management-System/raw/main/docs/screenshots/import-video.mp4" muted autoplay loop playsinline width="100%"></video>
 
 ### 📍 Bulk Operations (Map & Images)
 จัดการตำแหน่งแผนที่และรูปภาพสำหรับหลายรายการพร้อมกันในคลิกเดียว
-| Bulk Map Pinning | Bulk Image Management |
-|:---:|:---:|
-| <video src="./docs/screenshots/map-pin-video.mp4" muted autoplay loop playsinline width="100%"></video> | <video src="./docs/screenshots/upload-image-video.mp4" muted autoplay loop playsinline width="100%"></video> |
+
+**Bulk Map Pinning**
+<video src="https://github.com/Surasit111/Asset-Management-System/raw/main/docs/screenshots/map-pin-video.mp4" muted autoplay loop playsinline width="100%"></video>
+
+**Bulk Image Management**
+<video src="https://github.com/Surasit111/Asset-Management-System/raw/main/docs/screenshots/upload-image-video.mp4" muted autoplay loop playsinline width="100%"></video>
+
+### 🏷️ QR Code System
+สร้างและพิมพ์ QR Code สำหรับติดบนตัวครุภัณฑ์ เพื่อการตรวจสอบที่รวดเร็ว
+![QR Code](docs/screenshots/QR-Code.png)
 
 ### 🏷️ QR Code System
 สร้างและพิมพ์ QR Code สำหรับติดบนตัวครุภัณฑ์ เพื่อการตรวจสอบที่รวดเร็ว
