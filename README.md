@@ -44,16 +44,29 @@
 
 ---
 
-## 🖼️ Screenshots
+## 🖼️ Screenshots & Demos
 
-> เพิ่ม Screenshots หรือ GIF ของระบบที่นี่ เพื่อให้ผู้อ่าน README เห็นภาพรวมได้ทันที
+### 📊 Dashboard & Overview
+ภาพรวมสถิติคลังครุภัณฑ์ทั้งหมด พร้อมกราฟแยกตามประเภทและสถานะแบบ Real-time
+![Dashboard](./docs/screenshots/Dashboard.png)
 
-<!-- ตัวอย่าง:
-![Dashboard](./docs/screenshots/dashboard.png)
-![Map View](./docs/screenshots/map.png)
-![Excel Import](./docs/screenshots/import.png)
-![QR Code](./docs/screenshots/qrcode.png)
--->
+### 🗺️ Interactive Map
+ระบุตำแหน่งครุภัณฑ์บนแผนที่ แยกตามอาคาร/สถานที่ พร้อมแสดงรายการครุภัณฑ์ในหมุดนั้นๆ
+![Map View](./docs/screenshots/Map.png)
+
+### 📥 Smart Excel Import
+กระบวนการนำเข้าข้อมูลจาก Excel ที่ชาญฉลาด แมปคอลัมน์อัตโนมัติ และตรวจสอบความถูกต้องก่อนบันทึก
+![Excel Import](./docs/screenshots/import-gif.gif)
+
+### 📍 Bulk Operations (Map & Images)
+จัดการตำแหน่งแผนที่และรูปภาพสำหรับหลายรายการพร้อมกันในคลิกเดียว
+| Bulk Map Pinning | Bulk Image Management |
+|:---:|:---:|
+| ![Bulk Map](./docs/screenshots/map-pin-group.gif) | ![Bulk Images](./docs/screenshots/upload-image-group.gif) |
+
+### 🏷️ QR Code System
+สร้างและพิมพ์ QR Code สำหรับติดบนตัวครุภัณฑ์ เพื่อการตรวจสอบที่รวดเร็ว
+![QR Code](./docs/screenshots/QR-Code.png)
 
 ---
 
