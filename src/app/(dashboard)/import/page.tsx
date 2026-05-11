@@ -225,7 +225,6 @@ function StepBar({ step }: { step: number }) {
                             {step > s.n ? <Check className="w-[8px] h-[8px] md:w-[10px] md:h-[10px]" strokeWidth={3} /> : s.n}
                         </div>
                         <span className={cn("whitespace-nowrap", step !== s.n && "hidden sm:inline")}>{s.label}</span>
-                        {step === s.n && <span className="whitespace-nowrap">{s.label}</span>}
                     </div>
                     {i < steps.length - 1 && (
                         <div className={cn("w-2 md:w-5 h-px mx-0.5", step > s.n ? "bg-emerald-300" : "bg-slate-200")} />
