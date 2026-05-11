@@ -43,9 +43,9 @@ async function main() {
             longitude: 101.71942328686409,
             description: "ศูนย์คอมพิวเตอร์หลัก มรภ.เลย (ตึกคอม)",
             type: "building",
-            imageUrl: "https://cc.lru.ac.th/th/wp-content/uploads/2020/10/DSC_0272-768x519-1.png",
-            cardImageUrl: "https://cc.lru.ac.th/th/wp-content/uploads/2020/10/DSC_0272-768x519-1.png",
-            pinImageUrl: "https://cc.lru.ac.th/th/wp-content/uploads/2020/10/DSC_0272-768x519-1.png"
+            imageUrl: "/images/buildings/computer-center.png",
+            cardImageUrl: "/images/buildings/computer-center.png",
+            pinImageUrl: "/images/buildings/computer-center.png"
         },
         {
             name: "มหาลัยราชภัฎเลย",
@@ -53,9 +53,9 @@ async function main() {
             longitude: 101.72132315763594,
             description: "มหาวิทยาลัยราชภัฏเลย (อาคารเรียนรวม)",
             type: "building",
-            imageUrl: "https://academic.lru.ac.th/th/wp-content/uploads/2019/04/3-800x445.jpg",
-            cardImageUrl: "https://academic.lru.ac.th/th/wp-content/uploads/2019/04/3-800x445.jpg",
-            pinImageUrl: "https://academic.lru.ac.th/th/wp-content/uploads/2019/04/3-800x445.jpg"
+            imageUrl: "/images/buildings/academic.jpg",
+            cardImageUrl: "/images/buildings/academic.jpg",
+            pinImageUrl: "/images/buildings/academic.jpg"
         },
         {
             name: "ศูนย์วิทยบริการ มหาวิทยาลัยราชภัฏเลย",
@@ -63,9 +63,9 @@ async function main() {
             longitude: 101.72211029266894,
             description: "หอสมุดและศูนย์วิทยบริการ",
             type: "building",
-            imageUrl: "https://academic.lru.ac.th/th/wp-content/uploads/2019/04/1-800x445.jpg",
-            cardImageUrl: "https://academic.lru.ac.th/th/wp-content/uploads/2019/04/1-800x445.jpg",
-            pinImageUrl: "https://academic.lru.ac.th/th/wp-content/uploads/2019/04/1-800x445.jpg"
+            imageUrl: "/images/buildings/library.jpg",
+            cardImageUrl: "/images/buildings/library.jpg",
+            pinImageUrl: "/images/buildings/library.jpg"
         },
         {
             name: "ตึก 18 สำนักวิชาการและงานทะเบียน มหาวิทยาลัยราชภัฏเลย",
@@ -73,9 +73,9 @@ async function main() {
             longitude: 101.72116108226383,
             description: "สำนักวิชาการและงานทะเบียน (อาคาร 18)",
             type: "building",
-            imageUrl: "https://academic.lru.ac.th/th/wp-content/uploads/2019/04/6-800x445.jpg",
-            cardImageUrl: "https://academic.lru.ac.th/th/wp-content/uploads/2019/04/6-800x445.jpg",
-            pinImageUrl: "https://academic.lru.ac.th/th/wp-content/uploads/2019/04/6-800x445.jpg"
+            imageUrl: "/images/buildings/building-18.jpg",
+            cardImageUrl: "/images/buildings/building-18.jpg",
+            pinImageUrl: "/images/buildings/building-18.jpg"
         },
         {
             name: "สำนักวิทยบริการและเทคโนโลยีสารสนเทศ มหาวิทยาลัยราชภัฏเลย",
@@ -83,9 +83,9 @@ async function main() {
             longitude: 101.71969716886755,
             description: "สำนักวิทยบริการและเทคโนโลยีสารสนเทศ (ARIT)",
             type: "server",
-            imageUrl: "https://scontent.fbkk29-1.fna.fbcdn.net/v/t39.30808-6/482217926_1191014732715399_653992333148398326_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=2a1932&_nc_ohc=j8GvcfXKNfYQ7kNvwHEJgJ2&_nc_oc=Adr2lcCjU74tOIpaG0_waljVkfHld3IBAfffGFtqlzIyvMdkcinduwP1G008Ltix6hpqm7p7-uiZ1_KRg10s-on_&_nc_zt=23&_nc_ht=scontent.fbkk29-1.fna&_nc_gid=sKns5tRhQAm_crKP2-Dk1Q&_nc_ss=7b2a8&oh=00_Af5VFbHq8ZObIRPKlYYEpyJ2KPVtUnOTTnqkrjUmsvHxUg&oe=6A07CE22",
-            cardImageUrl: "https://scontent.fbkk29-1.fna.fbcdn.net/v/t39.30808-6/482217926_1191014732715399_653992333148398326_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=2a1932&_nc_ohc=j8GvcfXKNfYQ7kNvwHEJgJ2&_nc_oc=Adr2lcCjU74tOIpaG0_waljVkfHld3IBAfffGFtqlzIyvMdkcinduwP1G008Ltix6hpqm7p7-uiZ1_KRg10s-on_&_nc_zt=23&_nc_ht=scontent.fbkk29-1.fna&_nc_gid=sKns5tRhQAm_crKP2-Dk1Q&_nc_ss=7b2a8&oh=00_Af5VFbHq8ZObIRPKlYYEpyJ2KPVtUnOTTnqkrjUmsvHxUg&oe=6A07CE22",
-            pinImageUrl: "https://scontent.fbkk29-1.fna.fbcdn.net/v/t39.30808-6/482217926_1191014732715399_653992333148398326_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=2a1932&_nc_ohc=j8GvcfXKNfYQ7kNvwHEJgJ2&_nc_oc=Adr2lcCjU74tOIpaG0_waljVkfHld3IBAfffGFtqlzIyvMdkcinduwP1G008Ltix6hpqm7p7-uiZ1_KRg10s-on_&_nc_zt=23&_nc_ht=scontent.fbkk29-1.fna&_nc_gid=sKns5tRhQAm_crKP2-Dk1Q&_nc_ss=7b2a8&oh=00_Af5VFbHq8ZObIRPKlYYEpyJ2KPVtUnOTTnqkrjUmsvHxUg&oe=6A07CE22"
+            imageUrl: "/images/buildings/arit.jpg",
+            cardImageUrl: "/images/buildings/arit.jpg",
+            pinImageUrl: "/images/buildings/arit.jpg"
         }
     ];
 
