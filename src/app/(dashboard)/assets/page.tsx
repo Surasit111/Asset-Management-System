@@ -180,6 +180,8 @@ export default function AssetManagementPage() {
     const [bulkImageOpen, setBulkImageOpen] = useState(false);
     const [isBulkMapOpen, setIsBulkMapOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [bulkActionAssets, setBulkActionAssets] = useState<Asset[]>([]);
+    const [isPreparingBulk, setIsPreparingBulk] = useState(false);
 
     const deptRef = useRef<HTMLDivElement>(null);
 
@@ -498,6 +500,53 @@ export default function AssetManagementPage() {
     const countAccentColor = filterType === "general" ? "text-blue-600"
         : filterType === "durable" ? "text-orange-500" : "text-slate-900";
 
+    const openBulkModal = async (type: "qr" | "image" | "map") => {
+        if (selectedIds.size === 0 && type === "qr") {
+            toast.error("กรุณาเลือกรายการก่อน");
+            return;
+        }
+
+        setIsPreparingBulk(true);
+        try {
+            let targetAssets: Asset[] = [];
+            if (selectedIds.size > 0) {
+                // Fetch ALL selected assets by IDs
+                const idStr = Array.from(selectedIds).join(",");
+                const res = await fetch(`/api/assets?ids=${idStr}&limit=1000`);
+                if (res.ok) {
+                    const data = await res.json();
+                    targetAssets = (data.assets || []).map(flagAsset);
+                } else {
+                    throw new Error("Failed to fetch selected assets");
+                }
+            } else if (type === "image") {
+                // For image modal without selection, it shows items without images
+                const res = await fetch("/api/assets?qualityFilter=noImage&limit=200");
+                if (res.ok) {
+                    const data = await res.json();
+                    targetAssets = (data.assets || []).map(flagAsset);
+                }
+            } else if (type === "map") {
+                // For map modal without selection, show items without coords
+                const res = await fetch("/api/assets?qualityFilter=noCoords&limit=200");
+                if (res.ok) {
+                    const data = await res.json();
+                    targetAssets = (data.assets || []).map(flagAsset);
+                }
+            }
+
+            setBulkActionAssets(targetAssets);
+            if (type === "qr") setBulkQrOpen(true);
+            else if (type === "image") setBulkImageOpen(true);
+            else if (type === "map") setIsBulkMapOpen(true);
+        } catch (err) {
+            console.error(err);
+            toast.error("เกิดข้อผิดพลาดในการเตรียมข้อมูล");
+        } finally {
+            setIsPreparingBulk(false);
+        }
+    };
+
     const tabs = [
         { id: "" as const, label: "ทั้งหมด" },
         { id: "general" as const, label: "แบบทั่วไป" },
@@ -633,9 +682,9 @@ export default function AssetManagementPage() {
                                 <span className="text-[13px] font-medium text-black whitespace-nowrap opacity-80">รายการที่เลือก</span>
                             </div>
                             <div className="flex items-center gap-2.5 border-b sm:border-b-0 sm:border-r border-slate-200 pb-2 sm:pb-0 pr-0 sm:pr-5 mr-0 sm:mr-1 w-full sm:w-auto justify-center flex-wrap sm:flex-nowrap">
-                                <button onClick={() => setBulkQrOpen(true)}
-                                    className="h-8 px-4 bg-blue-500/5 hover:bg-blue-500/10 text-blue-600 border border-blue-500/30 rounded-full font-bold text-[12px] flex items-center gap-2 transition-all cursor-pointer">
-                                    <QrCode size={15} /> พิมพ์ QR ทั้งหมด
+                                <button onClick={() => openBulkModal("qr")} disabled={isPreparingBulk}
+                                    className={cn("h-8 px-4 bg-blue-500/5 hover:bg-blue-500/10 text-blue-600 border border-blue-500/30 rounded-full font-bold text-[12px] flex items-center gap-2 transition-all cursor-pointer", isPreparingBulk && "opacity-50 cursor-wait")}>
+                                    {isPreparingBulk ? <Loader2 size={15} className="animate-spin" /> : <QrCode size={15} />} พิมพ์ QR ทั้งหมด
                                 </button>
                                 <button onClick={() => setBulkDeleteOpen(true)}
                                     className="h-8 px-4 bg-red-500/5 hover:bg-red-500/10 text-red-600 border border-red-500/30 rounded-full font-bold text-[12px] flex items-center gap-2 transition-all cursor-pointer">
@@ -718,14 +767,14 @@ export default function AssetManagementPage() {
                                     </button>
                                 </div>
                                 <div className="flex items-center gap-2 w-full sm:w-auto justify-start sm:justify-end flex-wrap sm:flex-nowrap">
-                                    <button onClick={() => setBulkImageOpen(true)}
-                                        className="group flex items-center justify-center gap-2 px-4 py-1.5 bg-violet-600 hover:bg-violet-700 text-white rounded-lg text-[12px] font-bold shadow-sm transition-all cursor-pointer active:scale-95 w-full sm:w-auto">
-                                        <Images size={14} className="group-hover:rotate-12 transition-transform" />
+                                    <button onClick={() => openBulkModal("image")} disabled={isPreparingBulk}
+                                        className={cn("group flex items-center justify-center gap-2 px-4 py-1.5 bg-violet-600 hover:bg-violet-700 text-white rounded-lg text-[12px] font-bold shadow-sm transition-all cursor-pointer active:scale-95 w-full sm:w-auto", isPreparingBulk && "opacity-50 cursor-wait")}>
+                                        {isPreparingBulk ? <Loader2 size={14} className="animate-spin" /> : <Images size={14} className="group-hover:rotate-12 transition-transform" />}
                                         จัดการรูปภาพกลุ่ม
                                     </button>
-                                    <button onClick={() => setIsBulkMapOpen(true)}
-                                        className="group flex items-center justify-center gap-2 px-4 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-[12px] font-bold shadow-sm transition-all cursor-pointer active:scale-95 w-full sm:w-auto">
-                                        <MapPin size={14} className="group-hover:animate-bounce transition-transform" />
+                                    <button onClick={() => openBulkModal("map")} disabled={isPreparingBulk}
+                                        className={cn("group flex items-center justify-center gap-2 px-4 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-[12px] font-bold shadow-sm transition-all cursor-pointer active:scale-95 w-full sm:w-auto", isPreparingBulk && "opacity-50 cursor-wait")}>
+                                        {isPreparingBulk ? <Loader2 size={14} className="animate-spin" /> : <MapPin size={14} className="group-hover:animate-bounce transition-transform" />}
                                         ปักหมุดแผนที่กลุ่ม
                                     </button>
                                 </div>
@@ -1063,21 +1112,22 @@ export default function AssetManagementPage() {
                 description={<>คุณต้องการลบ <strong>{selectedIds.size} รายการ</strong> ออกจากระบบหรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้</>}
                 confirmText={`ลบ ${selectedIds.size} รายการ`} type="danger" isLoading={isDeleting} />
 
-            <BulkQRCodeModal isOpen={bulkQrOpen} onClose={() => setBulkQrOpen(false)} assets={assets.filter(a => selectedIds.has(a.id))} />
-
+            <BulkQRCodeModal isOpen={bulkQrOpen} onClose={() => setBulkQrOpen(false)} assets={bulkActionAssets} />
+ 
             <BulkImageModal
                 isOpen={bulkImageOpen}
                 onClose={() => setBulkImageOpen(false)}
-                assets={selectedIds.size > 0 ? assets.filter(a => selectedIds.has(a.id)) : assets.filter(a => !a.hasImage)}
+                assets={bulkActionAssets}
                 onSaved={() => {
                     fetchAssets({ p: page, s: search, type: filterType, fy: fiscalYear, sm: startMonth, em: endMonth, sf: statusFilter, af: acquisitionFilter, mf: moneyTypeFilter, df: departmentFilter, qf: qualityFilter, sb: sortBy, so: sortOrder, soft: true });
                     fetchStats();
                 }}
             />
-
+ 
             <BulkMapModal
                 isOpen={isBulkMapOpen}
                 onClose={() => setIsBulkMapOpen(false)}
+                assets={bulkActionAssets}
                 onSaved={() => {
                     fetchAssets({ p: page, s: search, type: filterType, fy: fiscalYear, sm: startMonth, em: endMonth, sf: statusFilter, af: acquisitionFilter, mf: moneyTypeFilter, df: departmentFilter, qf: qualityFilter, sb: sortBy, so: sortOrder, soft: true });
                     fetchStats();

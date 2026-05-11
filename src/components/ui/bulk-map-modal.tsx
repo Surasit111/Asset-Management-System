@@ -40,6 +40,7 @@ interface BulkMapModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSaved: () => void;
+    assets?: AssetItem[];
 }
 
 interface SelectedPin {
@@ -50,7 +51,7 @@ interface SelectedPin {
 }
 
 // ─── Main Modal ───────────────────────────────────────────────────────────────
-export function BulkMapModal({ isOpen, onClose, onSaved }: BulkMapModalProps) {
+export function BulkMapModal({ isOpen, onClose, onSaved, assets: propAssets }: BulkMapModalProps) {
 
     const [assets, setAssets] = useState<AssetItem[]>([]);
     const [loadingAssets, setLoadingAssets] = useState(false);
@@ -92,7 +93,12 @@ export function BulkMapModal({ isOpen, onClose, onSaved }: BulkMapModalProps) {
 
     useEffect(() => {
         if (isOpen) {
-            fetchAssets();
+            if (propAssets && propAssets.length > 0) {
+                setAssets(propAssets);
+                setLoadingAssets(false);
+            } else {
+                fetchAssets();
+            }
             setSelectedIds(new Set());
             setPin(null);
             setSearch("");
@@ -101,7 +107,7 @@ export function BulkMapModal({ isOpen, onClose, onSaved }: BulkMapModalProps) {
         }
         // cleanup เมื่อปิด modal
         return () => { fetchAbortRef.current?.abort(); };
-    }, [isOpen, fetchAssets]);
+    }, [isOpen, fetchAssets, propAssets]);
 
     // ── outside click (location dropdown) ────────────────────────────────────
     useEffect(() => {

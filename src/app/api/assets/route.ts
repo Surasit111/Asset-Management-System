@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
+        const ids = searchParams.get("ids") || "";
         const page = parseInt(searchParams.get("page") || "1");
         const limit = parseInt(searchParams.get("limit") || "20");
         const search = searchParams.get("search") || "";
@@ -25,6 +26,12 @@ export async function GET(request: NextRequest) {
         const sortOrder = searchParams.get("sortOrder") || "desc";
 
         const andConditions: any[] = [];
+
+        // 0. IDs filter (highest priority)
+        if (ids) {
+            const idList = ids.split(",").filter(Boolean);
+            andConditions.push({ id: { in: idList } });
+        }
 
         // 1. Search
         if (search) {
