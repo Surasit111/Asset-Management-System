@@ -55,9 +55,8 @@
 สร้างและพิมพ์ QR Code สำหรับติดบนตัวครุภัณฑ์ เพื่อการตรวจสอบที่รวดเร็ว
 ![QR Code](docs/screenshots/QR-Code.png)
 
-### 🏷️ QR Code System
-สร้างและพิมพ์ QR Code สำหรับติดบนตัวครุภัณฑ์ เพื่อการตรวจสอบที่รวดเร็ว
-![QR Code](./docs/screenshots/QR-Code.png)
+
+---
 
 ---
 
